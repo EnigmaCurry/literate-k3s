@@ -222,7 +222,7 @@ Now open up =${HOME}/git/literate-k3s/k3s.org= inside of Emacs.
 
  * Start with the [[Core Config][Core Config]] section. Edit the variable =CLUSTER=, which is
    your (sub-)domain name you wish to give to the cluster. (eg.
-   =k3s.example.com=). Then [[Make the namespace directories][make the namespace directories]].
+   =k3s.example.com=).
  * Next go to the section for [[kube-system setup][kube-system setup]], and run the code block there to
    create the =kube-system= directory.
  * Now go to the [[kube-system][kube-system]] section and edit all the variables there, most
