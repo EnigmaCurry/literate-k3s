@@ -1,0 +1,1652 @@
+#+title: Literate K3s Cluster
+#+author: EnigmaCurry
+#+OPTIONS: ^:{}
+#+EXPORT_FILE_NAME: index.html
+#+EXCLUDE_TAGS: noexport
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/build/solarized-dark.css" />
+#+INFOJS_OPT: view:showall toc:t ltoc:above mouse:underline buttons:0 path:css/build/all.min.js
+
+* Literate K3s cluster with Org-Mode and GitOps
+** Introduction
+Literate Programming is a style of computer programming where you "weave"
+together: code, configuration, prose documentation, and program results/output,
+all into one single readable document. If you use a Literate Programming style,
+you will never forget to document how your program works, because your
+documentation /is/ your program.
+
+[[https://k3s.io/][K3s]] is a distribution of Kubernetes, which is easy to deploy to many kinds of
+computer systems, be it on bare-metal, or virtual machine, or in the cloud. It
+is exceedingly useful as a *self-hosted* variant of Kubernetes, which you can
+even run on a single node with at least 2GB or more of RAM (4GB recommended).
+
+This file is an [[https://orgmode.org][org-mode]] and [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] document (or if you're reading this
+online, you're probably reading the exported HTML version. You may find [[attachment:k3s.org][the
+original Org source here]]). It contains the entire configuration and
+documentation for creating a [[https://k3s.io/][K3s]] cluster, from scratch, and the means to
+configure and maintain your deployments over time. Essentially, this org file
+becomes your ultimate source of configuration for your entire cluster: to make a
+change to your cluster, you first need to make the change in this file. You
+should open this file in Emacs, edit it in org-mode, run the setup commands
+described, and =tangle= your source files. A minimal tutorial on using Emacs
+with org-babel is included, but this expects some pre-existing Emacs knowledge.
+
+Having your entire cluster config in one file may sound like it would be
+overwhelming, but there is another trick up Org's sleeve: =tangling=. If
+bringing both code and documentation together is called =weaving=, taking them
+apart again is called =tangling=. Tangling is a process, which takes the literal
+snippets of code from inside this documentation file, and exports them out to
+individual files, somewhere else on your system. When you tangle, all of the
+snippets in this file will overwrite all of the external files that they are
+associated with. So, although the ultimate config is contained in this one Org
+file, you will be able to see its exported form, in the various external places,
+as separate files. You should treat these generated files as compiled/read-only,
+because any changes that you make to them would get over-written, the next time
+you run the =tangle= process. If you put these external files into a git
+repository, and make small regular commits, it will be much easier to track the
+changes in each file.
+
+[[https://github.com/fluxcd/flux2][Flux version 2]] is a Continuous Delivery system, that synchronizes the state of
+your cluster (and all deployments) from the state of YAML manifest files in a
+git repository. With Flux, you never run cluster commands like =kubectl= or
+=helm= directly, instead you commit these manifest files to your Flux git
+repository, and Flux applies the changes to the cluster, on your behalf. There
+will be a little bit of setup that you have to do manually with kubectl, in
+order to bootstrap Flux, but once Flux is running on your cluster, from that
+point on, you can control your entire cluster state simply by =tangling= this
+file, commiting the generated files to git, and pushing to the remote
+repository. Flux handles the actual upgrade for you, on git push.
+
+** Using Emacs, org-mode, and babel
+*** Install and config
+  * Install [[https://www.gnu.org/software/emacs/][GNU Emacs]] (tested on version 27)
+  * Install [[https://orgmode.org/][org-mode]] (tested using latest from MELPA)
+  * Open the [[https://orgmode.org/manual/][Org Manual]] and keep it handy as a reference
+  * Open the [[https://orgmode.org/worg/org-contrib/babel/intro.html][Babel Manual]] and keep it handy as a reference
+
+ Here is [[https://github.com/enigmacurry/emacs][my own Emacs config]] based upon [[https://www.spacemacs.org/][spacemacs]]. 
+
+If you don't know the first thing about Emacs, the way you start it from your
+command line is by running =emacs=. In Emacs, you perform actions with keyboard
+shortcut sequences that you type. If you can spare an hour, utilize the builtin
+Emacs tutorial system: on your keyboard, press the =F1= key followed by the =t=
+key. Basic Emacs concepts like navigation, opening and saving files, are covered
+in the tutorial, and will not be mentioned again here.
+
+*** Open k3s.org in Emacs
+ The first time you open this file, a dialog will open warning you about the
+ execution of code, and asking for your permission to run an =eval= code line:
+
+#+begin_example
+The local variables list in k3s.org
+contains values that may not be safe (*).
+
+Do you want to apply it?  You can type
+y  -- to apply the local variables list.
+n  -- to ignore the local variables list.
+!  -- to apply the local variables list, and permanently mark these
+      values (*) as safe (in the future, they will be set automatically.)
+
+  * eval : (progn (org-babel-goto-named-src-block "k3s-org-emacs-load") (org-babel-execute-src-block) (outline-hide-sublevels 1))
+#+end_example
+
+ You should type =y= to proceed, or type =!= to proceed and always trust this
+ code from now on. Additionally, org-mode will ask a follow up question to gain
+ permission to run the code block named =k3s-org-emacs-load= (The same as if you
+ had run the code block yourself, with =C-c C-c=). You should type =y= again.
+ (This second question will always be asked, each time you open the file, even
+ if you had typed =!= to avoid the first question everytime. Sorry! It's a good
+ security design, which you should not attempt to circumvent.)
+
+ This automatic loading happens because of the =Local Variables= section found
+ at the very bottom of this file under the [[Footnotes][Footnotes]] (not visible in HTML
+ export). The =Local Variables= is a formal way to inform Emacs that you would
+ like to run some code when the file is opened. It could be dangerous to do this
+ in some situations, so it's a good thing that Emacs asked you this question! In
+ this case, it is setting up to run the code block found in this file named
+ =k3s-org-emacs-load=, in order to enable automatic HTML export whenever you
+ save this file, as well as a few other fixes for things. If you don't desire
+ this behaviour, remove the =eval= line from the =Local Variables= section at
+ the bottom of the [[Footnotes][Footnotes]] section, and you will no longer see this message on
+ load.
+
+ When you opened this file, it should have automatically loaded in =Org= mode
+ (or you might need to run =M-x org-mode=). 
+
+*** Evaluating Code Blocks
+ Most code blocks in this document DO NOT need to be evaluated. Instead, this
+ document usually relies upon Tangling instead (see next section). However, each
+ deployment section has a =Setup= sub-section which includes some code blocks
+ that need to be evaluated as an initial setup procedure, only necessary to run
+ one time. You do this explicitly, in Emacs, by hand, telling Org mode to
+ evaluate each code block.
+
+ See the [[https://orgmode.org/manual/Evaluating-Code-Blocks.html][Evaluating Code Blocks]] section of the Org manual, but basically it's
+ like this:
+
+  1. Code blocks start with =#+begin_src= and end with =#+end_src=.
+  2. Put your cursor inside the code block (anywhere between =begin_src= and
+     =end_src=)
+  3. Press =C-c C-c= to execute the code block. It will ask you to confirm.
+     Press =y= or =n=. The code block is now executed directly on your system.
+     (And if that command was =kubectl=, it executes it on your cluster!)
+  4. After the code finishes running, you will see the output of the command
+     automatically printed, directly below the code block in the =RESULTS=
+     section. (This behaviour has been disabled on some commands with the
+     argument =:results none=). Normally, these results are also exported in the
+     HTML version, but can be excluded from the HTML by applying the argument
+     =:exports code= (as opposed to =:exports both= which would include the
+     RESULTS in the HTML).
+
+*** Tangling Code Blocks
+ For most code blocks, including all YAML code blocks, these have the arguments
+ =:tangle FILE :eval no=, which means that these code blocks cannot be
+ evaluated, but instead are exported to another external FILE. Tangling is
+ applied globally, that is, tangling exports ALL of the code blocks in the
+ entire file, found with the =:tangle FILE= argument, all at the same time (each
+ to different FILEs).
+
+  1. To tangle the whole document, press =C-c C-v t= or =M-x org-babel-tangle=
+*** Editing code blocks
+ To edit a code block, you can just edit it directly in the Org document, but
+ sometimes it is easier to edit the code block inside of the major mode for the
+ particular programming language. Org can do this by opening the code block in a
+ secondary buffer, with only the code inside:
+
+  1. Put your cursor inside of any code block.
+  2. Press =C-c '= to open the new buffer containing only the code block.
+  3. Edit the buffer, save it with =M-RET '= (see helpful text at top of buffer)
+  4. You are returned back to the Org document and you'll see the changes in the
+     code block.
+
+*** Creating new code blocks
+ To insert a new code block, you can use a shortcut (as opposed to copying one of
+ the existing code block headers).
+
+  1. Press =C-c C-,= to open the template menu. Choose the template you want
+     from the menu. If you're using my config, =s= gets you a bash shell
+     template, =config= gets you a config variable template, and =yaml= gets you
+     a yaml tangle template. Just pressing the first letter gets you the
+     template.
+  2. A different, /faster/, way of doing the same thing, is to type at the
+     beginning of a new line =<s= or =<config= or =<yaml= then press =TAB=. The
+     text input automatically replaces with the content of the template. This
+     feature requires the org-tempo library (pre-installed in my Emacs config).
+  3. The list of templates can be customized, type =M-x customize-variable= and
+     enter =org-structure-template-alist=. (=Customize= is the Emacs way of
+     saving a setting permanently to your config, without needing to edit the
+     lisp configuration file yourself.) 
+
+** Export to HTML
+Org-mode can export to HTML for easier viewing on the web. The exported version
+removes all NoWeb references and prints the actual literal values of things.
+This is a great way to view your current cluster config in an online readable
+form.
+
+In org-mode, you can export the current document as a single HTML page, with the
+builtin org-mode exporter: type =C-c C-e h-h= or run =M-x
+org-html-export-to-html=. However, in this file, it is setup automatically to
+export HTML whenever the file is saved, see the [[Footnotes][Footnotes]] section. You can
+toggle this behaviour on and off, by executing =M-x
+toggle-org-html-export-on-save=.
+
+Normally, org-mode runs all of the code blocks in the file, every single time
+you export. This is undesirable in this case, as the setup code only needs to
+run one time. So, in this document, all of the code blocks have set =:eval
+never-export= which means that these code blocks are never evaluated (run) when
+exporting. Indeed, when you export to HTML, you should not see any confirmation
+dialog when exporting, as no code is being run at that time. In order to run a
+code block, you must do so explicitly, with your cursor inside the block, and
+then type =C-c C-c=.
+
+If you would like to live reload the browser page, on save, you can use the
+Python based [[https://pypi.org/project/livereload/][livereload server]]. First install it eg: =pip install livereload=,
+then run =livereload -w3 -o0= in the same directory as the exported file, it
+should open your web browser automatically to =http://127.0.0.1:35729/=. You
+should now automatically see the changes reload on save. The argument =-w3=
+waits three seconds before reloading the browser on save, which makes reloading
+a bit more reliable.
+
+** Getting Started
+
+Clone [[https://github.com/EnigmaCurry/literate-k3s][this repository]] to your system:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+git clone https://github.com/EnigmaCurry/literate-k3s.git \
+          ${HOME}/git/literate-k3s -o EnigmaCurry
+#+end_src
+
+(This sets the upstream remote name to =EnigmaCurry=. You'll use the default
+=origin= later for your own self-hosted gitea remote.)
+
+Now open up =${HOME}/git/literate-k3s/k3s.org= inside of Emacs.
+
+ * Start with the [[Core Config][Core Config]] section. Edit the variable =CLUSTER=, which is
+   your (sub-)domain name you wish to give to the cluster. (eg.
+   =k3s.example.com=). Then [[Make the namespace directories][make the namespace directories]].
+ * Next go to the section for [[kube-system setup][kube-system setup]], and run the code block there to
+   create the =kube-system= directory.
+ * Now go to the [[kube-system][kube-system]] section and edit all the variables there, most
+   importantly =TRAEFIK_ACME_EMAIL=.
+ * Run Tangle - Press =C-c C-v t= or =M-x org-babel-tangle= to create all of the
+   derivative files into the =src/= directory.
+ * Run the code blocks in the [[Deploy Traefik][Deploy Traefik]].
+
+Follow the same procedure for all the rest of the sections:
+
+ 1. For each new namespace, you create a new directory in =src/=.
+ 2. Run code blocks in each =Setup= sections once, only for initial setup.
+ 3. Edit variables in the =Config= sections, anytime you need to change a setting. 
+ 4. After changing config, press =C-c C-v t=, to tangle the code blocks, which
+    creates the YAML manifests, and other files. If an Org sub-tree heading is
+    marked with =COMMENT=, it is disabled, and no blocks under this heading will
+    be tangled, and it will also not appear in the HTML export. You can toggle a
+    sub-tree =COMMENT= by pressing =C-c ;=.
+ 5. Follow any other instructions and code-blocks that the section may provide.
+    Usually this will be to commit the tangled files to git, and push to the
+    repository (so that Flux can handle the changes). In other cases, like
+    Traefik (which is setup before Flux is installed) may have you run manual
+    =kubectl= commands.
+
+If you already have a cluster, the generated YAML files written to the =src=
+directory can now be applied to your cluster. But if you don't have a cluster
+yet, read on.
+
+** Workstation tools
+To operate kubernetes, you need to install lots of different command line tools
+on your workstation (NOT on the cluster nodes). Here's a list of several, many
+of them are optional.
+
+*** kubectl
+=kubectl= is the main tool to access the Kubernetes API from the command line.
+You can use it to apply manifest files (YAML containing deployment
+configurations) to your cluster. This is mostly a manual tool, and useful during
+bootstrap of the cluster, but really once you get Flux installed, you won't need
+it for that purpose anymore. =kubectl= is still an indispensible tool for the
+purposes of retrieving logs and getting the system status.
+
+See the [[https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-using-native-package-management][kubectl install guide]].
+
+*** kustomize
+=kustomize= is a system to patch kubernetes manifests, essentially plugging new
+configs into existing templates. They don't like to call them templates though,
+because they are operating on structured data, but its the same thing really.
+There are no if-then-else constructs like there are in [[https://helm.sh/][Helm]] templates, this is
+more like monkey-patching config directly, but nice and clean.
+
+See the [[https://github.com/kubernetes-sigs/kustomize/releases][kustomize install guide]].
+
+*** kubeseal
+=kubeseal= is the command line tool for [[https://github.com/bitnami-labs/sealed-secrets#sealed-secrets-for-kubernetes][bitnami-labs/sealed-secrets]], which is a
+system for storing encrypted secrets in public(ish) git repositories, which only
+your cluster can decrypt and read. Using sealed secrets will let you fully
+document your cluster, inside of a single git repository, while not leaking any
+private details to third parties.
+
+See the [[https://github.com/bitnami-labs/sealed-secrets/releases][kubeseal install guide]], note that you only need to install the "Client
+side" part for now.
+
+*** flux
+=flux= is the command line tool for interacting with the Flux2 system. 
+
+See the [[https://github.com/fluxcd/flux2/tree/main/install][flux cli install guide]].
+
+*** k3sup (optional)
+=k3sup= is a tool to bootstrap creating a k3s cluster on a remote server, and
+automatically create the config file on your workstation with the authentication
+token.
+
+See the [[https://github.com/alexellis/k3sup#download-k3sup-tldr][k3sup install guide]].
+
+*** CDK8s (optional)
+=CDK8s= is a tool to programmatically generate kubernetes manifests from Python,
+Typescript, or Java code.
+
+See the [[https://cdk8s.io/docs/latest/getting-started/][CDK8s install guide]]
+
+*** OpenFaaS (optional)
+=OpenFaaS CLI= lets you interact with OpenFaaS installed on your cluster, to
+create your own "serverless" functions.
+
+See the [[https://docs.openfaas.com/cli/install/][OpenFaaS CLI install guide]]
+
+** Create a cluster
+The easiest way of creating a k3s cluster is with [[https://github.com/alexellis/k3sup][k3sup]]:
+
+ * Provision a Linux node with root (or sudo) SSH access (OS doesn't really
+   matter, Debian, Ubuntu, Fedora, Arch, Whatever. I'm testing with Debian 10.
+   This could be a Virtual Machine, another local computer, or a VPS cloud
+   instance anywhere. Just stick with the AMD64 platform, it'll be a LOT
+   easier.)
+ * Setup your DNS for the new node. You need type =A= records pointing to
+   =CLUSTER= and =*.CLUSTER= (eg. =k3s.example.com= and =*.k3s.example.com=
+   pointing to the public IP address of your node.)
+ * Setup SSH key based authentication from your workstation to the new node.
+ * Login to the node and install =curl= (you will need this for k3sup to work:
+=apt-get update && apt-get install -y curl=
+ * [[https://github.com/alexellis/k3sup#download-k3sup-tldr][Download and install k3sup]] on your local workstation.
+ * Run k3sup to create the cluster:
+
+#+begin_src shell :noweb yes :eval never-export :exports code :results none
+mkdir -p ${HOME}/.kube
+k3sup install --host <<CLUSTER>> --user <<CLUSTER_SSH_USER>> \
+  --local-path <<KUBE_CONFIG>> --k3s-extra-args '--disable traefik'
+#+end_src
+
+ * Wait a minute or two for the cluster to come up.
+ * Now test to see if you can connect and output node status:
+
+ #+begin_src shell :noweb yes :eval never-export :exports both
+kubectl --kubeconfig <<KUBE_CONFIG>> get nodes
+ #+end_src
+
+* Core Config
+This section will include all of the core configuration values, referenced by
+all the deployments. Each configuration has a named code block, which you can
+edit the value of, and can then be referenced in other code blocks via [[https://orgmode.org/manual/Noweb-Reference-Syntax.html][NoWeb
+syntax]]. (ie. =<<name-of-variable-block>>=)
+** CLUSTER
+=CLUSTER= is the domain name of your cluster:
+#+name: CLUSTER
+#+begin_src config :eval no
+k3s.example.com
+#+end_src
+** CLUSTER_SSH_USER
+=CLUSTER_SSH_USER= is the admin SSH account of the cluster.
+#+name: CLUSTER_SSH_USER
+#+begin_src config :noweb yes :eval no
+root
+#+end_src
+** KUBE_CONFIG
+=KUBE_CONFIG= is the local path to the kubectl config file
+#+name: KUBE_CONFIG
+#+begin_src config :noweb yes :eval no
+${HOME}/.kube/<<CLUSTER>>-config
+#+end_src
+
+* Sealed Secrets
+This Org file is not an appropriate place to store private things like passwords
+or API tokens, because it may accidentally be published to the web. These things
+should be stored in Secrets, controlled only by your cluster. To keep secrets
+local to this config, the use of [[https://github.com/bitnami-labs/sealed-secrets][Sealed Secrets]] allows us to store an encrypted
+copy of the secrets in our git repository. Only the cluster can decrypt sealed
+secrets.
+** Sealed Secrets Config
+
+#+name: SEALED_SECRETS_VERSION
+#+begin_src config :noweb yes :eval no
+v0.14.1
+#+end_src
+
+** Install bitnami-labs/sealed-secrets to the cluster
+In [[Workstation tools][Workstation tools]] you already installed the command line client. Now you need
+to install it to the cluster:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/<<SEALED_SECRETS_VERSION>>/controller.yaml
+#+end_src
+* kube-system
+=kube-system= is the namespace for running system wide features, mostly network
+related. 
+** kube-system setup
+Create the =kube-system= namespace directory:
+#+begin_src shell :noweb yes :eval never-export :exports code
+mkdir -p src/kube-system
+#+end_src
+** src/kube-system/kustomization.yaml
+Each namespace (including =kube-system=) needs a file called
+=kustomization.yaml=, which contains a list of all the YAML manifests for the
+namespace. As you add addtional manifests to =kube-system=, you must add
+references here:
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- traefik.crd.yaml
+- traefik.pvc.yaml
+- traefik.rbac.yaml
+- traefik.daemonset.yaml
+- traefik.whoami.yaml
+#+end_src
+
+** Traefik
+ [[https://doc.traefik.io/traefik/][Traefik]] is a reverse proxy that will allow HTTP and TCP ingress to your cluster
+ pods, thus allowing the public internet access to your container services. With
+ k3s + traefik there is no requirement for any external load balancer.
+
+ Listed here are all of the configuration variables needed for Traefik and all
+ of the YAML manifests to apply. This makes use of named code blocks that are
+ referenced elsewhere, via [[https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax][NoWeb syntax]]. (ie. =<<TRAEFIK_ACME_EMAIL>>=).
+
+*** TRAEFIK_VERSION
+ The version number of Traefik to install (eg. =2.3=).
+ #+name: TRAEFIK_VERSION
+ #+begin_src config :noweb yes :eval no
+ v2.3
+ #+end_src
+*** TRAEFIK_IMAGE
+ =TRAEFIK_IMAGE= is the name:tag of the container image for traefik:
+ #+name: TRAEFIK_IMAGE
+ #+begin_src config :noweb yes :eval no
+ traefik:<<TRAEFIK_VERSION>>
+ #+end_src
+*** TRAEFIK_ACME_EMAIL
+ =TRAEFIK_ACME_EMAIL= is the email address to register with the ACME service
+ prodider. 
+#+name: TRAEFIK_ACME_EMAIL
+#+begin_src config :eval no
+you@example.com
+#+end_src
+*** TRAEFIK_ACME_SERVER
+ =TRAEFIK_ACME_SERVER= is the URL for the Let's Encrypt API (Or other ACME
+ provider). 
+ #+name: TRAEFIK_ACME_SERVER
+ #+begin_src config :noweb yes :eval no
+ https://acme-staging-v02.api.letsencrypt.org/directory
+ #+end_src
+
+ For production, use the =acme-v02= Lets Encrypt server :
+
+ : https://acme-v02.api.letsencrypt.org/directory
+
+ For staging, use the =acme-staging-v02= Let's Encrypt server :
+
+ : https://acme-staging-v02.api.letsencrypt.org/directory
+
+ The difference, is that the staging server has much more generous [[https://letsencrypt.org/docs/rate-limits/][rate limiting]],
+ but will only provide certificates for testing purposes (ie, they appear INVALID
+ in web browsers.) You really should start with the staging server for new
+ deployments, because you may find you need to recreate the whole server a few
+ times, and if you don't backup and restore the =acme.json= file that Traefik
+ needs, it will request the certificates be issued again, incurring the wrath of
+ the rate limit, which blocks you out for a week.
+
+*** TRAEFIK_LOG_LEVEL
+ =TRAEFIK_LOG_LEVEL= is the filter level on the traefik log.
+ #+name: TRAEFIK_LOG_LEVEL
+ #+begin_src config :noweb yes :eval no
+ INFO
+ #+end_src
+*** TRAEFIK_WHOAMI_DOMAIN
+ [[https://github.com/traefik/whoami][traefik/whoami]] can be deployed to test Traefik functionality. It needs its own
+ domain name to respond to. =TRAEFIK_WHOAMI_DOMAIN= is the subdomain that the
+ whoami service responds to.
+ #+name: TRAEFIK_WHOAMI_DOMAIN
+ #+begin_src config :noweb yes :eval no
+ whoami.<<CLUSTER>>
+ #+end_src
+
+*** src/kube-system/traefik.crd.yaml
+Traefik supports Kubernetes by way of creating new kubernetes resource types:
+[[https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/][Custom Resource Definitions (CRD)]]. Basically its a declarative mapping between
+Kubernetes API concepts and Traefik API concepts. These CRD are copied verbatim
+from the [[https://github.com/traefik/traefik/blob/v2.3/docs/content/reference/dynamic-configuration/kubernetes-crd-definition.yml][Traefik v2.3 documentation]], and may require updating if you use a
+different version. I used to just link a URL inside of kustomization.yaml, as it
+feels like boilerplate, but I think its better to document all of the CRD in the
+Org document, even if its a bit long:
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik.crd.yaml
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: ingressroutes.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: IngressRoute
+    plural: ingressroutes
+    singular: ingressroute
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: middlewares.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: Middleware
+    plural: middlewares
+    singular: middleware
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: ingressroutetcps.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: IngressRouteTCP
+    plural: ingressroutetcps
+    singular: ingressroutetcp
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: ingressrouteudps.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: IngressRouteUDP
+    plural: ingressrouteudps
+    singular: ingressrouteudp
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: tlsoptions.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: TLSOption
+    plural: tlsoptions
+    singular: tlsoption
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: tlsstores.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: TLSStore
+    plural: tlsstores
+    singular: tlsstore
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: traefikservices.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: TraefikService
+    plural: traefikservices
+    singular: traefikservice
+  scope: Namespaced
+
+#+end_src
+*** src/kube-system/traefik.rbac.yaml
+RBAC is [[https://kubernetes.io/docs/reference/access-authn-authz/rbac/][Role Based Authentication Control]] and it grants Traefik extra privileges
+to watch the state of your cluster, and see when pods are created.
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik.rbac.yaml
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: traefik-ingress-controller
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: traefik
+    app.kubernetes.io/instance: traefik
+  annotations:
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: kube-system
+  name: traefik-ingress-controller
+
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - endpoints
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+      - networking.k8s.io
+    resources:
+      - ingresses
+      - ingressclasses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses/status
+    verbs:
+      - update
+  - apiGroups:
+      - traefik.containo.us
+    resources:
+      - middlewares
+      - ingressroutes
+      - traefikservices
+      - ingressroutetcps
+      - ingressrouteudps
+      - tlsoptions
+      - tlsstores
+    verbs:
+      - get
+      - list
+      - watch
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: traefik-ingress-controller
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-ingress-controller
+subjects:
+  - kind: ServiceAccount
+    name: traefik-ingress-controller
+    namespace: kube-system
+#+end_src
+*** src/kube-system/traefik.pvc.yaml
+a [[https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims][PersistentVolumeClaim]] allocates a permanent volume for a Pod. This is one is
+for 100MB to store the Traefik =acme.json= file.
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik.pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: traefik-data
+  namespace: kube-system
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100M
+  storageClassName: local-path
+#+end_src
+*** src/kube-system/traefik.daemonset.yaml
+A [[https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/][DaemonSet]] is one method of deployment in Kubernetes (others being [[https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/][StatefulSet]]
+and [[https://kubernetes.io/docs/concepts/workloads/controllers/deployment/][Deployment]]). DaemonSet is cool because it replicates a given pod on to every
+single node in the cluster. We want Traefik to listen on every node and be able
+to direct traffic to any other node.
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik.daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: traefik-ingress-lb
+  name: traefik
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress-lb
+      name: traefik-ingress-lb
+  template:
+    metadata:
+      labels:
+        k8s-app: traefik-ingress-lb
+        name: traefik-ingress-lb
+    spec:
+      containers:
+      - args:
+        - --api
+        - --log.level=<<TRAEFIK_LOG_LEVEL>>
+        - --api.insecure=false
+        - --api.dashboard=false
+        - --accesslog
+        - --global.checknewversion=true
+        - --entryPoints.web.address=:80
+        - --entryPoints.websecure.address=:443
+        - --entrypoints.web.http.redirections.entryPoint.to=websecure
+        - --entrypoints.websecure.http.tls.certResolver=default
+        - --ping=true
+        - --providers.kubernetescrd=true
+        - --providers.kubernetesingress=true
+        - --certificatesresolvers.default.acme.storage=/traefik-data/acme.json
+        - --certificatesresolvers.default.acme.tlschallenge=true
+        - --certificatesresolvers.default.acme.caserver=<<TRAEFIK_ACME_SERVER>>
+        - --certificatesresolvers.default.acme.email=<<TRAEFIK_ACME_EMAIL>>
+        - --entrypoints.ssh.address=:2222
+        image: <<TRAEFIK_IMAGE>>
+        name: traefik-ingress-lb
+        volumeMounts:
+        - name: traefik-data
+          mountPath: /traefik-data
+        ports:
+        - containerPort: 80
+          hostPort: 80
+          name: web
+        - containerPort: 443
+          hostPort: 443
+          name: websecure
+        - containerPort: 2222
+          hostPort: 2222
+          name: ssh
+        securityContext:
+          capabilities:
+            add:
+            - NET_BIND_SERVICE
+            drop:
+            - ALL
+      serviceAccountName: traefik-ingress-controller
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: traefik-data
+        persistentVolumeClaim:
+          claimName: traefik-data
+#+end_src
+
+*** src/kube-system/traefk.whoami.yaml
+ [[https://github.com/traefik/whoami][traefik/whoami]] can be deployed to test Traefik functionality. It listens to the
+ domain [[TRAEFIK_WHOAMI_DOMAIN][TRAEFIK_WHOAMI_DOMAIN]] (eg. =whoami.k3s.example.com=).
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik.whoami.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoami
+  namespace: kube-system
+spec:
+  ports:
+  - name: web
+    port: 80
+    protocol: TCP
+  selector:
+    app: whoami
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: TraefikService
+metadata:
+  name: whoami
+  namespace: kube-system
+
+spec:
+  weighted:
+    services:
+      - name: whoami
+        weight: 1
+        port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: whoami
+  name: whoami
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami
+  template:
+    metadata:
+      labels:
+        app: whoami
+    spec:
+      containers:
+      - image: containous/whoami
+        name: whoami
+        ports:
+        - containerPort: 80
+          name: web
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: whoami
+  namespace: kube-system
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`<<TRAEFIK_WHOAMI_DOMAIN>>`)
+    services:
+    - name: whoami
+      port: 80
+  tls:
+    certResolver: default
+#+end_src
+*** Deploy Traefik
+   After setting the config, tangle the config by pressing =C-c C-v t=. Then
+   deploy Traefik via kubectl:
+
+   #+begin_src shell :noweb yes :eval never-export :exports both
+   kubectl --kubeconfig <<KUBE_CONFIG>> apply -k src/kube-system
+   #+end_src
+
+ In some instances, you will need to run this command twice. If you get a
+ dependency error, try the command again, and it should resolve itself the second
+ time.
+
+*** Test Traefik whoami service
+ Test with TLS verification off:
+
+ #+begin_src shell :noweb yes :eval never-export :exports both
+ curl -Lk <<TRAEFIK_WHOAMI_DOMAIN>>
+ #+end_src
+
+ Test with TLS verification on:
+
+ #+begin_src shell :noweb yes :eval never-export :exports both
+ curl -L <<TRAEFIK_WHOAMI_DOMAIN>>
+ #+end_src
+
+ TLS will not verify until you use the production [[TRAEFIK_ACME_SERVER][TRAEFIK_ACME_SERVER]].
+
+* git-system
+=git-system= is the namespace setup for [[Gitea][Gitea]].
+
+** git-system setup
+Create the namespace directory
+#+begin_src shell :noweb yes :eval never-export :exports code
+mkdir -p src/git-system
+#+end_src
+** src/git-system/kustomization.yaml
+=kustomization.yaml= lists all of the =git-system= namespace manifests:
+#+begin_src yaml :noweb yes :eval no :tangle src/git-system/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- namespace.yaml
+- gitea.sealed_secret.yaml
+- gitea.pvc.yaml
+- gitea.database.yaml
+- gitea.statefulset.yaml
+- gitea.ingress.yaml
+#+end_src
+** src/git-system/namespace.yaml
+=namespace.yaml= creates the =git-system= namespace:
+#+begin_src yaml :noweb yes :eval no :tangle src/git-system/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: git-system
+#+end_src
+
+** Gitea
+ [[https://gitea.io/][Gitea]] is a self-hosted git platform, much like GitHub. You will need a git
+ platform to store your cluster config repository, which Flux will use to keep
+ your cluster in sync. Storing this inside the cluster makes logical sense.
+ In addition to running gitea repositories inside your cluster, you can also
+ easily mirror these repositories to external hosts like GitHub.
+
+ [[https://www.postgresql.org/][Postgresql]] will serve the backend database for Gitea.
+
+*** GITEA_DOMAIN
+#+name: GITEA_DOMAIN
+#+begin_src config :noweb yes :eval no
+git.<<CLUSTER>>
+#+end_src
+*** GITEA_POSTGRES_PVC_SIZE
+The size of the postgres database volume for gitea:
+#+name: GITEA_POSTGRES_PVC_SIZE
+#+begin_src config :noweb yes :eval no
+5Gi
+#+end_src
+*** GITEA_PVC_SIZE
+The size of the data volume for gitea:
+#+name: GITEA_PVC_SIZE
+#+begin_src config :noweb yes :eval no
+5Gi
+#+end_src
+*** GITEA_USER
+=GITEA_USER= is the admin account name to create. Note: =admin= is a reserved
+name.
+#+name: GITEA_USER
+#+begin_src config :noweb yes :eval no
+root
+#+end_src
+*** GITEA_EMAIL
+=GITEA_EMAIL= is the admin account email address:
+#+name: GITEA_EMAIL
+#+begin_src config :noweb yes :eval no
+root@example.com
+#+end_src
+*** Create Gitea Secrets
+ As initial setup, you must create the Sealed Secret, containing the Gitea
+ configuration file, the database password, and other Gitea application specific
+ tokens/secrets. The database password is generated randomly via =openssl rand=
+ on your local workstation. For the Gitea specific secrets, they need to be
+ generated by the gitea command line tool, which can be invoked in temporary
+ containers on the cluster, via =kubectl=. These secrets are stored in temporary
+ BASH variables: =POSTGRES_PASSWORD=, =INTERNAL_TOKEN=, =SECRET_KEY=, and
+ =JWT_SECRET=. A temporary, plain text, config file is created using these
+ values. Finally, a Secret is created containing the config file, is sealed
+ (encrypted), and the temporary plain text config is deleted.
+
+ The Sealed Secret is encrypted on your cluster, using a key that only your
+ cluster has access to, so it is safe to commit the sealed secret along with your
+ other manifest files, inside your git repostiory.
+
+ NOTE: this script is a little finnicky: it fails about 1 in 3 times, but you can
+ safely run it again if it fails. (Fresh passwords are generated each time.)
+ Check the results, and ensure the script finishes completely, and that the file
+ =src/git-system/gitea.sealed_secret.yaml= is created.
+
+ #+begin_src shell :noweb yes :eval never-export :exports code :results output
+ set -e
+ rm -f src/git-system/gitea.sealed_secret.yaml
+ POSTGRES_USER=gitea
+ ## Generate passwords and tokens:
+ echo "Generating passwords and tokens"
+ POSTGRES_PASSWORD=$(openssl rand --base64 24)
+ echo "Generating INTERNAL_TOKEN ..."
+ INTERNAL_TOKEN=$(kubectl --kubeconfig <<KUBE_CONFIG>> \
+    run -i --quiet --rm gen-passwd-${RANDOM} \
+    --image=gitea/gitea:latest --restart=Never -- \
+    gitea generate secret INTERNAL_TOKEN)
+ echo "Succesfully created INTERNAL_TOKEN."
+ echo "Generating SECRET_KEY ..."
+ SECRET_KEY=$(kubectl --kubeconfig <<KUBE_CONFIG>> \
+    run -i --quiet --rm gen-passwd-${RANDOM} \
+    --image=gitea/gitea:latest --restart=Never -- \
+    gitea generate secret SECRET_KEY)
+ echo "Succesfully created SECRET_KEY."
+ echo "Generating JWT_SECRET ..."
+ JWT_SECRET=$(kubectl --kubeconfig <<KUBE_CONFIG>> \
+    run -i --quiet --rm gen-passwd-${RANDOM} \
+    --image=gitea/gitea:latest --restart=Never -- \
+    gitea generate secret JWT_SECRET)
+ echo "Succesfully created JWT_SECRET."
+ CONFIG_TMP=$(mktemp)
+ echo "Creating temporary plain text config: ${CONFIG_TMP}"
+ cat <<EOF > $CONFIG_TMP
+ APP_NAME = <<GITEA_DOMAIN>>
+
+ [server]
+ DOMAIN = <<GITEA_DOMAIN>>
+ ROOT_URL = https://<<GITEA_DOMAIN>>
+ SSH_DOMAIN = <<GITEA_DOMAIN>>
+ SSH_PORT = 2222
+ START_SSH_SERVER = true
+
+ [service]
+ DISABLE_REGISTRATION = true
+ REQUIRE_SIGNIN_VIEW = true
+
+ [database]
+ DB_TYPE = postgres
+ NAME = ${POSTGRES_USER}
+ HOST = gitea-postgres
+ PASSWD = ${POSTGRES_PASSWORD}
+ USER = ${POSTGRES_USER}
+
+ [security]
+ INSTALL_LOCK = true
+ SECRET_KEY = ${SECRET_KEY}
+ INTERNAL_TOKEN = ${INTERNAL_TOKEN}
+ DISABLE_GIT_HOOKS = false
+
+ [oauth2]
+ JWT_SECRET = ${JWT_SECRET}
+
+ [repository]
+ DEFAULT_PRIVATE = private
+
+ EOF
+ kubectl --kubeconfig <<KUBE_CONFIG>> \
+    create secret generic gitea \
+    --namespace git-system --dry-run=client -o json \
+    --from-literal=POSTGRES_USER=$POSTGRES_USER \
+    --from-literal=POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+    --from-literal=INTERNAL_TOKEN=$INTERNAL_TOKEN \
+    --from-literal=JWT_SECRET=$JWT_SECRET \
+    --from-literal=SECRET_KEY=$SECRET_KEY \
+    --from-file=app.ini=${CONFIG_TMP} | kubeseal -o yaml > \
+  src/git-system/gitea.sealed_secret.yaml
+ rm ${CONFIG_TMP}
+ echo "Gitea Sealed Secret created: src/git-system/gitea.sealed_secret.yaml"
+ echo "Removed tempoary config file: ${CONFIG_TMP}"
+ echo "Finished!"
+ #+end_src
+
+ If the script completes succesfully, you should see the message =Finished!= at
+ the bottom of the result above, and =src/git-system/gitea.sealed_secret.yaml= should
+ now exist. If you don't see =Finished!=, then run it again, it should work if
+ you try it again...
+
+*** src/git-system/gitea.pvc.yaml
+     #+begin_src yaml :noweb yes :eval no :tangle src/git-system/gitea.pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitea-postgres-data
+  namespace: git-system
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: <<GITEA_POSTGRES_PVC_SIZE>>
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitea-data
+  namespace: git-system
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: <<GITEA_PVC_SIZE>>
+  storageClassName: local-path
+
+     #+end_src
+*** src/git-system/gitea.database.yaml
+      #+begin_src yaml :noweb yes :eval no :tangle src/git-system/gitea.database.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea-postgres
+  namespace: git-system
+spec:
+  selector:
+    app: gitea-postgres
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gitea-postgres
+  namespace: git-system
+spec:
+  selector:
+    matchLabels:
+      app: gitea-postgres
+  serviceName: gitea-postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gitea-postgres
+    spec:
+      containers:
+        - name: gitea-postgres
+          image: postgres
+          volumeMounts:
+            - name: gitea-postgres-data
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gitea
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gitea
+                  key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+      volumes:
+        - name: gitea-postgres-data
+          persistentVolumeClaim:
+            claimName: gitea-postgres-data
+
+      #+end_src
+*** src/git-system/gitea.statefulset.yaml
+#+begin_src yaml :noweb yes :eval no :tangle src/git-system/gitea.statefulset.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea-web
+  namespace: git-system
+spec:
+  ports:
+  - name: web
+    port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: gitea
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea-ssh
+  namespace: git-system
+spec:
+  ports:
+  - name: ssh
+    port: 2222
+    targetPort: 2222
+    protocol: TCP
+  selector:
+    app: gitea
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: gitea
+  name: gitea
+  namespace: git-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitea
+  serviceName: gitea-web
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      containers:
+      - image: gitea/gitea:latest
+        name: gitea
+        ## debug:
+        ## command: ["/bin/sh", "-c", "sleep 99999999999"]
+        volumeMounts:
+          - name: data
+            mountPath: /data
+          - name: config
+            mountPath: /data/gitea/conf
+        ports:
+        - containerPort: 3000
+          name: web
+        - containerPort: 2222
+          name: ssh
+        env:
+          - name: INSTALL_LOCK
+            value: "true"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: gitea-data
+        - name: config
+          secret:
+            secretName: gitea
+
+#+end_src
+*** src/git-system/gitea.ingress.yaml
+      #+begin_src yaml :noweb yes :eval no :tangle src/git-system/gitea.ingress.yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: TraefikService
+metadata:
+  name: gitea-ssh
+  namespace: git-system
+
+spec:
+  weighted:
+    services:
+      - name: gitea-ssh
+        weight: 1
+        port: 2222
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: gitea-web
+  namespace: git-system
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`<<GITEA_DOMAIN>>`)
+    services:
+    - name: gitea-web
+      port: 80
+  tls:
+    certResolver: default
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: gitea-ssh
+  namespace: git-system
+spec:
+  entryPoints:
+  - ssh
+  routes:
+  - kind: Rule
+    ## Domain matching is not possible with SSH, so match all domains:
+    match: HostSNI(`*`)
+    services:
+    - name: gitea-ssh
+      port: 2222
+
+      #+end_src
+*** Deploy Gitea
+    Tangle all the files, =C-c C-v t= then run:
+
+  #+begin_src shell :noweb yes :eval never-export :exports both
+  kubectl --kubeconfig <<KUBE_CONFIG>> apply -k src/git-system
+  #+end_src
+*** Create Admin account
+In order to login, you need to manually create the initial admin account via
+=kubectl=, afterward you can add more accounts via the web interface.
+
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
+GITEA_ADMIN_PASSWORD=$(openssl rand --base64 24)
+TMP_PASSWORD=$(mktemp --suffix .txt)
+echo ${GITEA_ADMIN_PASSWORD} > ${TMP_PASSWORD}
+echo "Gitea user <<GITEA_USER>> password written to ${TMP_PASSWORD}"
+kubectl -n git-system exec statefulset/gitea -i -- gitea admin user create \
+    --username <<GITEA_USER>> --password ${GITEA_ADMIN_PASSWORD} --admin \
+    --email <<GITEA_EMAIL>> 
+#+end_src
+
+Find the password written to a temporary file, to make sure it doesn't
+accidentally get published in this Org file.
+
+Now you can login to your domain at https://git.<<CLUSTER>> 
+
+*** Create test repository
+    1. Go to your gitea user profile, and find the =SSH/GPG Keys= section.
+    2. Add your local workstation public SSH Key (from
+       =${HOME}/.ssh/id_rsa.pub=, use =ssh-keygen= if you haven't got one yet.)
+    3. Create a new repository using the =+= icon in the upper right corner.
+    4. From the repository page, find the =SSH= clone URL. (Should look like
+       this: =ssh://git@git.k3s.example.com:2222/root/test1.git=)
+    5. Test cloning it someplace: =git clone
+       ssh://git@git.k3s.example.com:2222/root/test1.git=
+
+Assuming that's working, Traefik is providing Gitea SSH ingress (TCP not HTTP)
+on port 2222. That's neat! Port 2222 is from the gitea container, not your host
+SSH daemon (which still runs on regular port 22).
+
+*** Mirror repositories to GitHub or elsewhere
+You can mirror your gitea repositories to another git host, like GitHub. This
+has to be setup separately for each repository you wish to mirror.
+
+Create a new SSH keypair (separate from your user account!) to use as a deploy
+key:
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
+SSH_KEY_TMP=$(mktemp -u --suffix .key)
+ssh-keygen -C gitea-mirror-$RANDOM -P '' -f ${SSH_KEY_TMP} 2>&1 > /dev/null
+echo "Public SSH Key written to ${SSH_KEY_TMP}.pub"
+echo "Private SSH Key written to ${SSH_KEY_TMP}"
+#+end_src
+
+#+RESULTS:
+: Public SSH Key written to /tmp/tmp.gYZkhiUqqD.key.pub
+: Private SSH Key written to /tmp/tmp.gYZkhiUqqD.key
+
+Create a new repository on GitHub. Go to the Settings, then Deploy keys and
+create a new deploy key, and paste the public key from the file generated
+(=/tmp/tmp.#####.key.pub=).
+
+Next you need to create a git hook that pushes to github whenever a gitea
+repository receives a push. Go to the gitea repository settings, go to Git
+Hooks, edit the hook called post-receive and enter this script:
+
+#+begin_example
+#!/bin/bash
+## Set the full git SSH URL for the mirror repository:
+MIRROR_REPO="git@github.com:GITHUB_USERNAME/GITHUB_REPO_NAME.git"
+KNOWNHOSTS=$(mktemp)
+
+## Public known ssh key for github:
+cat <<'EOF' > ${KNOWNHOSTS}
+github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+EOF
+
+## Private ssh deploy key for remote mirror:
+KEYFILE=$(mktemp)
+cat <<'EOF' > ${KEYFILE}
+-----BEGIN OPENSSH PRIVATE KEY-----
+  YOUR DEPLOY KEY GOES HERE
+-----END OPENSSH PRIVATE KEY-----
+EOF
+
+## Push changes to mirror using deploy key and known hosts file:
+GIT_SSH_COMMAND="/usr/bin/ssh -i ${KEYFILE} -o UserKnownHostsFile=${KNOWNHOSTS}" git push --mirror ${MIRROR_REPO}
+rm ${KNOWNHOSTS}
+rm ${KEYFILE}
+#+end_example
+
+Edit the =MIRROR_REPO= at the top for your repository. Replace the placeholder
+for the deployment key, with the one generated in the private key file
+(=/tmp/tmp.#####.key=). Save the hook.
+
+Now when you push to this repository it should automatically push to the remote
+mirror as well.
+* flux-system
+=flux-system= is the namespace setup for [[https://github.com/fluxcd/flux2][Flux]].
+** flux-system setup
+Create the namespace directory
+#+begin_src shell :noweb yes :eval never-export :exports code
+mkdir -p src/flux-system
+#+end_src
+
+You need to [[https://github.com/fluxcd/flux2/tree/main/install][install the flux command line tool]], or you can [[https://blog.rymcg.tech/blog/k3s/k3s-01-setup#create-toolbox-container-optional][run it from a
+container]] or use the =flux-go= AUR package on Arch Linux.
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+flux install --version=latest --arch=amd64 --export > src/flux-system/gotk-components.yaml
+#+end_src
+
+#+RESULTS:
+** FLUX_REPO_NAME
+#+name: FLUX_REPO_NAME
+#+begin_src config :noweb yes :eval no
+literate-k3s
+#+end_src
+** FLUX_GIT_REMOTE
+#+name: FLUX_GIT_REMOTE
+#+begin_src config :noweb yes :eval no
+ssh://git@git.<<CLUSTER>>:2222/<<GITEA_USER>>/<<FLUX_REPO_NAME>>.git
+#+end_src
+** src/flux-system/kustomization.yaml
+#+begin_src yaml :noweb yes :eval no :tangle src/flux-system/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- gotk-components.yaml
+#+end_src
+** Deploy Flux
+    Tangle all the files, =C-c C-v t= then run:
+
+  #+begin_src shell :noweb yes :eval never-export :exports both
+  kubectl --kubeconfig <<KUBE_CONFIG>> apply -k src/flux-system
+  #+end_src
+
+** Create infrastructure repository
+You will now create a git repository on gitea, that will serve as the root
+source of all the manifests on your cluster. You will commit and push all of the
+generated YAML files to this repository and Flux will monitor this repository
+and keep the cluster in sync with its state.
+
+On Gitea, click the =+= icon in the upper right corner to create a new =New
+Repository=. Call the new repository the same as [[FLUX_REPO_NAME][FLUX_REPO_NAME]]. 
+
+Set the new gitea repository as the git origin remote:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+git remote remove origin
+git remote add origin <<FLUX_GIT_REMOTE>>
+#+end_src
+
+Add the src directory to the repository and commit it:
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
+git add src/
+git commit -m "Initial commit for new cluster <<CLUSTER>>"
+#+end_src
+
+Push the changes to the remote:
+#+begin_src shell :noweb yes :eval never-export :exports code
+git push -u origin master
+#+end_src
+
+** Tell flux to watch the infrastructure repository
+This next command is interactive only, so you must run it in a separate
+terminal. You also must replace =<<FLUX_REPO_NAME>>= and =<<FLUX_GIT_REMOTE>>=
+yourself, with the same values as in your config.
+
+Create the =Source= resource:
+
+#+begin_example
+flux create source git <<FLUX_REPO_NAME>> \
+  --url=<<FLUX_GIT_REMOTE>> \
+  --ssh-key-algorithm=rsa \
+  --ssh-rsa-bits=4096 \
+  --branch=master \
+  --interval=1m
+#+end_example
+
+Flux will automatically create its own SSH key, and will output its public SSH
+key. You must copy this key and install it as a Deploy Key in the remote git
+repository settings. In Gitea, add the deploy key under the repository
+=Settings->Deploy Keys=. The deploy key does not require write privileges. Once
+installed, press =Y= and =Enter= to continue, and it will test that it works for
+you.
+
+The rest of these commands can run non-interactive, so go ahead and run these
+from Emacs Org.
+
+Create the =Kustomization= resource:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+flux create kustomization <<FLUX_REPO_NAME>> \
+  --source=<<FLUX_REPO_NAME>> \
+  --path="./src" \
+  --prune=true \
+  --interval=10m
+#+end_src
+
+The Source controller periodically pulls changes from the git repository. The
+Kustomize controller applies changes to the cluster. If you run into problems,
+you should check the logs of these two controllers:
+
+Check the logs of the flux Source controller:
+
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
+kubectl -n flux-system logs deployment/source-controller | tail -n 10
+#+end_src
+
+Check the logs of the flux Kustomize controller:
+
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
+kubectl -n flux-system logs deployment/source-controller | tail -n 10
+#+end_src
+** Test adding a new manfiest to the git repository
+OK now, in theory, you are done using =kubectl apply=. From now on, all you have
+to do is commit and push manifests to your git repository, and Flux will
+automatically apply them to your cluster. So let's test that out:
+
+Create a new namespace just for testing. Create the manifests:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+mkdir -p src/just-a-test
+cat <<EOF > src/just-a-test/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- namespace.yaml
+EOF
+cat <<EOF > src/just-a-test/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: just-a-test
+EOF
+#+end_src
+
+Commit the changes:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+git add src/just-a-test
+git commit -m "just-a-test"
+#+end_src
+
+Push the changes:
+#+begin_src shell :noweb yes :eval never-export :exports code
+git push origin
+#+end_src
+
+And in a little less than a minute, you should see the new namespace appear:
+#+begin_src shell :noweb yes :eval never-export :exports code
+kubectl --kubeconfig <<KUBE_CONFIG>> get ns just-a-test
+#+end_src
+
+Now delete the =just-a-test= directory and commit:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+rm -rf src/just-a-test/
+git add src/just-a-test/
+git commit -m "remove just-a-test"
+#+end_src
+
+Push the changes again:
+#+begin_src shell :noweb yes :eval never-export :exports code
+git push origin
+#+end_src
+
+And in another minute or so, the namespace should be gone:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+kubectl --kubeconfig <<KUBE_CONFIG>> get ns just-a-test
+#+end_src
+
+* Footnotes
+
+This should be the very last section in this document. It is excluded from the
+HTML export. This section contains code that will run when Emacs loads this
+file. When Emacs loads a file, it searches for the =Local Variables= comment at
+the very bottom of the file, and loads variables defined there and runs any
+=eval= code listed.
+
+Here is the startup code block that =Local Variables= references:
+
+#+name: k3s-org-emacs-load
+#+begin_src elisp :noweb yes :eval never-export :results none
+<<enable-export-on-save>>
+<<export-html-with-useful-ids>>
+#+end_src
+
+Here is the code to automatically export HTML whenver this file is saved:
+
+#+name: enable-export-on-save
+#+begin_src elisp :exports code :eval never-export :results none
+  ;; Turn on automatic HTML export on save:
+  (defun toggle-org-html-export-on-save ()
+  ;;thank you aaptel : https://old.reddit.com/r/emacs/comments/4golh1/how_to_auto_export_html_when_saving_in_orgmode/d2jd88a/
+    (interactive)
+    (if (memq 'org-html-export-to-html after-save-hook)
+        (progn
+          (remove-hook 'after-save-hook 'org-html-export-to-html t)
+          (message "Disabled org html export on save for current buffer..."))
+      (add-hook 'after-save-hook 'org-html-export-to-html nil t)
+      (message "Enabled org html export on save for current buffer...")))
+  (toggle-org-html-export-on-save)
+#+end_src
+
+Here is a fix so that Org exports proper HTML anchors rather than the random
+IDs it generally provides:
+
+#+name: export-html-with-useful-ids
+#+begin_src elisp :eval never-export
+  ;; org-mode export useful anchors:
+  ;; thank you https://github.com/alphapapa/unpackaged.el
+  (define-minor-mode unpackaged/org-export-html-with-useful-ids-mode
+    "Attempt to export Org as HTML with useful link IDs.
+Instead of random IDs like \"#orga1b2c3\", use heading titles,
+made unique when necessary."
+    :global t
+    (if unpackaged/org-export-html-with-useful-ids-mode
+        (advice-add #'org-export-get-reference :override #'unpackaged/org-export-get-reference)
+      (advice-remove #'org-export-get-reference #'unpackaged/org-export-get-reference)))
+
+  (defun unpackaged/org-export-get-reference (datum info)
+    "Like `org-export-get-reference', except uses heading titles instead of random numbers."
+    (let ((cache (plist-get info :internal-references)))
+      (or (car (rassq datum cache))
+          (let* ((crossrefs (plist-get info :crossrefs))
+                 (cells (org-export-search-cells datum))
+                 ;; Preserve any pre-existing association between
+                 ;; a search cell and a reference, i.e., when some
+                 ;; previously published document referenced a location
+                 ;; within current file (see
+                 ;; `org-publish-resolve-external-link').
+                 ;;
+                 ;; However, there is no guarantee that search cells are
+                 ;; unique, e.g., there might be duplicate custom ID or
+                 ;; two headings with the same title in the file.
+                 ;;
+                 ;; As a consequence, before re-using any reference to
+                 ;; an element or object, we check that it doesn't refer
+                 ;; to a previous element or object.
+                 (new (or (cl-some
+                           (lambda (cell)
+                             (let ((stored (cdr (assoc cell crossrefs))))
+                               (when stored
+                                 (let ((old (org-export-format-reference stored)))
+                                   (and (not (assoc old cache)) stored)))))
+                           cells)
+                          (when (org-element-property :raw-value datum)
+                            ;; Heading with a title
+                            (unpackaged/org-export-new-title-reference datum cache))
+                          ;; NOTE: This probably breaks some Org Export
+                          ;; feature, but if it does what I need, fine.
+                          (org-export-format-reference
+                           (org-export-new-reference cache))))
+                 (reference-string new))
+            ;; Cache contains both data already associated to
+            ;; a reference and in-use internal references, so as to make
+            ;; unique references.
+            (dolist (cell cells) (push (cons cell new) cache))
+            ;; Retain a direct association between reference string and
+            ;; DATUM since (1) not every object or element can be given
+            ;; a search cell (2) it permits quick lookup.
+            (push (cons reference-string datum) cache)
+            (plist-put info :internal-references cache)
+            reference-string))))
+
+  (defun unpackaged/org-export-new-title-reference (datum cache)
+    "Return new reference for DATUM that is unique in CACHE."
+    (cl-macrolet ((inc-suffixf (place)
+                               `(progn
+                                  (string-match (rx bos
+                                                    (minimal-match (group (1+ anything)))
+                                                    (optional "--" (group (1+ digit)))
+                                                    eos)
+                                                ,place)
+                                  ;; HACK: `s1' instead of a gensym.
+                                  (-let* (((s1 suffix) (list (match-string 1 ,place)
+                                                             (match-string 2 ,place)))
+                                          (suffix (if suffix
+                                                      (string-to-number suffix)
+                                                    0)))
+                                    (setf ,place (format "%s--%s" s1 (cl-incf suffix)))))))
+      (let* ((title (org-element-property :raw-value datum))
+             (ref (url-hexify-string (substring-no-properties title)))
+             (parent (org-element-property :parent datum)))
+        (while (--any (equal ref (car it))
+                      cache)
+          ;; Title not unique: make it so.
+          (if parent
+              ;; Append ancestor title.
+              (setf title (concat (org-element-property :raw-value parent)
+                                  "--" title)
+                    ref (url-hexify-string (substring-no-properties title))
+                    parent (org-element-property :parent parent))
+            ;; No more ancestors: add and increment a number.
+            (inc-suffixf ref)))
+        ref)))
+(unpackaged/org-export-html-with-useful-ids-mode)
+#+end_src
+
+Keep this at the very bottom of the file:
+
+# Local Variables:
+# eval: (progn (org-babel-goto-named-src-block "k3s-org-emacs-load") (org-babel-execute-src-block) (outline-hide-sublevels 1))
+# End:
+
