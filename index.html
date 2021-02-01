@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-01 Mon 11:39 -->
+<!-- 2021-02-01 Mon 11:50 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Literate K3s Cluster</title>
@@ -339,12 +339,11 @@ for the JavaScript code in this tag.
 <li><a href="#Workstation%20tools">1.5. Workstation tools</a>
 <ul>
 <li><a href="#kubectl">1.5.1. kubectl</a></li>
-<li><a href="#kustomize">1.5.2. kustomize</a></li>
-<li><a href="#kubeseal">1.5.3. kubeseal</a></li>
-<li><a href="#flux">1.5.4. flux</a></li>
-<li><a href="#k3sup%20%28optional%29">1.5.5. k3sup (optional)</a></li>
-<li><a href="#CDK8s%20%28optional%29">1.5.6. CDK8s (optional)</a></li>
-<li><a href="#OpenFaaS%20%28optional%29">1.5.7. OpenFaaS (optional)</a></li>
+<li><a href="#kubeseal">1.5.2. kubeseal</a></li>
+<li><a href="#flux">1.5.3. flux</a></li>
+<li><a href="#k3sup%20%28optional%29">1.5.4. k3sup (optional)</a></li>
+<li><a href="#CDK8s%20%28optional%29">1.5.5. CDK8s (optional)</a></li>
+<li><a href="#OpenFaaS%20%28optional%29">1.5.6. OpenFaaS (optional)</a></li>
 </ul>
 </li>
 <li><a href="#Create%20a%20cluster">1.6. Create a cluster</a></li>
@@ -810,26 +809,9 @@ See the <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install
 </div>
 </div>
 
-<div id="outline-container-kustomize" class="outline-4">
-<h4 id="kustomize"><span class="section-number-4">1.5.2</span> kustomize</h4>
-<div class="outline-text-4" id="text-1-5-2">
-<p>
-<code>kustomize</code> is a system to patch kubernetes manifests, essentially plugging new
-configs into existing templates. They don't like to call them templates though,
-because they are operating on structured data, but its the same thing really.
-There are no if-then-else constructs like there are in <a href="https://helm.sh/">Helm</a> templates, this is
-more like monkey-patching config directly, but nice and clean.
-</p>
-
-<p>
-See the <a href="https://github.com/kubernetes-sigs/kustomize/releases">kustomize install guide</a>.
-</p>
-</div>
-</div>
-
 <div id="outline-container-kubeseal" class="outline-4">
-<h4 id="kubeseal"><span class="section-number-4">1.5.3</span> kubeseal</h4>
-<div class="outline-text-4" id="text-1-5-3">
+<h4 id="kubeseal"><span class="section-number-4">1.5.2</span> kubeseal</h4>
+<div class="outline-text-4" id="text-1-5-2">
 <p>
 <code>kubeseal</code> is the command line tool for <a href="https://github.com/bitnami-labs/sealed-secrets#sealed-secrets-for-kubernetes">bitnami-labs/sealed-secrets</a>, which is a
 system for storing encrypted secrets in public(ish) git repositories, which only
@@ -846,8 +828,8 @@ side" part for now.
 </div>
 
 <div id="outline-container-flux" class="outline-4">
-<h4 id="flux"><span class="section-number-4">1.5.4</span> flux</h4>
-<div class="outline-text-4" id="text-1-5-4">
+<h4 id="flux"><span class="section-number-4">1.5.3</span> flux</h4>
+<div class="outline-text-4" id="text-1-5-3">
 <p>
 <code>flux</code> is the command line tool for interacting with the Flux2 system. 
 </p>
@@ -859,8 +841,8 @@ See the <a href="https://github.com/fluxcd/flux2/tree/main/install">flux cli ins
 </div>
 
 <div id="outline-container-k3sup%20%28optional%29" class="outline-4">
-<h4 id="k3sup%20%28optional%29"><span class="section-number-4">1.5.5</span> k3sup (optional)</h4>
-<div class="outline-text-4" id="text-1-5-5">
+<h4 id="k3sup%20%28optional%29"><span class="section-number-4">1.5.4</span> k3sup (optional)</h4>
+<div class="outline-text-4" id="text-1-5-4">
 <p>
 <code>k3sup</code> is a tool to bootstrap creating a k3s cluster on a remote server, and
 automatically create the config file on your workstation with the authentication
@@ -874,8 +856,8 @@ See the <a href="https://github.com/alexellis/k3sup#download-k3sup-tldr">k3sup i
 </div>
 
 <div id="outline-container-CDK8s%20%28optional%29" class="outline-4">
-<h4 id="CDK8s%20%28optional%29"><span class="section-number-4">1.5.6</span> CDK8s (optional)</h4>
-<div class="outline-text-4" id="text-1-5-6">
+<h4 id="CDK8s%20%28optional%29"><span class="section-number-4">1.5.5</span> CDK8s (optional)</h4>
+<div class="outline-text-4" id="text-1-5-5">
 <p>
 <code>CDK8s</code> is a tool to programmatically generate kubernetes manifests from Python,
 Typescript, or Java code.
@@ -888,8 +870,8 @@ See the <a href="https://cdk8s.io/docs/latest/getting-started/">CDK8s install gu
 </div>
 
 <div id="outline-container-OpenFaaS%20%28optional%29" class="outline-4">
-<h4 id="OpenFaaS%20%28optional%29"><span class="section-number-4">1.5.7</span> OpenFaaS (optional)</h4>
-<div class="outline-text-4" id="text-1-5-7">
+<h4 id="OpenFaaS%20%28optional%29"><span class="section-number-4">1.5.6</span> OpenFaaS (optional)</h4>
+<div class="outline-text-4" id="text-1-5-6">
 <p>
 <code>OpenFaaS CLI</code> lets you interact with OpenFaaS installed on your cluster, to
 create your own "serverless" functions.
@@ -966,7 +948,7 @@ syntax</a>. (ie. <code>&lt;&lt;name-of-variable-block&gt;&gt;</code>)
 <code>CLUSTER</code> is the domain name of your cluster:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org2af6f4d">k3s.example.com
+<pre class="src src-config" id="orgb2678a4">k3s.example.com
 </pre>
 </div>
 </div>
@@ -978,7 +960,7 @@ syntax</a>. (ie. <code>&lt;&lt;name-of-variable-block&gt;&gt;</code>)
 <code>CLUSTER_SSH_USER</code> is the admin SSH account of the cluster.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org6a4c67b">root
+<pre class="src src-config" id="orgeefbf78">root
 </pre>
 </div>
 </div>
@@ -990,7 +972,7 @@ syntax</a>. (ie. <code>&lt;&lt;name-of-variable-block&gt;&gt;</code>)
 <code>KUBE_CONFIG</code> is the local path to the kubectl config file
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org40cbbee">${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="orgffb0a02">${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1013,7 +995,7 @@ secrets.
 <h3 id="Sealed%20Secrets%20Config"><span class="section-number-3">3.1</span> Sealed Secrets Config</h3>
 <div class="outline-text-3" id="text-3-1">
 <div class="org-src-container">
-<pre class="src src-config" id="org4ee9420">v0.14.1
+<pre class="src src-config" id="orgc643144">v0.14.1
 </pre>
 </div>
 </div>
@@ -1101,7 +1083,7 @@ referenced elsewhere, via <a href="https://orgmode.org/manual/Noweb-Reference-Sy
 The version number of Traefik to install (eg. <code>2.3</code>).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgc417dc1">v2.3
+<pre class="src src-config" id="org2f83dcc">v2.3
 </pre>
 </div>
 </div>
@@ -1113,7 +1095,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 <code>TRAEFIK_IMAGE</code> is the name:tag of the container image for traefik:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgfb09e7b">traefik:v2.3
+<pre class="src src-config" id="org7922e97">traefik:v2.3
 </pre>
 </div>
 </div>
@@ -1126,7 +1108,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 prodider. 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgc426a6c">you@example.com
+<pre class="src src-config" id="org950eadd">you@example.com
 </pre>
 </div>
 </div>
@@ -1139,7 +1121,7 @@ prodider.
 provider). 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org1b6f065">https://acme-staging-v02.api.letsencrypt.org/directory
+<pre class="src src-config" id="org7020111">https://acme-staging-v02.api.letsencrypt.org/directory
 </pre>
 </div>
 
@@ -1180,7 +1162,7 @@ the rate limit, which blocks you out for a week.
 <code>TRAEFIK_LOG_LEVEL</code> is the filter level on the traefik log.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org142fbe0">INFO
+<pre class="src src-config" id="org3a70377">INFO
 </pre>
 </div>
 </div>
@@ -1194,7 +1176,7 @@ domain name to respond to. <code>TRAEFIK_WHOAMI_DOMAIN</code> is the subdomain t
 whoami service responds to.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orga860867">whoami.k3s.example.com
+<pre class="src src-config" id="org2d4784c">whoami.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1517,7 +1499,7 @@ to direct traffic to any other node.
 <div class="outline-text-4" id="text-4-3-11">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It listens to the
-domain <a href="#orga860867">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
+domain <a href="#org2d4784c">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
 </p>
 
 <div class="org-src-container">
@@ -1637,7 +1619,7 @@ Test with TLS verification on:
 </div>
 
 <p>
-TLS will not verify until you use the production <a href="#org1b6f065">TRAEFIK_ACME_SERVER</a>.
+TLS will not verify until you use the production <a href="#org7020111">TRAEFIK_ACME_SERVER</a>.
 </p>
 </div>
 </div>
@@ -1720,7 +1702,7 @@ easily mirror these repositories to external hosts like GitHub.
 <h4 id="GITEA_DOMAIN"><span class="section-number-4">5.4.1</span> GITEA_DOMAIN</h4>
 <div class="outline-text-4" id="text-5-4-1">
 <div class="org-src-container">
-<pre class="src src-config" id="org14b24a3">git.k3s.example.com
+<pre class="src src-config" id="orgfa433ad">git.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1732,7 +1714,7 @@ easily mirror these repositories to external hosts like GitHub.
 The size of the postgres database volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgef7d0ea">5Gi
+<pre class="src src-config" id="org26280e1">5Gi
 </pre>
 </div>
 </div>
@@ -1744,7 +1726,7 @@ The size of the postgres database volume for gitea:
 The size of the data volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org8c7cc9b">5Gi
+<pre class="src src-config" id="orgaa8ce02">5Gi
 </pre>
 </div>
 </div>
@@ -1757,7 +1739,7 @@ The size of the data volume for gitea:
 name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org82e5174">root
+<pre class="src src-config" id="org93b8ca4">root
 </pre>
 </div>
 </div>
@@ -1769,7 +1751,7 @@ name.
 <code>GITEA_EMAIL</code> is the admin account email address:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgb3eff4a">root@example.com
+<pre class="src src-config" id="org1397a78">root@example.com
 </pre>
 </div>
 </div>
@@ -2158,7 +2140,7 @@ accidentally get published in this Org file.
 </p>
 
 <p>
-Now you can login to your domain at <a href="https://git">https://git</a>.<a id="orgd143cd5"></a> 
+Now you can login to your domain at <a href="https://git">https://git</a>.<a id="org9b6043a"></a> 
 </p>
 </div>
 </div>
@@ -2289,7 +2271,7 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 <h3 id="FLUX_REPO_NAME"><span class="section-number-3">6.2</span> FLUX_REPO_NAME</h3>
 <div class="outline-text-3" id="text-6-2">
 <div class="org-src-container">
-<pre class="src src-config" id="org11549bb">literate-k3s
+<pre class="src src-config" id="org0a1272f">literate-k3s
 </pre>
 </div>
 </div>
@@ -2298,7 +2280,7 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 <h3 id="FLUX_GIT_REMOTE"><span class="section-number-3">6.3</span> FLUX_GIT_REMOTE</h3>
 <div class="outline-text-3" id="text-6-3">
 <div class="org-src-container">
-<pre class="src src-config" id="org94a6695">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+<pre class="src src-config" id="org75d10d6">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
 </pre>
 </div>
 </div>
@@ -2341,7 +2323,7 @@ and keep the cluster in sync with its state.
 
 <p>
 On Gitea, click the <code>+</code> icon in the upper right corner to create a new <code>New
-Repository</code>. Call the new repository the same as <a href="#org11549bb">FLUX_REPO_NAME</a>. 
+Repository</code>. Call the new repository the same as <a href="#org0a1272f">FLUX_REPO_NAME</a>. 
 </p>
 
 <p>
@@ -2602,7 +2584,7 @@ packaged very well, so I instead opted to copy them here.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: EnigmaCurry</p>
-<p class="date">Created: 2021-02-01 Mon 11:39</p>
+<p class="date">Created: 2021-02-01 Mon 11:50</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

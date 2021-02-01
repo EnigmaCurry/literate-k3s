@@ -272,15 +272,6 @@ purposes of retrieving logs and getting the system status.
 
 See the [[https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-using-native-package-management][kubectl install guide]].
 
-*** kustomize
-=kustomize= is a system to patch kubernetes manifests, essentially plugging new
-configs into existing templates. They don't like to call them templates though,
-because they are operating on structured data, but its the same thing really.
-There are no if-then-else constructs like there are in [[https://helm.sh/][Helm]] templates, this is
-more like monkey-patching config directly, but nice and clean.
-
-See the [[https://github.com/kubernetes-sigs/kustomize/releases][kustomize install guide]].
-
 *** kubeseal
 =kubeseal= is the command line tool for [[https://github.com/bitnami-labs/sealed-secrets#sealed-secrets-for-kubernetes][bitnami-labs/sealed-secrets]], which is a
 system for storing encrypted secrets in public(ish) git repositories, which only
