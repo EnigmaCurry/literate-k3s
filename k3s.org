@@ -1543,6 +1543,38 @@ kubectl --kubeconfig <<KUBE_CONFIG>> get ns just-a-test
 : IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 : CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+The HTML export stylesheet and javascript code is forked from
+[[https://github.com/thomasf/solarized-css][thomasf/solarized-css]] into the =css/= directory and has a separate LICENSE:
+
+: The MIT License (MIT)
+: 
+: Copyright (c) 2015 Thomas Frössman
+: 
+: Permission is hereby granted, free of charge, to any person obtaining a copy
+: of this software and associated documentation files (the "Software"), to deal
+: in the Software without restriction, including without limitation the rights
+: to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+: copies of the Software, and to permit persons to whom the Software is
+: furnished to do so, subject to the following conditions:
+: 
+: The above copyright notice and this permission notice shall be included in
+: all copies or substantial portions of the Software.
+: 
+: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+: IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+: FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+: AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+: LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+: OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+: THE SOFTWARE.
+
+[[https://github.com/alphapapa/unpackaged.el][alphapapa/unpackaged.el]] is licensed under the [[https://github.com/alphapapa/unpackaged.el/blob/master/LICENSE][GNU General
+Public License v3.0]]. Select functions from this package have been copied
+verbatim into the [[Footnotes][Footnotes]] section, in order to improve the user experience
+using Org mode. These functions could be removed, and installed separately from
+the upstream package into your Emacs environment, its just that they are not
+packaged very well, so I instead opted to copy them here.
+
 * Footnotes
 
 This should be the very last section in this document. It is excluded from the
@@ -1583,6 +1615,7 @@ IDs it generally provides:
 #+begin_src elisp :eval never-export
   ;; org-mode export useful anchors:
   ;; thank you https://github.com/alphapapa/unpackaged.el
+  ;; This code is licensed GNU GPL v3:
   (define-minor-mode unpackaged/org-export-html-with-useful-ids-mode
     "Attempt to export Org as HTML with useful link IDs.
 Instead of random IDs like \"#orga1b2c3\", use heading titles,

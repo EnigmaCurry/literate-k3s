@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-01 Mon 11:02 -->
+<!-- 2021-02-01 Mon 11:39 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Literate K3s Cluster</title>
@@ -966,7 +966,7 @@ syntax</a>. (ie. <code>&lt;&lt;name-of-variable-block&gt;&gt;</code>)
 <code>CLUSTER</code> is the domain name of your cluster:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgf1d4a7c">k3s.example.com
+<pre class="src src-config" id="org2af6f4d">k3s.example.com
 </pre>
 </div>
 </div>
@@ -978,7 +978,7 @@ syntax</a>. (ie. <code>&lt;&lt;name-of-variable-block&gt;&gt;</code>)
 <code>CLUSTER_SSH_USER</code> is the admin SSH account of the cluster.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org460056a">root
+<pre class="src src-config" id="org6a4c67b">root
 </pre>
 </div>
 </div>
@@ -990,7 +990,7 @@ syntax</a>. (ie. <code>&lt;&lt;name-of-variable-block&gt;&gt;</code>)
 <code>KUBE_CONFIG</code> is the local path to the kubectl config file
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org30b6c51">${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="org40cbbee">${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1013,7 +1013,7 @@ secrets.
 <h3 id="Sealed%20Secrets%20Config"><span class="section-number-3">3.1</span> Sealed Secrets Config</h3>
 <div class="outline-text-3" id="text-3-1">
 <div class="org-src-container">
-<pre class="src src-config" id="orgd6bcdf8">v0.14.1
+<pre class="src src-config" id="org4ee9420">v0.14.1
 </pre>
 </div>
 </div>
@@ -1101,7 +1101,7 @@ referenced elsewhere, via <a href="https://orgmode.org/manual/Noweb-Reference-Sy
 The version number of Traefik to install (eg. <code>2.3</code>).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org42362dc">v2.3
+<pre class="src src-config" id="orgc417dc1">v2.3
 </pre>
 </div>
 </div>
@@ -1113,7 +1113,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 <code>TRAEFIK_IMAGE</code> is the name:tag of the container image for traefik:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org437049c">traefik:v2.3
+<pre class="src src-config" id="orgfb09e7b">traefik:v2.3
 </pre>
 </div>
 </div>
@@ -1126,7 +1126,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 prodider. 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgc32a8e4">you@example.com
+<pre class="src src-config" id="orgc426a6c">you@example.com
 </pre>
 </div>
 </div>
@@ -1139,7 +1139,7 @@ prodider.
 provider). 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orga0aef0c">https://acme-staging-v02.api.letsencrypt.org/directory
+<pre class="src src-config" id="org1b6f065">https://acme-staging-v02.api.letsencrypt.org/directory
 </pre>
 </div>
 
@@ -1180,7 +1180,7 @@ the rate limit, which blocks you out for a week.
 <code>TRAEFIK_LOG_LEVEL</code> is the filter level on the traefik log.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org75f0c97">INFO
+<pre class="src src-config" id="org142fbe0">INFO
 </pre>
 </div>
 </div>
@@ -1194,7 +1194,7 @@ domain name to respond to. <code>TRAEFIK_WHOAMI_DOMAIN</code> is the subdomain t
 whoami service responds to.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org636b8a7">whoami.k3s.example.com
+<pre class="src src-config" id="orga860867">whoami.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1517,7 +1517,7 @@ to direct traffic to any other node.
 <div class="outline-text-4" id="text-4-3-11">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It listens to the
-domain <a href="#org636b8a7">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
+domain <a href="#orga860867">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
 </p>
 
 <div class="org-src-container">
@@ -1637,7 +1637,7 @@ Test with TLS verification on:
 </div>
 
 <p>
-TLS will not verify until you use the production <a href="#orga0aef0c">TRAEFIK_ACME_SERVER</a>.
+TLS will not verify until you use the production <a href="#org1b6f065">TRAEFIK_ACME_SERVER</a>.
 </p>
 </div>
 </div>
@@ -1720,7 +1720,7 @@ easily mirror these repositories to external hosts like GitHub.
 <h4 id="GITEA_DOMAIN"><span class="section-number-4">5.4.1</span> GITEA_DOMAIN</h4>
 <div class="outline-text-4" id="text-5-4-1">
 <div class="org-src-container">
-<pre class="src src-config" id="orgb4c8449">git.k3s.example.com
+<pre class="src src-config" id="org14b24a3">git.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1732,7 +1732,7 @@ easily mirror these repositories to external hosts like GitHub.
 The size of the postgres database volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgcd3c5a4">5Gi
+<pre class="src src-config" id="orgef7d0ea">5Gi
 </pre>
 </div>
 </div>
@@ -1744,7 +1744,7 @@ The size of the postgres database volume for gitea:
 The size of the data volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org3421351">5Gi
+<pre class="src src-config" id="org8c7cc9b">5Gi
 </pre>
 </div>
 </div>
@@ -1757,7 +1757,7 @@ The size of the data volume for gitea:
 name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org0ed762e">root
+<pre class="src src-config" id="org82e5174">root
 </pre>
 </div>
 </div>
@@ -1769,7 +1769,7 @@ name.
 <code>GITEA_EMAIL</code> is the admin account email address:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgf7f6f93">root@example.com
+<pre class="src src-config" id="orgb3eff4a">root@example.com
 </pre>
 </div>
 </div>
@@ -2158,7 +2158,7 @@ accidentally get published in this Org file.
 </p>
 
 <p>
-Now you can login to your domain at <a href="https://git">https://git</a>.<a id="orgfb73578"></a> 
+Now you can login to your domain at <a href="https://git">https://git</a>.<a id="orgd143cd5"></a> 
 </p>
 </div>
 </div>
@@ -2289,7 +2289,7 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 <h3 id="FLUX_REPO_NAME"><span class="section-number-3">6.2</span> FLUX_REPO_NAME</h3>
 <div class="outline-text-3" id="text-6-2">
 <div class="org-src-container">
-<pre class="src src-config" id="orgda89d9b">literate-k3s
+<pre class="src src-config" id="org11549bb">literate-k3s
 </pre>
 </div>
 </div>
@@ -2298,7 +2298,7 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 <h3 id="FLUX_GIT_REMOTE"><span class="section-number-3">6.3</span> FLUX_GIT_REMOTE</h3>
 <div class="outline-text-3" id="text-6-3">
 <div class="org-src-container">
-<pre class="src src-config" id="orgd64b563">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+<pre class="src src-config" id="org94a6695">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
 </pre>
 </div>
 </div>
@@ -2341,7 +2341,7 @@ and keep the cluster in sync with its state.
 
 <p>
 On Gitea, click the <code>+</code> icon in the upper right corner to create a new <code>New
-Repository</code>. Call the new repository the same as <a href="#orgda89d9b">FLUX_REPO_NAME</a>. 
+Repository</code>. Call the new repository the same as <a href="#org11549bb">FLUX_REPO_NAME</a>. 
 </p>
 
 <p>
@@ -2557,12 +2557,52 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 </pre>
+
+
+<p>
+The HTML export stylesheet and javascript code is forked from
+<a href="https://github.com/thomasf/solarized-css">thomasf/solarized-css</a> into the <code>css/</code> directory and has a separate LICENSE:
+</p>
+
+<pre class="example">
+The MIT License (MIT)
+
+Copyright (c) 2015 Thomas Frössman
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+</pre>
+
+
+<p>
+<a href="https://github.com/alphapapa/unpackaged.el">alphapapa/unpackaged.el</a> is licensed under the <a href="https://github.com/alphapapa/unpackaged.el/blob/master/LICENSE">GNU General
+Public License v3.0</a>. Select functions from this package have been copied
+verbatim into the <a href="#Footnotes">Footnotes</a> section, in order to improve the user experience
+using Org mode. These functions could be removed, and installed separately from
+the upstream package into your Emacs environment, its just that they are not
+packaged very well, so I instead opted to copy them here.
+</p>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: EnigmaCurry</p>
-<p class="date">Created: 2021-02-01 Mon 11:02</p>
+<p class="date">Created: 2021-02-01 Mon 11:39</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
