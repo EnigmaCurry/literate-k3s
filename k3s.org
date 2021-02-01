@@ -4,7 +4,13 @@
 #+EXPORT_FILE_NAME: index.html
 #+EXCLUDE_TAGS: noexport
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/build/solarized-dark.css" />
+#+HTML_HEAD: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
 #+INFOJS_OPT: view:showall toc:t ltoc:above mouse:underline buttons:0 path:css/build/all.min.js
+
+#+BEGIN_EXPORT html
+<a class="github-fork-ribbon" href="https://github.com/EnigmaCurry/literate-k3s" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a> 
+#+END_EXPORT
+
 
 * Literate K3s cluster with Org-Mode and GitOps
 ** Introduction

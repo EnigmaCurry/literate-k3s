@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-01 Mon 10:50 -->
+<!-- 2021-02-01 Mon 11:02 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Literate K3s Cluster</title>
@@ -194,6 +194,7 @@
   /*]]>*/-->
 </style>
 <link rel="stylesheet" type="text/css" href="css/build/solarized-dark.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
 
 <script type="text/javascript" src="css/build/all.min.js">
 /**
@@ -426,6 +427,8 @@ for the JavaScript code in this tag.
 </ul>
 </div>
 </div>
+<a class="github-fork-ribbon" href="https://github.com/EnigmaCurry/literate-k3s" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a> 
+
 
 <div id="outline-container-Literate%20K3s%20cluster%20with%20Org-Mode%20and%20GitOps" class="outline-2">
 <h2 id="Literate%20K3s%20cluster%20with%20Org-Mode%20and%20GitOps"><span class="section-number-2">1</span> Literate K3s cluster with Org-Mode and GitOps</h2>
@@ -963,7 +966,7 @@ syntax</a>. (ie. <code>&lt;&lt;name-of-variable-block&gt;&gt;</code>)
 <code>CLUSTER</code> is the domain name of your cluster:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org6244cc6">k3s.example.com
+<pre class="src src-config" id="orgf1d4a7c">k3s.example.com
 </pre>
 </div>
 </div>
@@ -975,7 +978,7 @@ syntax</a>. (ie. <code>&lt;&lt;name-of-variable-block&gt;&gt;</code>)
 <code>CLUSTER_SSH_USER</code> is the admin SSH account of the cluster.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org08cdbdc">root
+<pre class="src src-config" id="org460056a">root
 </pre>
 </div>
 </div>
@@ -987,7 +990,7 @@ syntax</a>. (ie. <code>&lt;&lt;name-of-variable-block&gt;&gt;</code>)
 <code>KUBE_CONFIG</code> is the local path to the kubectl config file
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org2c101cf">${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="org30b6c51">${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1010,7 +1013,7 @@ secrets.
 <h3 id="Sealed%20Secrets%20Config"><span class="section-number-3">3.1</span> Sealed Secrets Config</h3>
 <div class="outline-text-3" id="text-3-1">
 <div class="org-src-container">
-<pre class="src src-config" id="orgee3204b">v0.14.1
+<pre class="src src-config" id="orgd6bcdf8">v0.14.1
 </pre>
 </div>
 </div>
@@ -1098,7 +1101,7 @@ referenced elsewhere, via <a href="https://orgmode.org/manual/Noweb-Reference-Sy
 The version number of Traefik to install (eg. <code>2.3</code>).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org2b1f2b3">v2.3
+<pre class="src src-config" id="org42362dc">v2.3
 </pre>
 </div>
 </div>
@@ -1110,7 +1113,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 <code>TRAEFIK_IMAGE</code> is the name:tag of the container image for traefik:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgd406f69">traefik:v2.3
+<pre class="src src-config" id="org437049c">traefik:v2.3
 </pre>
 </div>
 </div>
@@ -1123,7 +1126,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 prodider. 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org1fbcf7a">you@example.com
+<pre class="src src-config" id="orgc32a8e4">you@example.com
 </pre>
 </div>
 </div>
@@ -1136,7 +1139,7 @@ prodider.
 provider). 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org76a2488">https://acme-staging-v02.api.letsencrypt.org/directory
+<pre class="src src-config" id="orga0aef0c">https://acme-staging-v02.api.letsencrypt.org/directory
 </pre>
 </div>
 
@@ -1177,7 +1180,7 @@ the rate limit, which blocks you out for a week.
 <code>TRAEFIK_LOG_LEVEL</code> is the filter level on the traefik log.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orga3eba98">INFO
+<pre class="src src-config" id="org75f0c97">INFO
 </pre>
 </div>
 </div>
@@ -1191,7 +1194,7 @@ domain name to respond to. <code>TRAEFIK_WHOAMI_DOMAIN</code> is the subdomain t
 whoami service responds to.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org756c7dc">whoami.k3s.example.com
+<pre class="src src-config" id="org636b8a7">whoami.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1514,7 +1517,7 @@ to direct traffic to any other node.
 <div class="outline-text-4" id="text-4-3-11">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It listens to the
-domain <a href="#org756c7dc">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
+domain <a href="#org636b8a7">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
 </p>
 
 <div class="org-src-container">
@@ -1634,7 +1637,7 @@ Test with TLS verification on:
 </div>
 
 <p>
-TLS will not verify until you use the production <a href="#org76a2488">TRAEFIK_ACME_SERVER</a>.
+TLS will not verify until you use the production <a href="#orga0aef0c">TRAEFIK_ACME_SERVER</a>.
 </p>
 </div>
 </div>
@@ -1717,7 +1720,7 @@ easily mirror these repositories to external hosts like GitHub.
 <h4 id="GITEA_DOMAIN"><span class="section-number-4">5.4.1</span> GITEA_DOMAIN</h4>
 <div class="outline-text-4" id="text-5-4-1">
 <div class="org-src-container">
-<pre class="src src-config" id="org3b075b3">git.k3s.example.com
+<pre class="src src-config" id="orgb4c8449">git.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1729,7 +1732,7 @@ easily mirror these repositories to external hosts like GitHub.
 The size of the postgres database volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org2be4de8">5Gi
+<pre class="src src-config" id="orgcd3c5a4">5Gi
 </pre>
 </div>
 </div>
@@ -1741,7 +1744,7 @@ The size of the postgres database volume for gitea:
 The size of the data volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org8c49e20">5Gi
+<pre class="src src-config" id="org3421351">5Gi
 </pre>
 </div>
 </div>
@@ -1754,7 +1757,7 @@ The size of the data volume for gitea:
 name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org57879c6">root
+<pre class="src src-config" id="org0ed762e">root
 </pre>
 </div>
 </div>
@@ -1766,7 +1769,7 @@ name.
 <code>GITEA_EMAIL</code> is the admin account email address:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org41bef63">root@example.com
+<pre class="src src-config" id="orgf7f6f93">root@example.com
 </pre>
 </div>
 </div>
@@ -2155,7 +2158,7 @@ accidentally get published in this Org file.
 </p>
 
 <p>
-Now you can login to your domain at <a href="https://git">https://git</a>.<a id="org78afeb9"></a> 
+Now you can login to your domain at <a href="https://git">https://git</a>.<a id="orgfb73578"></a> 
 </p>
 </div>
 </div>
@@ -2286,7 +2289,7 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 <h3 id="FLUX_REPO_NAME"><span class="section-number-3">6.2</span> FLUX_REPO_NAME</h3>
 <div class="outline-text-3" id="text-6-2">
 <div class="org-src-container">
-<pre class="src src-config" id="org27f8968">literate-k3s
+<pre class="src src-config" id="orgda89d9b">literate-k3s
 </pre>
 </div>
 </div>
@@ -2295,7 +2298,7 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 <h3 id="FLUX_GIT_REMOTE"><span class="section-number-3">6.3</span> FLUX_GIT_REMOTE</h3>
 <div class="outline-text-3" id="text-6-3">
 <div class="org-src-container">
-<pre class="src src-config" id="org42d2449">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+<pre class="src src-config" id="orgd64b563">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
 </pre>
 </div>
 </div>
@@ -2338,7 +2341,7 @@ and keep the cluster in sync with its state.
 
 <p>
 On Gitea, click the <code>+</code> icon in the upper right corner to create a new <code>New
-Repository</code>. Call the new repository the same as <a href="#org27f8968">FLUX_REPO_NAME</a>. 
+Repository</code>. Call the new repository the same as <a href="#orgda89d9b">FLUX_REPO_NAME</a>. 
 </p>
 
 <p>
@@ -2559,7 +2562,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: EnigmaCurry</p>
-<p class="date">Created: 2021-02-01 Mon 10:50</p>
+<p class="date">Created: 2021-02-01 Mon 11:02</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
