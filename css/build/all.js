@@ -1363,6 +1363,7 @@ var org_html_manager = {
     if     (t.READING)   { t.endRead(); t.hideConsole(); }
     else if(t.MESSAGING) { t.removeWarning(); }
     if(t.VIEW == t.SLIDE_VIEW) t.adjustSlide(sec);
+    console.log(t.NODE.IDX);
     t.pushHistory(sec, t.NODE.IDX);
     t.showSection(sec);
   },

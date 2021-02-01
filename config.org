@@ -1,0 +1,74 @@
+#+STARTUP: showeverything
+
+* Core
+Core config includes configuration values referenced by all other configs.
+** CLUSTER
+=CLUSTER= is the domain name of your cluster:
+#+name: CLUSTER
+#+begin_src config :eval no
+k3s.example.com
+#+end_src
+** CLUSTER_SSH_USER
+=CLUSTER_SSH_USER= is the admin SSH account of the cluster.
+#+name: CLUSTER_SSH_USER
+#+begin_src config :eval no
+root
+#+end_src
+** SEALED_SECRETS_VERSION
+#+name: SEALED_SECRETS_VERSION
+#+begin_src config :eval no
+v0.14.1
+#+end_src
+* Traefik
+** TRAEFIK_VERSION
+The version number of Traefik to install (eg. =2.3=).
+#+name: TRAEFIK_VERSION
+#+begin_src config :eval no
+v2.3
+#+end_src
+** TRAEFIK_ACME_EMAIL
+ =TRAEFIK_ACME_EMAIL= is the email address to register with the ACME service
+ prodider. 
+#+name: TRAEFIK_ACME_EMAIL
+#+begin_src config :eval no
+you@example.com
+#+end_src
+** TRAEFIK_ACME_SERVER
+=TRAEFIK_ACME_SERVER= is the URL for the Let's Encrypt API (Or other ACME
+provider). 
+#+name: TRAEFIK_ACME_SERVER
+#+begin_src config :eval no
+https://acme-staging-v02.api.letsencrypt.org/directory
+#+end_src
+
+For production, use the =acme-v02= Lets Encrypt server :
+
+: https://acme-v02.api.letsencrypt.org/directory
+
+For staging, use the =acme-staging-v02= Let's Encrypt server :
+
+: https://acme-staging-v02.api.letsencrypt.org/directory
+
+The difference, is that the staging server has much more generous [[https://letsencrypt.org/docs/rate-limits/][rate limiting]],
+but will only provide certificates for testing purposes (ie, they appear INVALID
+in web browsers.) You really should start with the staging server for new
+deployments, because you may find you need to recreate the whole server a few
+times, and if you don't backup and restore the =acme.json= file that Traefik
+needs, it will request the certificates be issued again, incurring the wrath of
+the rate limit, which blocks you out for a week.
+
+** TRAEFIK_LOG_LEVEL
+=TRAEFIK_LOG_LEVEL= is the filter level on the traefik log.
+#+name: TRAEFIK_LOG_LEVEL
+#+begin_src config :eval no
+INFO
+#+end_src
+** TRAEFIK_WHOAMI_DOMAIN
+[[https://github.com/traefik/whoami][traefik/whoami]] can be deployed to test Traefik functionality. It needs its own
+domain name to respond to. =TRAEFIK_WHOAMI_DOMAIN= is the subdomain that the
+whoami service responds to.
+#+name: TRAEFIK_WHOAMI_DOMAIN
+#+begin_src config :eval no
+whoami.k3s.example.com
+#+end_src
+

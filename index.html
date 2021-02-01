@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-01 Mon 11:50 -->
+<!-- 2021-02-01 Mon 15:26 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Literate K3s Cluster</title>
@@ -349,38 +349,48 @@ for the JavaScript code in this tag.
 <li><a href="#Create%20a%20cluster">1.6. Create a cluster</a></li>
 </ul>
 </li>
-<li><a href="#Core%20Config">2. Core Config</a>
+<li><a href="#Config">2. Config</a>
 <ul>
-<li><a href="#CLUSTER">2.1. CLUSTER</a></li>
-<li><a href="#CLUSTER_SSH_USER">2.2. CLUSTER_SSH_USER</a></li>
-<li><a href="#KUBE_CONFIG">2.3. KUBE_CONFIG</a></li>
+<li><a href="#Core">2.1. Core</a>
+<ul>
+<li><a href="#CLUSTER">2.1.1. CLUSTER</a></li>
+<li><a href="#CLUSTER_SSH_USER">2.1.2. CLUSTER_SSH_USER</a></li>
+<li><a href="#SEALED_SECRETS_VERSION">2.1.3. SEALED_SECRETS_VERSION</a></li>
+</ul>
+</li>
+<li><a href="#Traefik">2.2. Traefik</a>
+<ul>
+<li><a href="#TRAEFIK_VERSION">2.2.1. TRAEFIK_VERSION</a></li>
+<li><a href="#TRAEFIK_ACME_EMAIL">2.2.2. TRAEFIK_ACME_EMAIL</a></li>
+<li><a href="#TRAEFIK_ACME_SERVER">2.2.3. TRAEFIK_ACME_SERVER</a></li>
+<li><a href="#TRAEFIK_LOG_LEVEL">2.2.4. TRAEFIK_LOG_LEVEL</a></li>
+<li><a href="#TRAEFIK_WHOAMI_DOMAIN">2.2.5. TRAEFIK_WHOAMI_DOMAIN</a></li>
+</ul>
+</li>
+<li><a href="#Derived%20Config%20Variables">2.3. Derived Config Variables</a>
+<ul>
+<li><a href="#KUBE_CONFIG">2.3.1. KUBE_CONFIG</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#Sealed%20Secrets">3. Sealed Secrets</a>
 <ul>
-<li><a href="#Sealed%20Secrets%20Config">3.1. Sealed Secrets Config</a></li>
-<li><a href="#Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster">3.2. Install bitnami-labs/sealed-secrets to the cluster</a></li>
+<li><a href="#Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster">3.1. Install bitnami-labs/sealed-secrets to the cluster</a></li>
 </ul>
 </li>
 <li><a href="#kube-system">4. kube-system</a>
 <ul>
-<li><a href="#kube-system%20setup">4.1. kube-system setup</a></li>
-<li><a href="#src%2Fkube-system%2Fkustomization.yaml">4.2. src/kube-system/kustomization.yaml</a></li>
-<li><a href="#Traefik">4.3. Traefik</a>
+<li><a href="#src%2Fkube-system%2Fkustomization.yaml">4.1. src/kube-system/kustomization.yaml</a></li>
+<li><a href="#kube-system--Traefik">4.2. Traefik</a>
 <ul>
-<li><a href="#TRAEFIK_VERSION">4.3.1. TRAEFIK_VERSION</a></li>
-<li><a href="#TRAEFIK_IMAGE">4.3.2. TRAEFIK_IMAGE</a></li>
-<li><a href="#TRAEFIK_ACME_EMAIL">4.3.3. TRAEFIK_ACME_EMAIL</a></li>
-<li><a href="#TRAEFIK_ACME_SERVER">4.3.4. TRAEFIK_ACME_SERVER</a></li>
-<li><a href="#TRAEFIK_LOG_LEVEL">4.3.5. TRAEFIK_LOG_LEVEL</a></li>
-<li><a href="#TRAEFIK_WHOAMI_DOMAIN">4.3.6. TRAEFIK_WHOAMI_DOMAIN</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefik.crd.yaml">4.3.7. src/kube-system/traefik.crd.yaml</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefik.rbac.yaml">4.3.8. src/kube-system/traefik.rbac.yaml</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefik.pvc.yaml">4.3.9. src/kube-system/traefik.pvc.yaml</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefik.daemonset.yaml">4.3.10. src/kube-system/traefik.daemonset.yaml</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefk.whoami.yaml">4.3.11. src/kube-system/traefk.whoami.yaml</a></li>
-<li><a href="#Deploy%20Traefik">4.3.12. Deploy Traefik</a></li>
-<li><a href="#Test%20Traefik%20whoami%20service">4.3.13. Test Traefik whoami service</a></li>
+<li><a href="#src%2Fkube-system%2Ftraefik.crd.yaml">4.2.1. src/kube-system/traefik.crd.yaml</a></li>
+<li><a href="#src%2Fkube-system%2Ftraefik.rbac.yaml">4.2.2. src/kube-system/traefik.rbac.yaml</a></li>
+<li><a href="#src%2Fkube-system%2Ftraefik.pvc.yaml">4.2.3. src/kube-system/traefik.pvc.yaml</a></li>
+<li><a href="#src%2Fkube-system%2Ftraefik.daemonset.yaml">4.2.4. src/kube-system/traefik.daemonset.yaml</a></li>
+<li><a href="#src%2Fkube-system%2Ftraefk.whoami.yaml">4.2.5. src/kube-system/traefk.whoami.yaml</a></li>
+<li><a href="#Deploy%20Traefik">4.2.6. Deploy Traefik</a></li>
+<li><a href="#Test%20Traefik%20whoami%20service">4.2.7. Test Traefik whoami service</a></li>
 </ul>
 </li>
 </ul>
@@ -426,8 +436,8 @@ for the JavaScript code in this tag.
 </ul>
 </div>
 </div>
-<a class="github-fork-ribbon" href="https://github.com/EnigmaCurry/literate-k3s" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a> 
-
+<a class="github-fork-ribbon" href="https://github.com/EnigmaCurry/literate-k3s" 
+  data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a> 
 
 <div id="outline-container-Literate%20K3s%20cluster%20with%20Org-Mode%20and%20GitOps" class="outline-2">
 <h2 id="Literate%20K3s%20cluster%20with%20Org-Mode%20and%20GitOps"><span class="section-number-2">1</span> Literate K3s cluster with Org-Mode and GitOps</h2>
@@ -437,11 +447,11 @@ for the JavaScript code in this tag.
 <h3 id="Introduction"><span class="section-number-3">1.1</span> Introduction</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
-Literate Programming is a style of computer programming where you "weave"
-together: code, configuration, prose documentation, and program results/output,
-all into one single readable document. If you use a Literate Programming style,
-you will never forget to document how your program works, because your
-documentation <i>is</i> your program.
+Literate Programming is a style of computer programming where you "weave
+together" code, configuration, prose text, and program results/output, all into
+a readable document; sometimes referred to as Executable Documentation. If you
+use a Literate Programming style, you will never forget to document how your
+program works, because your documentation <i>is</i> your program.
 </p>
 
 <p>
@@ -454,18 +464,19 @@ even run on a single node with at least 2GB or more of RAM (4GB recommended).
 <p>
 This file is an <a href="https://orgmode.org">org-mode</a> and <a href="https://orgmode.org/worg/org-contrib/babel/">org-babel</a> document (or if you're reading this
 online, you're probably reading the exported HTML version. You may find <a target="_blank" href="k3s.org">the
-original Org source here</a>). It contains the entire configuration and
-documentation for creating a <a href="https://k3s.io/">K3s</a> cluster, from scratch, and the means to
-configure and maintain your deployments over time. Essentially, this org file
-becomes your ultimate source of configuration for your entire cluster: to make a
-change to your cluster, you first need to make the change in this file. You
-should open this file in Emacs, edit it in org-mode, run the setup commands
-described, and <code>tangle</code> your source files. A minimal tutorial on using Emacs
-with org-babel is included, but this expects some pre-existing Emacs knowledge.
+original Org source here</a>). This file, and one other file named <a target="_blank" href="config.org">config.org</a>,
+contain the entire configuration, and documentation, for creating a <a href="https://k3s.io/">K3s</a> cluster,
+from scratch, and the means with which to maintain your deployments over time.
+Essentially, this set of org files becomes your ultimate source of configuration
+for your entire cluster: to make a change to your cluster, you first need to
+make the change in this file. You should open this file in Emacs, edit it in
+org-mode, run the setup commands described, and <code>tangle</code> your source files. A
+minimal tutorial on using Emacs with org-babel is included, but this expects
+some pre-existing Emacs knowledge.
 </p>
 
 <p>
-Having your entire cluster config in one file may sound like it would be
+Having your entire cluster config in one or two files may sound like it would be
 overwhelming, but there is another trick up Org's sleeve: <code>tangling</code>. If
 bringing both code and documentation together is called <code>weaving</code>, taking them
 apart again is called <code>tangling</code>. Tangling is a process, which takes the literal
@@ -733,50 +744,51 @@ Clone <a href="https://github.com/EnigmaCurry/literate-k3s">this repository</a> 
 
 <p>
 (This sets the upstream remote name to <code>EnigmaCurry</code>. You'll use the default
-<code>origin</code> later for your own self-hosted gitea remote.)
+<code>origin</code> remote later, for your own self-hosted gitea repository.)
 </p>
+
+<p>
+Now open up <code>${HOME}/git/literate-k3s/config.org</code> inside of Emacs.
+</p>
+
+<ul class="org-ul">
+<li><code>config.org</code> is your config file that feeds configuration variables into
+k3s.org (this file).</li>
+<li>You should review all of the code blocks in <code>config.org</code>, and edit those
+variables appropriately for your environment.</li>
+</ul>
 
 <p>
 Now open up <code>${HOME}/git/literate-k3s/k3s.org</code> inside of Emacs.
 </p>
 
 <ul class="org-ul">
-<li>Start with the <a href="#Core%20Config">Core Config</a> section. Edit the variable <code>CLUSTER</code>, which is
-your (sub-)domain name you wish to give to the cluster. (eg.
-<code>k3s.example.com</code>).</li>
-<li>Next go to the section for <a href="#kube-system%20setup">kube-system setup</a>, and run the code block there to
-create the <code>kube-system</code> directory.</li>
-<li>Now go to the <a href="#kube-system">kube-system</a> section and edit all the variables there, most
-importantly <code>TRAEFIK_ACME_EMAIL</code>.</li>
 <li>Run Tangle - Press <code>C-c C-v t</code> or <code>M-x org-babel-tangle</code> to create all of the
 derivative files into the <code>src/</code> directory.</li>
-<li>Run the code blocks in the <a href="#Deploy%20Traefik">Deploy Traefik</a>.</li>
+<li>Run the code blocks in the <a href="#Deploy%20Traefik">Deploy Traefik</a> section.</li>
 </ul>
 
 <p>
-Follow the same procedure for all the rest of the sections:
+Follow these general procedures going forward:
 </p>
 
 <ol class="org-ol">
 <li>For each new namespace, you create a new directory in <code>src/</code>.</li>
-<li>Run code blocks in each <code>Setup</code> sections once, only for initial setup.</li>
-<li>Edit variables in the <code>Config</code> sections, anytime you need to change a setting.</li>
-<li>After changing config, press <code>C-c C-v t</code>, to tangle the code blocks, which
-creates the YAML manifests, and other files. If an Org sub-tree heading is
-marked with <code>COMMENT</code>, it is disabled, and no blocks under this heading will
-be tangled, and it will also not appear in the HTML export. You can toggle a
-sub-tree <code>COMMENT</code> by pressing <code>C-c ;</code>.</li>
-<li>Follow any other instructions and code-blocks that the section may provide.
-Usually this will be to commit the tangled files to git, and push to the
-repository (so that Flux can handle the changes). In other cases, like
-Traefik (which is setup before Flux is installed) may have you run manual
-<code>kubectl</code> commands.</li>
+<li>Run code blocks as directed in each section, usually only as one-time setup.</li>
+<li>Make new variables in <code>config.org</code> and reference them in other code blocks via
+<a href="https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax">NoWeb</a> syntax, for example: <code>&lt;&lt;variable_name&gt;&gt;</code>.</li>
+<li>After changing any config, press <code>C-c C-v t</code>, to tangle the code blocks,
+which creates the YAML manifests, and other files. If an Org sub-tree
+heading is marked with <code>COMMENT</code>, it is disabled, and no blocks under this
+heading will be tangled, and it will also not appear in the HTML export. You
+can toggle a sub-tree <code>COMMENT</code> by pressing <code>C-c ;</code>.</li>
+<li>Commit changed files to git and push to the remote repository.</li>
 </ol>
 
 <p>
 If you already have a cluster, the generated YAML files written to the <code>src</code>
-directory can now be applied to your cluster. But if you don't have a cluster
-yet, read on.
+directory can now be applied to your cluster. But if you don't yet have a
+cluster, read on.
 </p>
 </div>
 </div>
@@ -931,197 +943,94 @@ k3sup install --host k3s.example.com --user root <span style="color: #2d9574;">\
 </div>
 </div>
 
-<div id="outline-container-Core%20Config" class="outline-2">
-<h2 id="Core%20Config"><span class="section-number-2">2</span> Core Config</h2>
+<div id="outline-container-Config" class="outline-2">
+<h2 id="Config"><span class="section-number-2">2</span> Config</h2>
 <div class="outline-text-2" id="text-2">
 <p>
-This section will include all of the core configuration values, referenced by
-all the deployments. Each configuration has a named code block, which you can
-edit the value of, and can then be referenced in other code blocks via <a href="https://orgmode.org/manual/Noweb-Reference-Syntax.html">NoWeb
-syntax</a>. (ie. <code>&lt;&lt;name-of-variable-block&gt;&gt;</code>)
+This section contains all of the variables used for all of the templates. These
+are imported from <a href="config.html">config.org</a>
 </p>
 </div>
-<div id="outline-container-CLUSTER" class="outline-3">
-<h3 id="CLUSTER"><span class="section-number-3">2.1</span> CLUSTER</h3>
+
+<div id="outline-container-Core" class="outline-3">
+<h3 id="Core"><span class="section-number-3">2.1</span> Core</h3>
 <div class="outline-text-3" id="text-2-1">
+<p>
+Core config includes configuration values referenced by all other configs.
+</p>
+</div>
+<div id="outline-container-CLUSTER" class="outline-4">
+<h4 id="CLUSTER"><span class="section-number-4">2.1.1</span> CLUSTER</h4>
+<div class="outline-text-4" id="text-2-1-1">
 <p>
 <code>CLUSTER</code> is the domain name of your cluster:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgb2678a4">k3s.example.com
+<pre class="src src-config" id="orgc192b6d">k3s.example.com
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-CLUSTER_SSH_USER" class="outline-3">
-<h3 id="CLUSTER_SSH_USER"><span class="section-number-3">2.2</span> CLUSTER_SSH_USER</h3>
-<div class="outline-text-3" id="text-2-2">
+<div id="outline-container-CLUSTER_SSH_USER" class="outline-4">
+<h4 id="CLUSTER_SSH_USER"><span class="section-number-4">2.1.2</span> CLUSTER_SSH_USER</h4>
+<div class="outline-text-4" id="text-2-1-2">
 <p>
 <code>CLUSTER_SSH_USER</code> is the admin SSH account of the cluster.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgeefbf78">root
+<pre class="src src-config" id="orgef1e847">root
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-KUBE_CONFIG" class="outline-3">
-<h3 id="KUBE_CONFIG"><span class="section-number-3">2.3</span> KUBE_CONFIG</h3>
-<div class="outline-text-3" id="text-2-3">
-<p>
-<code>KUBE_CONFIG</code> is the local path to the kubectl config file
-</p>
+<div id="outline-container-SEALED_SECRETS_VERSION" class="outline-4">
+<h4 id="SEALED_SECRETS_VERSION"><span class="section-number-4">2.1.3</span> SEALED_SECRETS_VERSION</h4>
+<div class="outline-text-4" id="text-2-1-3">
 <div class="org-src-container">
-<pre class="src src-config" id="orgffb0a02">${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="orga1fc9a9">v0.14.1
 </pre>
 </div>
 </div>
 </div>
 </div>
-
-<div id="outline-container-Sealed%20Secrets" class="outline-2">
-<h2 id="Sealed%20Secrets"><span class="section-number-2">3</span> Sealed Secrets</h2>
-<div class="outline-text-2" id="text-3">
-<p>
-This Org file is not an appropriate place to store private things like passwords
-or API tokens, because it may accidentally be published to the web. These things
-should be stored in Secrets, controlled only by your cluster. To keep secrets
-local to this config, the use of <a href="https://github.com/bitnami-labs/sealed-secrets">Sealed Secrets</a> allows us to store an encrypted
-copy of the secrets in our git repository. Only the cluster can decrypt sealed
-secrets.
-</p>
-</div>
-<div id="outline-container-Sealed%20Secrets%20Config" class="outline-3">
-<h3 id="Sealed%20Secrets%20Config"><span class="section-number-3">3.1</span> Sealed Secrets Config</h3>
-<div class="outline-text-3" id="text-3-1">
-<div class="org-src-container">
-<pre class="src src-config" id="orgc643144">v0.14.1
-</pre>
-</div>
-</div>
-</div>
-
-<div id="outline-container-Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster" class="outline-3">
-<h3 id="Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster"><span class="section-number-3">3.2</span> Install bitnami-labs/sealed-secrets to the cluster</h3>
-<div class="outline-text-3" id="text-3-2">
-<p>
-In <a href="#Workstation%20tools">Workstation tools</a> you already installed the command line client. Now you need
-to install it to the cluster:
-</p>
-
-<div class="org-src-container">
-<pre class="src src-shell">kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.14.1/controller.yaml
-</pre>
-</div>
-</div>
-</div>
-</div>
-<div id="outline-container-kube-system" class="outline-2">
-<h2 id="kube-system"><span class="section-number-2">4</span> kube-system</h2>
-<div class="outline-text-2" id="text-4">
-<p>
-<code>kube-system</code> is the namespace for running system wide features, mostly network
-related. 
-</p>
-</div>
-<div id="outline-container-kube-system%20setup" class="outline-3">
-<h3 id="kube-system%20setup"><span class="section-number-3">4.1</span> kube-system setup</h3>
-<div class="outline-text-3" id="text-4-1">
-<p>
-Create the <code>kube-system</code> namespace directory:
-</p>
-<div class="org-src-container">
-<pre class="src src-shell">mkdir -p src/kube-system
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-src%2Fkube-system%2Fkustomization.yaml" class="outline-3">
-<h3 id="src%2Fkube-system%2Fkustomization.yaml"><span class="section-number-3">4.2</span> src/kube-system/kustomization.yaml</h3>
-<div class="outline-text-3" id="text-4-2">
-<p>
-Each namespace (including <code>kube-system</code>) needs a file called
-<code>kustomization.yaml</code>, which contains a list of all the YAML manifests for the
-namespace. As you add addtional manifests to <code>kube-system</code>, you must add
-references here:
-</p>
-
-<div class="org-src-container">
-<pre class="src src-yaml"><span style="color: #7590db;">apiVersion</span>: kustomize.config.k8s.io/v1beta1
-<span style="color: #7590db;">kind</span>: Kustomization
-<span style="color: #7590db;">resources</span>:
-- traefik.crd.yaml
-- traefik.pvc.yaml
-- traefik.rbac.yaml
-- traefik.daemonset.yaml
-- traefik.whoami.yaml
-</pre>
-</div>
-</div>
-</div>
-
 <div id="outline-container-Traefik" class="outline-3">
-<h3 id="Traefik"><span class="section-number-3">4.3</span> Traefik</h3>
-<div class="outline-text-3" id="text-4-3">
-<p>
-<a href="https://doc.traefik.io/traefik/">Traefik</a> is a reverse proxy that will allow HTTP and TCP ingress to your cluster
-pods, thus allowing the public internet access to your container services. With
-k3s + traefik there is no requirement for any external load balancer.
-</p>
-
-<p>
-Listed here are all of the configuration variables needed for Traefik and all
-of the YAML manifests to apply. This makes use of named code blocks that are
-referenced elsewhere, via <a href="https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax">NoWeb syntax</a>. (ie. <code>&lt;&lt;TRAEFIK_ACME_EMAIL&gt;&gt;</code>).
-</p>
+<h3 id="Traefik"><span class="section-number-3">2.2</span> Traefik</h3>
+<div class="outline-text-3" id="text-2-2">
 </div>
-
 <div id="outline-container-TRAEFIK_VERSION" class="outline-4">
-<h4 id="TRAEFIK_VERSION"><span class="section-number-4">4.3.1</span> TRAEFIK_VERSION</h4>
-<div class="outline-text-4" id="text-4-3-1">
+<h4 id="TRAEFIK_VERSION"><span class="section-number-4">2.2.1</span> TRAEFIK_VERSION</h4>
+<div class="outline-text-4" id="text-2-2-1">
 <p>
 The version number of Traefik to install (eg. <code>2.3</code>).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org2f83dcc">v2.3
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-TRAEFIK_IMAGE" class="outline-4">
-<h4 id="TRAEFIK_IMAGE"><span class="section-number-4">4.3.2</span> TRAEFIK_IMAGE</h4>
-<div class="outline-text-4" id="text-4-3-2">
-<p>
-<code>TRAEFIK_IMAGE</code> is the name:tag of the container image for traefik:
-</p>
-<div class="org-src-container">
-<pre class="src src-config" id="org7922e97">traefik:v2.3
+<pre class="src src-config" id="orgcce5336">v2.3
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-TRAEFIK_ACME_EMAIL" class="outline-4">
-<h4 id="TRAEFIK_ACME_EMAIL"><span class="section-number-4">4.3.3</span> TRAEFIK_ACME_EMAIL</h4>
-<div class="outline-text-4" id="text-4-3-3">
+<h4 id="TRAEFIK_ACME_EMAIL"><span class="section-number-4">2.2.2</span> TRAEFIK_ACME_EMAIL</h4>
+<div class="outline-text-4" id="text-2-2-2">
 <p>
 <code>TRAEFIK_ACME_EMAIL</code> is the email address to register with the ACME service
 prodider. 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org950eadd">you@example.com
+<pre class="src src-config" id="org4480ea0">you@example.com
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-TRAEFIK_ACME_SERVER" class="outline-4">
-<h4 id="TRAEFIK_ACME_SERVER"><span class="section-number-4">4.3.4</span> TRAEFIK_ACME_SERVER</h4>
-<div class="outline-text-4" id="text-4-3-4">
+<h4 id="TRAEFIK_ACME_SERVER"><span class="section-number-4">2.2.3</span> TRAEFIK_ACME_SERVER</h4>
+<div class="outline-text-4" id="text-2-2-3">
 <p>
 <code>TRAEFIK_ACME_SERVER</code> is the URL for the Let's Encrypt API (Or other ACME
 provider). 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org7020111">https://acme-staging-v02.api.letsencrypt.org/directory
+<pre class="src src-config" id="org75c9e63">https://acme-staging-v02.api.letsencrypt.org/directory
 </pre>
 </div>
 
@@ -1156,35 +1065,133 @@ the rate limit, which blocks you out for a week.
 </div>
 
 <div id="outline-container-TRAEFIK_LOG_LEVEL" class="outline-4">
-<h4 id="TRAEFIK_LOG_LEVEL"><span class="section-number-4">4.3.5</span> TRAEFIK_LOG_LEVEL</h4>
-<div class="outline-text-4" id="text-4-3-5">
+<h4 id="TRAEFIK_LOG_LEVEL"><span class="section-number-4">2.2.4</span> TRAEFIK_LOG_LEVEL</h4>
+<div class="outline-text-4" id="text-2-2-4">
 <p>
 <code>TRAEFIK_LOG_LEVEL</code> is the filter level on the traefik log.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org3a70377">INFO
+<pre class="src src-config" id="org6060a36">INFO
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-TRAEFIK_WHOAMI_DOMAIN" class="outline-4">
-<h4 id="TRAEFIK_WHOAMI_DOMAIN"><span class="section-number-4">4.3.6</span> TRAEFIK_WHOAMI_DOMAIN</h4>
-<div class="outline-text-4" id="text-4-3-6">
+<h4 id="TRAEFIK_WHOAMI_DOMAIN"><span class="section-number-4">2.2.5</span> TRAEFIK_WHOAMI_DOMAIN</h4>
+<div class="outline-text-4" id="text-2-2-5">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It needs its own
 domain name to respond to. <code>TRAEFIK_WHOAMI_DOMAIN</code> is the subdomain that the
 whoami service responds to.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org2d4784c">whoami.k3s.example.com
+<pre class="src src-config" id="org41a925e">whoami.k3s.example.com
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-Derived%20Config%20Variables" class="outline-3">
+<h3 id="Derived%20Config%20Variables"><span class="section-number-3">2.3</span> Derived Config Variables</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+These are variables that are derived from other variables in <a href="config.html">config.org</a>, using
+NoWeb syntax. You probably don't need to customize these:
+</p>
+</div>
+<div id="outline-container-KUBE_CONFIG" class="outline-4">
+<h4 id="KUBE_CONFIG"><span class="section-number-4">2.3.1</span> KUBE_CONFIG</h4>
+<div class="outline-text-4" id="text-2-3-1">
+<p>
+<code>KUBE_CONFIG</code> is the local path to the kubectl config file
+</p>
+<div class="org-src-container">
+<pre class="src src-config" id="org8e405f6">${HOME}/.kube/k3s.example.com-config
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-Sealed%20Secrets" class="outline-2">
+<h2 id="Sealed%20Secrets"><span class="section-number-2">3</span> Sealed Secrets</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+This Org file is not an appropriate place to store private things like passwords
+or API tokens, because it may accidentally be published to the web. These things
+should be stored in Secrets, controlled only by your cluster. To keep secrets
+local to this config, the use of <a href="https://github.com/bitnami-labs/sealed-secrets">Sealed Secrets</a> allows us to store an encrypted
+copy of the secrets in our git repository. Only the cluster can decrypt sealed
+secrets.
+</p>
+</div>
+<div id="outline-container-Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster" class="outline-3">
+<h3 id="Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster"><span class="section-number-3">3.1</span> Install bitnami-labs/sealed-secrets to the cluster</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+In <a href="#Workstation%20tools">Workstation tools</a> you already installed the command line client. Now you need
+to install it to the cluster:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.14.1/controller.yaml
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-kube-system" class="outline-2">
+<h2 id="kube-system"><span class="section-number-2">4</span> kube-system</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+<code>kube-system</code> is the namespace for running system wide features, mostly network
+related. 
+</p>
+</div>
+<div id="outline-container-src%2Fkube-system%2Fkustomization.yaml" class="outline-3">
+<h3 id="src%2Fkube-system%2Fkustomization.yaml"><span class="section-number-3">4.1</span> src/kube-system/kustomization.yaml</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+Each namespace (including <code>kube-system</code>) needs a file called
+<code>kustomization.yaml</code>, which contains a list of all the YAML manifests for the
+namespace. As you add additional manifests to <code>kube-system</code>, you must add
+references here:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-yaml"><span style="color: #7590db;">apiVersion</span>: kustomize.config.k8s.io/v1beta1
+<span style="color: #7590db;">kind</span>: Kustomization
+<span style="color: #7590db;">resources</span>:
+- traefik.crd.yaml
+- traefik.pvc.yaml
+- traefik.rbac.yaml
+- traefik.daemonset.yaml
+- traefik.whoami.yaml
 </pre>
 </div>
 </div>
 </div>
 
+<div id="outline-container-kube-system--Traefik" class="outline-3">
+<h3 id="kube-system--Traefik"><span class="section-number-3">4.2</span> Traefik</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+<a href="https://doc.traefik.io/traefik/">Traefik</a> is a reverse proxy that will allow HTTP and TCP ingress to your cluster
+pods, thus allowing the public internet access to your container services. With
+k3s + traefik there is no requirement for any external load balancer.
+</p>
+
+<p>
+Listed here are all of the configuration variables needed for Traefik and all
+of the YAML manifests to apply. This makes use of named code blocks that are
+referenced elsewhere, via <a href="https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax">NoWeb syntax</a>. (ie. <code>&lt;&lt;TRAEFIK_ACME_EMAIL&gt;&gt;</code>).
+</p>
+</div>
+
 <div id="outline-container-src%2Fkube-system%2Ftraefik.crd.yaml" class="outline-4">
-<h4 id="src%2Fkube-system%2Ftraefik.crd.yaml"><span class="section-number-4">4.3.7</span> src/kube-system/traefik.crd.yaml</h4>
-<div class="outline-text-4" id="text-4-3-7">
+<h4 id="src%2Fkube-system%2Ftraefik.crd.yaml"><span class="section-number-4">4.2.1</span> src/kube-system/traefik.crd.yaml</h4>
+<div class="outline-text-4" id="text-4-2-1">
 <p>
 Traefik supports Kubernetes by way of creating new kubernetes resource types:
 <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/">Custom Resource Definitions (CRD)</a>. Basically its a declarative mapping between
@@ -1305,8 +1312,8 @@ Org document, even if its a bit long:
 </div>
 </div>
 <div id="outline-container-src%2Fkube-system%2Ftraefik.rbac.yaml" class="outline-4">
-<h4 id="src%2Fkube-system%2Ftraefik.rbac.yaml"><span class="section-number-4">4.3.8</span> src/kube-system/traefik.rbac.yaml</h4>
-<div class="outline-text-4" id="text-4-3-8">
+<h4 id="src%2Fkube-system%2Ftraefik.rbac.yaml"><span class="section-number-4">4.2.2</span> src/kube-system/traefik.rbac.yaml</h4>
+<div class="outline-text-4" id="text-4-2-2">
 <p>
 RBAC is <a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/">Role Based Authentication Control</a> and it grants Traefik extra privileges
 to watch the state of your cluster, and see when pods are created.
@@ -1389,8 +1396,8 @@ to watch the state of your cluster, and see when pods are created.
 </div>
 </div>
 <div id="outline-container-src%2Fkube-system%2Ftraefik.pvc.yaml" class="outline-4">
-<h4 id="src%2Fkube-system%2Ftraefik.pvc.yaml"><span class="section-number-4">4.3.9</span> src/kube-system/traefik.pvc.yaml</h4>
-<div class="outline-text-4" id="text-4-3-9">
+<h4 id="src%2Fkube-system%2Ftraefik.pvc.yaml"><span class="section-number-4">4.2.3</span> src/kube-system/traefik.pvc.yaml</h4>
+<div class="outline-text-4" id="text-4-2-3">
 <p>
 a <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims">PersistentVolumeClaim</a> allocates a permanent volume for a Pod. This is one is
 for 100MB to store the Traefik <code>acme.json</code> file.
@@ -1414,8 +1421,8 @@ for 100MB to store the Traefik <code>acme.json</code> file.
 </div>
 </div>
 <div id="outline-container-src%2Fkube-system%2Ftraefik.daemonset.yaml" class="outline-4">
-<h4 id="src%2Fkube-system%2Ftraefik.daemonset.yaml"><span class="section-number-4">4.3.10</span> src/kube-system/traefik.daemonset.yaml</h4>
-<div class="outline-text-4" id="text-4-3-10">
+<h4 id="src%2Fkube-system%2Ftraefik.daemonset.yaml"><span class="section-number-4">4.2.4</span> src/kube-system/traefik.daemonset.yaml</h4>
+<div class="outline-text-4" id="text-4-2-4">
 <p>
 A <a href="https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/">DaemonSet</a> is one method of deployment in Kubernetes (others being <a href="https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/">StatefulSet</a>
 and <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a>). DaemonSet is cool because it replicates a given pod on to every
@@ -1495,11 +1502,11 @@ to direct traffic to any other node.
 </div>
 
 <div id="outline-container-src%2Fkube-system%2Ftraefk.whoami.yaml" class="outline-4">
-<h4 id="src%2Fkube-system%2Ftraefk.whoami.yaml"><span class="section-number-4">4.3.11</span> src/kube-system/traefk.whoami.yaml</h4>
-<div class="outline-text-4" id="text-4-3-11">
+<h4 id="src%2Fkube-system%2Ftraefk.whoami.yaml"><span class="section-number-4">4.2.5</span> src/kube-system/traefk.whoami.yaml</h4>
+<div class="outline-text-4" id="text-4-2-5">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It listens to the
-domain <a href="#org2d4784c">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
+domain <a href="#org41a925e">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
 </p>
 
 <div class="org-src-container">
@@ -1577,8 +1584,8 @@ domain <a href="#org2d4784c">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.exa
 </div>
 </div>
 <div id="outline-container-Deploy%20Traefik" class="outline-4">
-<h4 id="Deploy%20Traefik"><span class="section-number-4">4.3.12</span> Deploy Traefik</h4>
-<div class="outline-text-4" id="text-4-3-12">
+<h4 id="Deploy%20Traefik"><span class="section-number-4">4.2.6</span> Deploy Traefik</h4>
+<div class="outline-text-4" id="text-4-2-6">
 <p>
 After setting the config, tangle the config by pressing <code>C-c C-v t</code>. Then
 deploy Traefik via kubectl:
@@ -1598,8 +1605,8 @@ time.
 </div>
 
 <div id="outline-container-Test%20Traefik%20whoami%20service" class="outline-4">
-<h4 id="Test%20Traefik%20whoami%20service"><span class="section-number-4">4.3.13</span> Test Traefik whoami service</h4>
-<div class="outline-text-4" id="text-4-3-13">
+<h4 id="Test%20Traefik%20whoami%20service"><span class="section-number-4">4.2.7</span> Test Traefik whoami service</h4>
+<div class="outline-text-4" id="text-4-2-7">
 <p>
 Test with TLS verification off:
 </p>
@@ -1619,7 +1626,7 @@ Test with TLS verification on:
 </div>
 
 <p>
-TLS will not verify until you use the production <a href="#org7020111">TRAEFIK_ACME_SERVER</a>.
+TLS will not verify until you use the production <a href="#org75c9e63">TRAEFIK_ACME_SERVER</a>.
 </p>
 </div>
 </div>
@@ -1702,7 +1709,7 @@ easily mirror these repositories to external hosts like GitHub.
 <h4 id="GITEA_DOMAIN"><span class="section-number-4">5.4.1</span> GITEA_DOMAIN</h4>
 <div class="outline-text-4" id="text-5-4-1">
 <div class="org-src-container">
-<pre class="src src-config" id="orgfa433ad">git.k3s.example.com
+<pre class="src src-config" id="org062c398">git.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1714,7 +1721,7 @@ easily mirror these repositories to external hosts like GitHub.
 The size of the postgres database volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org26280e1">5Gi
+<pre class="src src-config" id="orgba4f374">5Gi
 </pre>
 </div>
 </div>
@@ -1726,7 +1733,7 @@ The size of the postgres database volume for gitea:
 The size of the data volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgaa8ce02">5Gi
+<pre class="src src-config" id="org3a37eef">5Gi
 </pre>
 </div>
 </div>
@@ -1739,7 +1746,7 @@ The size of the data volume for gitea:
 name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org93b8ca4">root
+<pre class="src src-config" id="orgebcb90e">root
 </pre>
 </div>
 </div>
@@ -1751,7 +1758,7 @@ name.
 <code>GITEA_EMAIL</code> is the admin account email address:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org1397a78">root@example.com
+<pre class="src src-config" id="org33e5e94">root@example.com
 </pre>
 </div>
 </div>
@@ -2140,7 +2147,7 @@ accidentally get published in this Org file.
 </p>
 
 <p>
-Now you can login to your domain at <a href="https://git">https://git</a>.<a id="org9b6043a"></a> 
+Now you can login to your domain at <a href="https://git">https://git</a>.<a id="org70f7024"></a> 
 </p>
 </div>
 </div>
@@ -2271,7 +2278,7 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 <h3 id="FLUX_REPO_NAME"><span class="section-number-3">6.2</span> FLUX_REPO_NAME</h3>
 <div class="outline-text-3" id="text-6-2">
 <div class="org-src-container">
-<pre class="src src-config" id="org0a1272f">literate-k3s
+<pre class="src src-config" id="org183e847">literate-k3s
 </pre>
 </div>
 </div>
@@ -2280,7 +2287,7 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 <h3 id="FLUX_GIT_REMOTE"><span class="section-number-3">6.3</span> FLUX_GIT_REMOTE</h3>
 <div class="outline-text-3" id="text-6-3">
 <div class="org-src-container">
-<pre class="src src-config" id="org75d10d6">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+<pre class="src src-config" id="orgc9a0b96">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
 </pre>
 </div>
 </div>
@@ -2323,7 +2330,7 @@ and keep the cluster in sync with its state.
 
 <p>
 On Gitea, click the <code>+</code> icon in the upper right corner to create a new <code>New
-Repository</code>. Call the new repository the same as <a href="#org0a1272f">FLUX_REPO_NAME</a>. 
+Repository</code>. Call the new repository the same as <a href="#org183e847">FLUX_REPO_NAME</a>. 
 </p>
 
 <p>
@@ -2584,7 +2591,7 @@ packaged very well, so I instead opted to copy them here.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: EnigmaCurry</p>
-<p class="date">Created: 2021-02-01 Mon 11:50</p>
+<p class="date">Created: 2021-02-01 Mon 15:26</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

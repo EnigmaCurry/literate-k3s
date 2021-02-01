@@ -8,17 +8,17 @@
 #+INFOJS_OPT: view:showall toc:t ltoc:above mouse:underline buttons:0 path:css/build/all.min.js
 
 #+BEGIN_EXPORT html
-<a class="github-fork-ribbon" href="https://github.com/EnigmaCurry/literate-k3s" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a> 
+<a class="github-fork-ribbon" href="https://github.com/EnigmaCurry/literate-k3s" 
+  data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a> 
 #+END_EXPORT
-
 
 * Literate K3s cluster with Org-Mode and GitOps
 ** Introduction
-Literate Programming is a style of computer programming where you "weave"
-together: code, configuration, prose documentation, and program results/output,
-all into one single readable document. If you use a Literate Programming style,
-you will never forget to document how your program works, because your
-documentation /is/ your program.
+Literate Programming is a style of computer programming where you "weave
+together" code, configuration, prose text, and program results/output, all into
+a readable document; sometimes referred to as Executable Documentation. If you
+use a Literate Programming style, you will never forget to document how your
+program works, because your documentation /is/ your program.
 
 [[https://k3s.io/][K3s]] is a distribution of Kubernetes, which is easy to deploy to many kinds of
 computer systems, be it on bare-metal, or virtual machine, or in the cloud. It
@@ -27,16 +27,17 @@ even run on a single node with at least 2GB or more of RAM (4GB recommended).
 
 This file is an [[https://orgmode.org][org-mode]] and [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] document (or if you're reading this
 online, you're probably reading the exported HTML version. You may find [[attachment:k3s.org][the
-original Org source here]]). It contains the entire configuration and
-documentation for creating a [[https://k3s.io/][K3s]] cluster, from scratch, and the means to
-configure and maintain your deployments over time. Essentially, this org file
-becomes your ultimate source of configuration for your entire cluster: to make a
-change to your cluster, you first need to make the change in this file. You
-should open this file in Emacs, edit it in org-mode, run the setup commands
-described, and =tangle= your source files. A minimal tutorial on using Emacs
-with org-babel is included, but this expects some pre-existing Emacs knowledge.
+original Org source here]]). This file, and one other file named [[attachment:config.org][config.org]],
+contain the entire configuration, and documentation, for creating a [[https://k3s.io/][K3s]] cluster,
+from scratch, and the means with which to maintain your deployments over time.
+Essentially, this set of org files becomes your ultimate source of configuration
+for your entire cluster: to make a change to your cluster, you first need to
+make the change in this file. You should open this file in Emacs, edit it in
+org-mode, run the setup commands described, and =tangle= your source files. A
+minimal tutorial on using Emacs with org-babel is included, but this expects
+some pre-existing Emacs knowledge.
 
-Having your entire cluster config in one file may sound like it would be
+Having your entire cluster config in one or two files may sound like it would be
 overwhelming, but there is another trick up Org's sleeve: =tangling=. If
 bringing both code and documentation together is called =weaving=, taking them
 apart again is called =tangling=. Tangling is a process, which takes the literal
@@ -222,40 +223,37 @@ git clone https://github.com/EnigmaCurry/literate-k3s.git \
 #+end_src
 
 (This sets the upstream remote name to =EnigmaCurry=. You'll use the default
-=origin= later for your own self-hosted gitea remote.)
+=origin= remote later, for your own self-hosted gitea repository.)
+
+Now open up =${HOME}/git/literate-k3s/config.org= inside of Emacs.
+
+ * =config.org= is your config file that feeds configuration variables into
+   k3s.org (this file).
+ * You should review all of the code blocks in =config.org=, and edit those
+   variables appropriately for your environment.
 
 Now open up =${HOME}/git/literate-k3s/k3s.org= inside of Emacs.
 
- * Start with the [[Core Config][Core Config]] section. Edit the variable =CLUSTER=, which is
-   your (sub-)domain name you wish to give to the cluster. (eg.
-   =k3s.example.com=).
- * Next go to the section for [[kube-system setup][kube-system setup]], and run the code block there to
-   create the =kube-system= directory.
- * Now go to the [[kube-system][kube-system]] section and edit all the variables there, most
-   importantly =TRAEFIK_ACME_EMAIL=.
  * Run Tangle - Press =C-c C-v t= or =M-x org-babel-tangle= to create all of the
    derivative files into the =src/= directory.
- * Run the code blocks in the [[Deploy Traefik][Deploy Traefik]].
+ * Run the code blocks in the [[Deploy Traefik][Deploy Traefik]] section.
 
-Follow the same procedure for all the rest of the sections:
+Follow these general procedures going forward:
 
  1. For each new namespace, you create a new directory in =src/=.
- 2. Run code blocks in each =Setup= sections once, only for initial setup.
- 3. Edit variables in the =Config= sections, anytime you need to change a setting. 
- 4. After changing config, press =C-c C-v t=, to tangle the code blocks, which
-    creates the YAML manifests, and other files. If an Org sub-tree heading is
-    marked with =COMMENT=, it is disabled, and no blocks under this heading will
-    be tangled, and it will also not appear in the HTML export. You can toggle a
-    sub-tree =COMMENT= by pressing =C-c ;=.
- 5. Follow any other instructions and code-blocks that the section may provide.
-    Usually this will be to commit the tangled files to git, and push to the
-    repository (so that Flux can handle the changes). In other cases, like
-    Traefik (which is setup before Flux is installed) may have you run manual
-    =kubectl= commands.
+ 2. Run code blocks as directed in each section, usually only as one-time setup.
+ 3. Make new variables in =config.org= and reference them in other code blocks via
+    [[https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax][NoWeb]] syntax, for example: =<<variable_name>>=.
+ 4. After changing any config, press =C-c C-v t=, to tangle the code blocks,
+    which creates the YAML manifests, and other files. If an Org sub-tree
+    heading is marked with =COMMENT=, it is disabled, and no blocks under this
+    heading will be tangled, and it will also not appear in the HTML export. You
+    can toggle a sub-tree =COMMENT= by pressing =C-c ;=.
+ 5. Commit changed files to git and push to the remote repository.
 
 If you already have a cluster, the generated YAML files written to the =src=
-directory can now be applied to your cluster. But if you don't have a cluster
-yet, read on.
+directory can now be applied to your cluster. But if you don't yet have a
+cluster, read on.
 
 ** Workstation tools
 To operate kubernetes, you need to install lots of different command line tools
@@ -336,29 +334,19 @@ k3sup install --host <<CLUSTER>> --user <<CLUSTER_SSH_USER>> \
 kubectl --kubeconfig <<KUBE_CONFIG>> get nodes
  #+end_src
 
-* Core Config
-This section will include all of the core configuration values, referenced by
-all the deployments. Each configuration has a named code block, which you can
-edit the value of, and can then be referenced in other code blocks via [[https://orgmode.org/manual/Noweb-Reference-Syntax.html][NoWeb
-syntax]]. (ie. =<<name-of-variable-block>>=)
-** CLUSTER
-=CLUSTER= is the domain name of your cluster:
-#+name: CLUSTER
-#+begin_src config :eval no
-k3s.example.com
-#+end_src
-** CLUSTER_SSH_USER
-=CLUSTER_SSH_USER= is the admin SSH account of the cluster.
-#+name: CLUSTER_SSH_USER
-#+begin_src config :noweb yes :eval no
-root
-#+end_src
-** KUBE_CONFIG
-=KUBE_CONFIG= is the local path to the kubectl config file
-#+name: KUBE_CONFIG
-#+begin_src config :noweb yes :eval no
-${HOME}/.kube/<<CLUSTER>>-config
-#+end_src
+* Config
+This section contains all of the variables used for all of the templates. These
+are imported from [[file:config.org][config.org]]
+#+INCLUDE: "./config.org"
+** Derived Config Variables
+These are variables that are derived from other variables in [[file:config.org][config.org]], using
+NoWeb syntax. You probably don't need to customize these:
+*** KUBE_CONFIG
+ =KUBE_CONFIG= is the local path to the kubectl config file
+ #+name: KUBE_CONFIG
+ #+begin_src config :noweb yes :eval no
+ ${HOME}/.kube/<<CLUSTER>>-config
+ #+end_src
 
 * Sealed Secrets
 This Org file is not an appropriate place to store private things like passwords
@@ -367,13 +355,6 @@ should be stored in Secrets, controlled only by your cluster. To keep secrets
 local to this config, the use of [[https://github.com/bitnami-labs/sealed-secrets][Sealed Secrets]] allows us to store an encrypted
 copy of the secrets in our git repository. Only the cluster can decrypt sealed
 secrets.
-** Sealed Secrets Config
-
-#+name: SEALED_SECRETS_VERSION
-#+begin_src config :noweb yes :eval no
-v0.14.1
-#+end_src
-
 ** Install bitnami-labs/sealed-secrets to the cluster
 In [[Workstation tools][Workstation tools]] you already installed the command line client. Now you need
 to install it to the cluster:
@@ -384,15 +365,10 @@ kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/downloa
 * kube-system
 =kube-system= is the namespace for running system wide features, mostly network
 related. 
-** kube-system setup
-Create the =kube-system= namespace directory:
-#+begin_src shell :noweb yes :eval never-export :exports code
-mkdir -p src/kube-system
-#+end_src
 ** src/kube-system/kustomization.yaml
 Each namespace (including =kube-system=) needs a file called
 =kustomization.yaml=, which contains a list of all the YAML manifests for the
-namespace. As you add addtional manifests to =kube-system=, you must add
+namespace. As you add additional manifests to =kube-system=, you must add
 references here:
 
 #+begin_src yaml :noweb yes :eval no :tangle src/kube-system/kustomization.yaml
@@ -414,64 +390,6 @@ resources:
  Listed here are all of the configuration variables needed for Traefik and all
  of the YAML manifests to apply. This makes use of named code blocks that are
  referenced elsewhere, via [[https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax][NoWeb syntax]]. (ie. =<<TRAEFIK_ACME_EMAIL>>=).
-
-*** TRAEFIK_VERSION
- The version number of Traefik to install (eg. =2.3=).
- #+name: TRAEFIK_VERSION
- #+begin_src config :noweb yes :eval no
- v2.3
- #+end_src
-*** TRAEFIK_IMAGE
- =TRAEFIK_IMAGE= is the name:tag of the container image for traefik:
- #+name: TRAEFIK_IMAGE
- #+begin_src config :noweb yes :eval no
- traefik:<<TRAEFIK_VERSION>>
- #+end_src
-*** TRAEFIK_ACME_EMAIL
- =TRAEFIK_ACME_EMAIL= is the email address to register with the ACME service
- prodider. 
-#+name: TRAEFIK_ACME_EMAIL
-#+begin_src config :eval no
-you@example.com
-#+end_src
-*** TRAEFIK_ACME_SERVER
- =TRAEFIK_ACME_SERVER= is the URL for the Let's Encrypt API (Or other ACME
- provider). 
- #+name: TRAEFIK_ACME_SERVER
- #+begin_src config :noweb yes :eval no
- https://acme-staging-v02.api.letsencrypt.org/directory
- #+end_src
-
- For production, use the =acme-v02= Lets Encrypt server :
-
- : https://acme-v02.api.letsencrypt.org/directory
-
- For staging, use the =acme-staging-v02= Let's Encrypt server :
-
- : https://acme-staging-v02.api.letsencrypt.org/directory
-
- The difference, is that the staging server has much more generous [[https://letsencrypt.org/docs/rate-limits/][rate limiting]],
- but will only provide certificates for testing purposes (ie, they appear INVALID
- in web browsers.) You really should start with the staging server for new
- deployments, because you may find you need to recreate the whole server a few
- times, and if you don't backup and restore the =acme.json= file that Traefik
- needs, it will request the certificates be issued again, incurring the wrath of
- the rate limit, which blocks you out for a week.
-
-*** TRAEFIK_LOG_LEVEL
- =TRAEFIK_LOG_LEVEL= is the filter level on the traefik log.
- #+name: TRAEFIK_LOG_LEVEL
- #+begin_src config :noweb yes :eval no
- INFO
- #+end_src
-*** TRAEFIK_WHOAMI_DOMAIN
- [[https://github.com/traefik/whoami][traefik/whoami]] can be deployed to test Traefik functionality. It needs its own
- domain name to respond to. =TRAEFIK_WHOAMI_DOMAIN= is the subdomain that the
- whoami service responds to.
- #+name: TRAEFIK_WHOAMI_DOMAIN
- #+begin_src config :noweb yes :eval no
- whoami.<<CLUSTER>>
- #+end_src
 
 *** src/kube-system/traefik.crd.yaml
 Traefik supports Kubernetes by way of creating new kubernetes resource types:
@@ -728,7 +646,7 @@ spec:
         - --certificatesresolvers.default.acme.caserver=<<TRAEFIK_ACME_SERVER>>
         - --certificatesresolvers.default.acme.email=<<TRAEFIK_ACME_EMAIL>>
         - --entrypoints.ssh.address=:2222
-        image: <<TRAEFIK_IMAGE>>
+        image: traefik:<<TRAEFIK_VERSION>>
         name: traefik-ingress-lb
         volumeMounts:
         - name: traefik-data
@@ -1578,8 +1496,20 @@ Here is the startup code block that =Local Variables= references:
 
 #+name: k3s-org-emacs-load
 #+begin_src elisp :noweb yes :eval never-export :results none
+<<literate-k3s-reload-config-before-tangle>>
 <<enable-export-on-save>>
 <<export-html-with-useful-ids>>
+#+end_src
+
+Here is code to reload config.org before tangling:
+
+#+name: literate-k3s-reload-config-before-tangle
+#+begin_src elisp :exports code :eval never-export :results none
+(defun literate-k3s-reload-config ()
+  (org-babel-lob-ingest "config.org"))
+(add-hook 'after-save-hook 'literate-k3s-reload-config)
+(add-hook 'org-babel-pre-tangle-hook 'literate-k3s-reload-config)
+(literate-k3s-reload-config)
 #+end_src
 
 Here is the code to automatically export HTML whenver this file is saved:
@@ -1700,4 +1630,3 @@ Keep this at the very bottom of the file:
 # Local Variables:
 # eval: (progn (org-babel-goto-named-src-block "k3s-org-emacs-load") (org-babel-execute-src-block) (outline-hide-sublevels 1))
 # End:
-
