@@ -15,53 +15,69 @@
 * Literate K3s cluster with Org-Mode and GitOps
 ** Introduction
 Literate Programming is a style of computer programming where you "weave
-together" code, configuration, prose text, and program results/output, all into
-a readable document; sometimes referred to as Executable Documentation. If you
-use a Literate Programming style, you will never forget to document how your
-program works, because your documentation /is/ your program.
+together" code, configuration, prose text, and program results/output, presented
+as a single readable document; sometimes referred to as Executable Documentation
+or Reproducible Research. If you use a Literate Programming style, you will
+never forget to document how your program works, because your documentation /is/
+your program source code.
 
-[[https://k3s.io/][K3s]] is a distribution of Kubernetes, which is easy to deploy to many kinds of
-computer systems, be it on bare-metal, or virtual machine, or in the cloud. It
-is exceedingly useful as a *self-hosted* variant of Kubernetes, which you can
-even run on a single node with at least 2GB or more of RAM (4GB recommended).
+[[https://k3s.io/][K3s]] is a distribution of Kubernetes (software for running Docker containers),
+which is easy to deploy to many kinds of computer systems, be it on bare-metal,
+or virtual machine, or in the cloud. It is exceedingly useful as a *self-hosted*
+variant of Kubernetes, which you can even run on a single node with at least 2GB
+or more of RAM (4GB recommended). The cluster you'll create will be suitable for
+public web services, served through [[https://doc.traefik.io/traefik/][Traefik]] ingress, and automatic TLS.
 
-This file is an [[https://orgmode.org][org-mode]] and [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] document (or if you're reading this
-online, you're probably reading the exported HTML version. You may find [[attachment:k3s.org][the
-original Org source here]]). This file, and one other file named [[attachment:config.org][config.org]],
-contain the entire configuration, and documentation, for creating a [[https://k3s.io/][K3s]] cluster,
-from scratch, and the means with which to maintain your deployments over time.
-Essentially, this set of org files becomes your ultimate source of configuration
-for your entire cluster: to make a change to your cluster, you first need to
-make the change in this file. You should open this file in Emacs, edit it in
-org-mode, run the setup commands described, and =tangle= your source files. A
+This is a collection of [[https://orgmode.org][org-mode]] and [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] documents. (Or if you're reading
+this online, you're probably reading the exported HTML version. You can find
+here the original [[attachment:k3s.org][k3s.org]] and [[attachment:config.org][config.org]] files used to generate this page.)
+These contain the entire code/documentation/config, for creating a [[https://k3s.io/][K3s]] cluster,
+from scratch, and they are the means with which to create and edit YAML
+manifests for your cluster. Essentially, this set of org files becomes your
+ultimate source of configuration for your entire cluster: to make a change to
+your cluster, you first need to make the change in the documentation. You should
+open these files (=k3s.org= and =config.org=) in Emacs, edit them in org-mode,
+run the setup commands described inside, and =tangle= the source files. A
 minimal tutorial on using Emacs with org-babel is included, but this expects
 some pre-existing Emacs knowledge.
 
-Having your entire cluster config in one or two files may sound like it would be
-overwhelming, but there is another trick up Org's sleeve: =tangling=. If
-bringing both code and documentation together is called =weaving=, taking them
-apart again is called =tangling=. Tangling is a process, which takes the literal
-snippets of code from inside this documentation file, and exports them out to
-individual files, somewhere else on your system. When you tangle, all of the
-snippets in this file will overwrite all of the external files that they are
-associated with. So, although the ultimate config is contained in this one Org
-file, you will be able to see its exported form, in the various external places,
-as separate files. You should treat these generated files as compiled/read-only,
-because any changes that you make to them would get over-written, the next time
-you run the =tangle= process. If you put these external files into a git
-repository, and make small regular commits, it will be much easier to track the
-changes in each file.
+Having your entire cluster config inside of documentation may seem odd or
+overwhelming, (or it may sound great!) but there is another trick up Org's
+sleeve: =tangling=. If bringing both code and documentation together is called
+=weaving=, taking them apart again is called =tangling=. Tangling is an
+automatic process, which takes the literal snippets of code found inside these
+documentation files, and exports them out to normal individual files, somewhere
+else on your system. When you tangle, all of the code blocks in this file will
+overwrite all of the external files that they are associated with (those marked
+with the =:tangle FILE= code block header, writes itself to =FILE=). So,
+although the ultimate code and config is sourced from this documentation, you
+will also be able to see the code in its exported form, in the various external
+places, as separate files. You should treat these generated files as
+compiled/read-only, because any changes that you make to them would get
+over-written, the next time you =tangle= the documentation. However, if you put
+those external files into a git repository, and make small regular commits, it
+will become much easier to track the changes in each file over time.
 
-[[https://github.com/fluxcd/flux2][Flux version 2]] is a Continuous Delivery system, that synchronizes the state of
-your cluster (and all deployments) from the state of YAML manifest files in a
-git repository. With Flux, you never run cluster commands like =kubectl= or
-=helm= directly, instead you commit these manifest files to your Flux git
-repository, and Flux applies the changes to the cluster, on your behalf. There
-will be a little bit of setup that you have to do manually with kubectl, in
-order to bootstrap Flux, but once Flux is running on your cluster, from that
-point on, you can control your entire cluster state simply by =tangling= this
-file, commiting the generated files to git, and pushing to the remote
-repository. Flux handles the actual upgrade for you, on git push.
+It is these derivative files (a collection of YAML manifests), that you generate
+via =tangle=, and put in a git repository, which become the source of truth for
+your cluster state, through Flux. [[https://github.com/fluxcd/flux2][Flux version 2]] is a Continuous Delivery
+system, that synchronizes the state of your cluster (and all deployments) from
+the state of YAML manifest files in this git repository. With Flux, you never
+run cluster commands like =kubectl apply= or =helm install= manually, instead
+you commit these manifest files to the git repository, =git push=, and Flux
+applies the changes to the cluster, on your behalf. There will be a little bit
+of setup that you have to do manually with kubectl, in order to bootstrap Flux,
+but once Flux is running on your cluster, from that point on, you can control
+your entire cluster state simply by =tangling= this file, commiting the
+generated files to git, and pushing to the remote repository. Flux is
+continuously monitoring this repository for changes (checks every 1 minute) and
+automatically applies them.
+
+Flux supports reading manifests from any of the following formats: Vanilla K8s
+YAML, [[https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/][Kustomize]] YAML (used extensively in this document), and [[https://helm.sh/docs/topics/charts/][Helm Charts]], so
+you don't necessarily need to store /all/ of the YAML in this org file, you can
+still package things in an external repository, and just provide the
+configuration here in this document. It's up to you how deep this goes...
 
 ** Using Emacs, org-mode, and babel
 *** Install and config
@@ -129,6 +145,8 @@ n  -- to ignore the local variables list.
 
  See the [[https://orgmode.org/manual/Evaluating-Code-Blocks.html][Evaluating Code Blocks]] section of the Org manual, but basically it's
  like this:
+
+[[https://ec-share.nyc3.digitaloceanspaces.com/emacs-org-mode-evaluate-code-block.gif]]
 
   1. Code blocks start with =#+begin_src= and end with =#+end_src=.
   2. Put your cursor inside the code block (anywhere between =begin_src= and
