@@ -372,6 +372,12 @@ NoWeb syntax. You probably don't need to customize these:
  ${HOME}/.kube/<<CLUSTER>>-config
  #+end_src
 
+*** FLUX_GIT_REMOTE
+This is the correct git remote URL if you are using self-hosted Gitea:
+ #+name: FLUX_GIT_REMOTE
+ #+begin_src config :noweb yes :eval no
+ ssh://git@git.<<CLUSTER>>:2222/<<GITEA_USER>>/<<FLUX_REPO_NAME>>.git
+ #+end_src
 * Sealed Secrets
 This Org file is not an appropriate place to store private things like passwords
 or API tokens, because it may accidentally be published to the web. These things
@@ -1294,16 +1300,6 @@ flux install --version=latest --arch=amd64 --export > src/flux-system/gotk-compo
 #+end_src
 
 #+RESULTS:
-** FLUX_REPO_NAME
-#+name: FLUX_REPO_NAME
-#+begin_src config :noweb yes :eval no
-literate-k3s
-#+end_src
-** FLUX_GIT_REMOTE
-#+name: FLUX_GIT_REMOTE
-#+begin_src config :noweb yes :eval no
-ssh://git@git.<<CLUSTER>>:2222/<<GITEA_USER>>/<<FLUX_REPO_NAME>>.git
-#+end_src
 ** src/flux-system/kustomization.yaml
 #+begin_src yaml :noweb yes :eval no :tangle src/flux-system/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -1342,17 +1338,19 @@ git commit -m "Initial commit for new cluster <<CLUSTER>>"
 
 Push the changes to the remote:
 #+begin_src shell :noweb yes :eval never-export :exports code
-git push -u origin master
+git push -u origin
 #+end_src
 
 ** Tell flux to watch the infrastructure repository
 This next command is interactive only, so you must run it in a separate
-terminal. You also must replace =<<FLUX_REPO_NAME>>= and =<<FLUX_GIT_REMOTE>>=
-yourself, with the same values as in your config.
+terminal. Copy and paste it, but you also must replace =<<KUBE_CONFIG>>=,
+=<<FLUX_REPO_NAME>>=, and =<<FLUX_GIT_REMOTE>>= manually, with the same values
+as in your config.
 
 Create the =Source= resource:
 
 #+begin_example
+export KUBECONFIG=<<KUBE_CONFIG>>
 flux create source git <<FLUX_REPO_NAME>> \
   --url=<<FLUX_GIT_REMOTE>> \
   --ssh-key-algorithm=rsa \
@@ -1388,13 +1386,15 @@ you should check the logs of these two controllers:
 Check the logs of the flux Source controller:
 
 #+begin_src shell :noweb yes :eval never-export :exports code :results output
-kubectl -n flux-system logs deployment/source-controller | tail -n 10
+kubectl --kubeconfig <<KUBE_CONFIG>> -n flux-system \
+        logs deployment/source-controller | tail -n 10
 #+end_src
 
 Check the logs of the flux Kustomize controller:
 
 #+begin_src shell :noweb yes :eval never-export :exports code :results output
-kubectl -n flux-system logs deployment/source-controller | tail -n 10
+kubectl --kubeconfig <<KUBE_CONFIG>> -n flux-system \
+        logs deployment/source-controller | tail -n 10
 #+end_src
 ** Test adding a new manfiest to the git repository
 OK now, in theory, you are done using =kubectl apply=. From now on, all you have

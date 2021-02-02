@@ -72,3 +72,11 @@ whoami service responds to.
 whoami.k3s.example.com
 #+end_src
 
+* Flux
+** FLUX_REPO_NAME
+The name of the repository containing these org files, and from which flux
+reads. Not including the domain, just the name.
+#+name: FLUX_REPO_NAME
+#+begin_src config :noweb yes :eval no
+literate-k3s
+#+end_src
