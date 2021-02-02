@@ -26,14 +26,14 @@ which is easy to deploy to many kinds of computer systems, be it on bare-metal,
 or virtual machine, or in the cloud. It is exceedingly useful as a *self-hosted*
 variant of Kubernetes, which you can even run on a single node with at least 2GB
 or more of RAM (4GB recommended). The cluster you'll create will be suitable for
-public web services, served through [[https://doc.traefik.io/traefik/][Traefik]] ingress, and automatic TLS. It's
+public web services, served through [[https://doc.traefik.io/traefik/][Traefik]] ingress, and automatic TLS. Its
 focus is on the smaller scale, a single node, using Kubernetes more as a
 packaging thing, rather than a clustering thing, but you can easily build this
 up, and get true high availability if you desire, its just not the focus of this
 presentation. If you're on the even smaller scale (less than 2GB of RAM) this
-really may not be appropriate, Kubernetes is a memory hog compared to vanilla
-Docker on these small systems (I recommend Podman with Systemd services
-instead.)
+really may not be appropriate for you: Kubernetes (even k3s) is a memory hog
+compared to vanilla Docker on these small systems (I recommend Podman with
+Systemd services instead.)
 
 This is a collection of [[https://orgmode.org][org-mode]] and [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] documents. (Or if you're reading
 this online, you're probably reading the exported HTML version. You can find
@@ -61,8 +61,8 @@ although the ultimate code and config is sourced from this documentation, you
 will also be able to see the code in its exported form, in the various external
 places, as separate files. You should treat these generated files as
 compiled/read-only, because any changes that you make to them would get
-over-written, the next time you =tangle= the documentation. However, if you put
-those external files into a git repository, and make small regular commits, it
+over-written, the next time you =tangle= the documentation. However, if you keep
+those external files in a git repository, and make small regular commits, it
 will become much easier to track the changes in each file over time.
 
 It is these derivative files (a collection of YAML manifests), that you generate
@@ -87,7 +87,7 @@ still package things in an external repository, and just provide the
 configuration here in this document. It's up to you how deep this goes...
 
 ** Using Emacs, org-mode, and babel
-*** Install and config
+*** Install Emacs and Configure
   * Install [[https://www.gnu.org/software/emacs/][GNU Emacs]] (tested on version 27)
   * Install [[https://orgmode.org/][org-mode]] (tested using latest from MELPA)
   * Open the [[https://orgmode.org/manual/][Org Manual]] and keep it handy as a reference
@@ -145,10 +145,9 @@ n  -- to ignore the local variables list.
 *** Evaluating Code Blocks
  Most code blocks in this document DO NOT need to be evaluated. Instead, this
  document usually relies upon Tangling instead (see next section). However, each
- deployment section has a =Setup= sub-section which includes some code blocks
- that need to be evaluated as an initial setup procedure, only necessary to run
- one time. You do this explicitly, in Emacs, by hand, telling Org mode to
- evaluate each code block.
+ deployment section may include some code blocks that need to be evaluated, as
+ an initial setup procedure, only necessary to run one time. You do this
+ explicitly, in Emacs, by hand, telling Org mode to evaluate each code block.
 
  See the [[https://orgmode.org/manual/Evaluating-Code-Blocks.html][Evaluating Code Blocks]] section of the Org manual, but basically it's
  like this:
@@ -385,7 +384,7 @@ In [[Workstation tools][Workstation tools]] you already installed the command li
 to install it to the cluster:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/<<SEALED_SECRETS_VERSION>>/controller.yaml
+kubectl --kubeconfig <<KUBE_CONFIG>> apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/<<SEALED_SECRETS_VERSION>>/controller.yaml
 #+end_src
 * kube-system
 =kube-system= is the namespace for running system wide features, mostly network
