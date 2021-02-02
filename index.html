@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-02 Tue 11:19 -->
+<!-- 2021-02-02 Tue 11:58 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Literate K3s Cluster</title>
@@ -461,7 +461,14 @@ which is easy to deploy to many kinds of computer systems, be it on bare-metal,
 or virtual machine, or in the cloud. It is exceedingly useful as a <b>self-hosted</b>
 variant of Kubernetes, which you can even run on a single node with at least 2GB
 or more of RAM (4GB recommended). The cluster you'll create will be suitable for
-public web services, served through <a href="https://doc.traefik.io/traefik/">Traefik</a> ingress, and automatic TLS.
+public web services, served through <a href="https://doc.traefik.io/traefik/">Traefik</a> ingress, and automatic TLS. It's
+focus is on the smaller scale, a single node, using Kubernetes more as a
+packaging thing, rather than a clustering thing, but you can easily build this
+up, and get true high availability if you desire, its just not the focus of this
+presentation. If you're on the even smaller scale (less than 2GB of RAM) this
+really may not be appropriate, Kubernetes is a memory hog compared to vanilla
+Docker on these small systems (I recommend Podman with Systemd services
+instead.)
 </p>
 
 <p>
@@ -990,7 +997,7 @@ Core config includes configuration values referenced by all other configs.
 <code>CLUSTER</code> is the domain name of your cluster:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org55a14f1">k3s.example.com
+<pre class="src src-config" id="orga8ea3c9">k3s.example.com
 </pre>
 </div>
 </div>
@@ -1002,7 +1009,7 @@ Core config includes configuration values referenced by all other configs.
 <code>CLUSTER_SSH_USER</code> is the admin SSH account of the cluster.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org35651a2">root
+<pre class="src src-config" id="org8fa72c4">root
 </pre>
 </div>
 </div>
@@ -1011,7 +1018,7 @@ Core config includes configuration values referenced by all other configs.
 <h4 id="SEALED_SECRETS_VERSION"><span class="section-number-4">2.1.3</span> SEALED_SECRETS_VERSION</h4>
 <div class="outline-text-4" id="text-2-1-3">
 <div class="org-src-container">
-<pre class="src src-config" id="orge07e1bb">v0.14.1
+<pre class="src src-config" id="org60b0136">v0.14.1
 </pre>
 </div>
 </div>
@@ -1028,7 +1035,7 @@ Core config includes configuration values referenced by all other configs.
 The version number of Traefik to install (eg. <code>2.3</code>).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgde5aafc">v2.3
+<pre class="src src-config" id="org0e745d1">v2.3
 </pre>
 </div>
 </div>
@@ -1041,7 +1048,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 prodider. 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org1f8cdf4">you@example.com
+<pre class="src src-config" id="org81b6ec9">you@example.com
 </pre>
 </div>
 </div>
@@ -1054,7 +1061,7 @@ prodider.
 provider). 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org85500fe">https://acme-staging-v02.api.letsencrypt.org/directory
+<pre class="src src-config" id="org0477675">https://acme-staging-v02.api.letsencrypt.org/directory
 </pre>
 </div>
 
@@ -1095,7 +1102,7 @@ the rate limit, which blocks you out for a week.
 <code>TRAEFIK_LOG_LEVEL</code> is the filter level on the traefik log.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgf21c86f">INFO
+<pre class="src src-config" id="orge3cd32d">INFO
 </pre>
 </div>
 </div>
@@ -1109,7 +1116,7 @@ domain name to respond to. <code>TRAEFIK_WHOAMI_DOMAIN</code> is the subdomain t
 whoami service responds to.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgdefeabd">whoami.k3s.example.com
+<pre class="src src-config" id="org4fa87a2">whoami.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1130,7 +1137,7 @@ NoWeb syntax. You probably don't need to customize these:
 <code>KUBE_CONFIG</code> is the local path to the kubectl config file
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org91f25d8">${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="orga7023f8">${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1530,7 +1537,7 @@ to direct traffic to any other node.
 <div class="outline-text-4" id="text-4-2-5">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It listens to the
-domain <a href="#orgdefeabd">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
+domain <a href="#org4fa87a2">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
 </p>
 
 <div class="org-src-container">
@@ -1650,7 +1657,7 @@ Test with TLS verification on:
 </div>
 
 <p>
-TLS will not verify until you use the production <a href="#org85500fe">TRAEFIK_ACME_SERVER</a>.
+TLS will not verify until you use the production <a href="#org0477675">TRAEFIK_ACME_SERVER</a>.
 </p>
 </div>
 </div>
@@ -1733,7 +1740,7 @@ easily mirror these repositories to external hosts like GitHub.
 <h4 id="GITEA_DOMAIN"><span class="section-number-4">5.4.1</span> GITEA_DOMAIN</h4>
 <div class="outline-text-4" id="text-5-4-1">
 <div class="org-src-container">
-<pre class="src src-config" id="orgc72347a">git.k3s.example.com
+<pre class="src src-config" id="org0007755">git.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1745,7 +1752,7 @@ easily mirror these repositories to external hosts like GitHub.
 The size of the postgres database volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgc0f7789">5Gi
+<pre class="src src-config" id="orgbce1897">5Gi
 </pre>
 </div>
 </div>
@@ -1757,7 +1764,7 @@ The size of the postgres database volume for gitea:
 The size of the data volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgdee2ced">5Gi
+<pre class="src src-config" id="org2a157c8">5Gi
 </pre>
 </div>
 </div>
@@ -1770,7 +1777,7 @@ The size of the data volume for gitea:
 name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgf9877a2">root
+<pre class="src src-config" id="org8d00804">root
 </pre>
 </div>
 </div>
@@ -1782,7 +1789,7 @@ name.
 <code>GITEA_EMAIL</code> is the admin account email address:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org32d1629">root@example.com
+<pre class="src src-config" id="org2284abb">root@example.com
 </pre>
 </div>
 </div>
@@ -2171,7 +2178,7 @@ accidentally get published in this Org file.
 </p>
 
 <p>
-Now you can login to your domain at <a href="https://git">https://git</a>.<a id="org0731630"></a> 
+Now you can login to your domain at <a href="https://git">https://git</a>.<a id="org1cd308c"></a> 
 </p>
 </div>
 </div>
@@ -2302,7 +2309,7 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 <h3 id="FLUX_REPO_NAME"><span class="section-number-3">6.2</span> FLUX_REPO_NAME</h3>
 <div class="outline-text-3" id="text-6-2">
 <div class="org-src-container">
-<pre class="src src-config" id="org05860c0">literate-k3s
+<pre class="src src-config" id="orga1fd83b">literate-k3s
 </pre>
 </div>
 </div>
@@ -2311,7 +2318,7 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 <h3 id="FLUX_GIT_REMOTE"><span class="section-number-3">6.3</span> FLUX_GIT_REMOTE</h3>
 <div class="outline-text-3" id="text-6-3">
 <div class="org-src-container">
-<pre class="src src-config" id="orge969d8a">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+<pre class="src src-config" id="org7ec4541">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
 </pre>
 </div>
 </div>
@@ -2354,7 +2361,7 @@ and keep the cluster in sync with its state.
 
 <p>
 On Gitea, click the <code>+</code> icon in the upper right corner to create a new <code>New
-Repository</code>. Call the new repository the same as <a href="#org05860c0">FLUX_REPO_NAME</a>. 
+Repository</code>. Call the new repository the same as <a href="#orga1fd83b">FLUX_REPO_NAME</a>. 
 </p>
 
 <p>
@@ -2615,7 +2622,7 @@ packaged very well, so I instead opted to copy them here.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: EnigmaCurry</p>
-<p class="date">Created: 2021-02-02 Tue 11:19</p>
+<p class="date">Created: 2021-02-02 Tue 11:58</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
