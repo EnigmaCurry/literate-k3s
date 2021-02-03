@@ -1,12 +1,12 @@
 These are config values that are applicable cluster wide, imported from
-[[file:config.org][config.org]].
+[[attachment:config.org][config.org]].
 
 * CLUSTER
- =CLUSTER= is the domain name of your cluster:
- #+name: CLUSTER
- #+begin_src config :eval no
- k3s.example.com
- #+end_src
+=CLUSTER= is the domain name of your cluster:
+#+name: CLUSTER
+#+begin_src config :eval no
+k3s.example.com
+#+end_src
 * CLUSTER_SSH_USER
  =CLUSTER_SSH_USER= is the admin SSH account of the cluster.
  #+name: CLUSTER_SSH_USER
@@ -14,8 +14,8 @@ These are config values that are applicable cluster wide, imported from
  root
  #+end_src
 * KUBE_CONFIG
- =KUBE_CONFIG= is the local path to the kubectl config file
- #+name: KUBE_CONFIG
- #+begin_src config :noweb yes :eval no
- ${HOME}/.kube/<<CLUSTER>>-config
- #+end_src
+=KUBE_CONFIG= is the local path to the kubectl config file
+#+name: KUBE_CONFIG
+#+begin_src config :noweb yes :eval no
+${HOME}/.kube/<<CLUSTER>>-config
+#+end_src

@@ -10,7 +10,7 @@ This config automatically redirects HTTP port 80 to HTTPs port 443. TCP port
 
 ** TRAEFIK_ACME_EMAIL
  =TRAEFIK_ACME_EMAIL= is the email address to register with the ACME service
- prodider. 
+ provider. 
 #+name: TRAEFIK_ACME_EMAIL
 #+begin_src config :eval no
 you@example.com

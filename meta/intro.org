@@ -332,6 +332,7 @@ The easiest way of creating a k3s cluster is with [[https://github.com/alexellis
  * Run k3sup to create the cluster:
 
 #+begin_src shell :noweb yes :eval never-export :exports code :results none
+set -e
 mkdir -p ${HOME}/.kube
 k3sup install --host <<CLUSTER>> --user <<CLUSTER_SSH_USER>> \
   --local-path <<KUBE_CONFIG>> --k3s-extra-args '--disable traefik'
@@ -340,7 +341,10 @@ k3sup install --host <<CLUSTER>> --user <<CLUSTER_SSH_USER>> \
  * Wait a minute or two for the cluster to come up.
  * Now test to see if you can connect and output node status:
 
- #+begin_src shell :noweb yes :eval never-export :exports both
-kubectl --kubeconfig=<<KUBE_CONFIG>> get nodes
- #+end_src
+#+begin_src shell :noweb yes :eval never-export :exports both
+echo kubectl --kubeconfig=<<KUBE_CONFIG>> get nodes
+#+end_src
+
+#+RESULTS:
+: kubectl --kubeconfig=/home/ryan/.kube/barrel.rymcg.tech-config get nodes
 
