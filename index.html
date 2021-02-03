@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-02 Tue 21:32 -->
+<!-- 2021-02-02 Tue 21:40 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Literate K3s Cluster</title>
@@ -773,15 +773,13 @@ configuration when it loads that other files rely upon. See the <a href="#Footno
 section.)
 </p>
 
-<p>
-Open <code>${HOME}/git/literate-k3s/config.org</code>.
-</p>
-
 <ul class="org-ul">
-<li><code>config.org</code> contains key configuration variables for use across your entire
-cluster.</li>
-<li>You should review all of the code blocks in <code>config.org</code>, and edit those
-variables appropriately for your environment, especially <code>CLUSTER</code>.</li>
+<li>Find the <a href="#Core%20Config">Core Config</a> section.</li>
+<li>You should review all of the core config code blocks, and edit them
+appropriately for your environment, especially <code>CLUSTER</code>, and save the file.
+(Saving automatically loads the code blocks into the Library of Babel (<code>M-x
+   org-babel-lob-ingest</code>), so you can reference these blocks by name, even in
+other files.)</li>
 </ul>
 
 <p>
@@ -790,9 +788,9 @@ Open <code>${HOME}/git/literate-k3s/traefik.org</code>
 
 <ul class="org-ul">
 <li>Edit <code>TRAEFIK_ACME_EMAIL</code>, <code>TRAEFIK_WHOAMI_DOMAIN</code>, and any other variables
-according to your needs.</li>
-<li>Follow the other steps as outlined: Deploy Traefik, and test the <code>whoami</code>
-service.</li>
+according to your needs, save the file.</li>
+<li>Follow the other steps as outlined: Tangle and Deploy Traefik, and test the
+<code>whoami</code> service.</li>
 </ul>
 
 <p>
@@ -974,12 +972,7 @@ k3sup install --host k3s.example.com --user root <span style="color: #2d9574;">\
 <div id="outline-container-Core%20Config" class="outline-2">
 <h2 id="Core%20Config"><span class="section-number-2">2</span> Core Config</h2>
 <div class="outline-text-2" id="text-2">
-<p>
-These are config values that are applicable cluster wide, imported from
-<a target="_blank" href="config.org">config.org</a>.
-</p>
 </div>
-
 <div id="outline-container-CLUSTER" class="outline-3">
 <h3 id="CLUSTER"><span class="section-number-3">2.1</span> CLUSTER</h3>
 <div class="outline-text-3" id="text-2-1">
@@ -987,7 +980,7 @@ These are config values that are applicable cluster wide, imported from
 <code>CLUSTER</code> is the domain name of your cluster:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orga25bd27">k3s.example.com
+<pre class="src src-config" id="org5a94023">k3s.example.com
 </pre>
 </div>
 </div>
@@ -999,7 +992,7 @@ These are config values that are applicable cluster wide, imported from
 <code>CLUSTER_SSH_USER</code> is the admin SSH account of the cluster.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org441b235">root
+<pre class="src src-config" id="orge033e0e">root
 </pre>
 </div>
 </div>
@@ -1011,7 +1004,7 @@ These are config values that are applicable cluster wide, imported from
 <code>KUBE_CONFIG</code> is the local path to the kubectl config file
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org1c17bf0">${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="org9a05281">${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1049,7 +1042,7 @@ This config automatically redirects HTTP port 80 to HTTPs port 443. TCP port
 provider. 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org6ac5cf6">you@example.com
+<pre class="src src-config" id="org858be76">you@example.com
 </pre>
 </div>
 </div>
@@ -1062,7 +1055,7 @@ provider.
 provider). 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org99e8beb">https://acme-staging-v02.api.letsencrypt.org/directory
+<pre class="src src-config" id="org50141de">https://acme-staging-v02.api.letsencrypt.org/directory
 </pre>
 </div>
 
@@ -1105,7 +1098,7 @@ domain name to respond to. <code>TRAEFIK_WHOAMI_DOMAIN</code> is the subdomain t
 whoami service responds to.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgae6136f">whoami.k3s.example.com
+<pre class="src src-config" id="org436b4c4">whoami.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1117,7 +1110,7 @@ whoami service responds to.
 The version number of Traefik to install (eg. <code>2.3</code>).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgf0774b7">v2.3
+<pre class="src src-config" id="org9a3ffa7">v2.3
 </pre>
 </div>
 </div>
@@ -1129,7 +1122,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 <code>TRAEFIK_LOG_LEVEL</code> is the filter level on the traefik log.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org03215e9">INFO
+<pre class="src src-config" id="org554b242">INFO
 </pre>
 </div>
 </div>
@@ -1177,7 +1170,7 @@ Test with TLS verification on:
 </div>
 
 <p>
-TLS will not verify until you use the production <a href="#org99e8beb">TRAEFIK_ACME_SERVER</a>.
+TLS will not verify until you use the production <a href="#org50141de">TRAEFIK_ACME_SERVER</a>.
 </p>
 </div>
 </div>
@@ -1515,7 +1508,7 @@ to direct traffic to any other node.
 <div class="outline-text-4" id="text-3-1-13">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It listens to the
-domain <a href="#orgae6136f">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
+domain <a href="#org436b4c4">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
 </p>
 
 <div class="org-src-container">
@@ -1648,7 +1641,7 @@ easily mirror these repositories to external hosts like GitHub.
 <h4 id="GITEA_DOMAIN"><span class="section-number-4">4.1.1</span> GITEA_DOMAIN</h4>
 <div class="outline-text-4" id="text-4-1-1">
 <div class="org-src-container">
-<pre class="src src-config" id="org8c6ab2b">git.k3s.example.com
+<pre class="src src-config" id="orgb1cd1a6">git.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1660,7 +1653,7 @@ easily mirror these repositories to external hosts like GitHub.
 The size of the postgres database volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org3ae2c84">5Gi
+<pre class="src src-config" id="orgb059387">5Gi
 </pre>
 </div>
 </div>
@@ -1672,7 +1665,7 @@ The size of the postgres database volume for gitea:
 The size of the data volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org3df9e32">5Gi
+<pre class="src src-config" id="orge7a764d">5Gi
 </pre>
 </div>
 </div>
@@ -1685,7 +1678,7 @@ The size of the data volume for gitea:
 name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org28f405b">root
+<pre class="src src-config" id="org5006435">root
 </pre>
 </div>
 </div>
@@ -1697,7 +1690,7 @@ name.
 <code>GITEA_EMAIL</code> is the admin account email address:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgcb63279">root@example.com
+<pre class="src src-config" id="orge03a7eb">root@example.com
 </pre>
 </div>
 </div>
@@ -1855,7 +1848,7 @@ accidentally get published in this Org file.
 </p>
 
 <p>
-Now you can login to your domain at <a href="https://git">https://git</a>.<a id="orgf5b42a1"></a> 
+Now you can login to your domain at <a href="https://git">https://git</a>.<a id="org2b61219"></a> 
 </p>
 </div>
 </div>
@@ -2244,7 +2237,7 @@ The name of the repository containing these org files, and from which flux
 reads. Not including the domain, just the name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgb2c2d07">literate-k3s
+<pre class="src src-config" id="org5cea271">literate-k3s
 </pre>
 </div>
 </div>
@@ -2256,7 +2249,7 @@ reads. Not including the domain, just the name.
 This is the correct git remote URL if you are using self-hosted Gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org07f6dd1">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+<pre class="src src-config" id="org883fc1b">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
 </pre>
 </div>
 </div>
@@ -2301,7 +2294,7 @@ and keep the cluster in sync with its state.
 
 <p>
 On Gitea, click the <code>+</code> icon in the upper right corner to create a new <code>New
-Repository</code>. Call the new repository the same as <a href="#orgb2c2d07">FLUX_REPO_NAME</a>. 
+Repository</code>. Call the new repository the same as <a href="#org5cea271">FLUX_REPO_NAME</a>. 
 </p>
 
 <p>
@@ -2577,7 +2570,7 @@ well, so I instead opted to copy them here.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: EnigmaCurry</p>
-<p class="date">Created: 2021-02-02 Tue 21:32</p>
+<p class="date">Created: 2021-02-02 Tue 21:40</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

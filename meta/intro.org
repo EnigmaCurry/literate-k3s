@@ -223,55 +223,6 @@ should now automatically see the changes reload on save. The argument =-w3=
 waits three seconds before reloading the browser on save, which makes reloading
 a bit more reliable.
 
-** Getting Started
-
-Clone [[https://github.com/EnigmaCurry/literate-k3s][this repository]] to your system:
-
-#+begin_src shell :noweb yes :eval never-export :exports code
-git clone https://github.com/EnigmaCurry/literate-k3s.git \
-          ${HOME}/git/literate-k3s -o EnigmaCurry
-#+end_src
-
-(This sets the upstream remote name to =EnigmaCurry=. You'll use the default
-=origin= remote later, for your own self-hosted gitea repository.)
-
-Open =${HOME}/git/literate-k3s/k3s.org= inside of Emacs.
-
-(You should always open =k3s.org= first, because it loads some Emacs
-configuration when it loads that other files rely upon. See the [[Footnotes][Footnotes]]
-section.)
-
-Open =${HOME}/git/literate-k3s/config.org=.
-
- * =config.org= contains key configuration variables for use across your entire
-   cluster.
- * You should review all of the code blocks in =config.org=, and edit those
-   variables appropriately for your environment, especially =CLUSTER=.
-
-Open =${HOME}/git/literate-k3s/traefik.org=
-
- * Edit =TRAEFIK_ACME_EMAIL=, =TRAEFIK_WHOAMI_DOMAIN=, and any other variables
-   according to your needs.
- * Follow the other steps as outlined: Deploy Traefik, and test the =whoami=
-   service.
-
-Follow these general procedures going forward:
-
- 1. For each new namespace, you create a new directory in =src/= and a new Org
-    file that you =#+INCLUDE= inside =k3s.org=.
- 2. In the new org file, make config code blocks for any variables needed, use
-    [[https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax][NoWeb]] syntax to reference them: =<<variable_name>>=.
- 3. Write and run any code blocks that perform initial setup.
- 4. Create YAML code blocks and =tangle= them with =C-c C-v t=. If an Org
-    sub-tree heading is marked with =COMMENT=, it is disabled, and no blocks
-    under this heading will be tangled, and it will also not appear in the HTML
-    export. You can toggle a sub-tree =COMMENT= by pressing =C-c ;=.
- 5. Commit changed files to git and push to the remote repository.
-
-If you already have a cluster, the generated YAML files written to the =src=
-directory can now be applied to your cluster. But if you don't yet have a
-cluster, read on.
-
 ** Workstation tools
 To operate kubernetes, you need to install lots of different command line tools
 on your workstation (NOT on the cluster nodes). Here's a list of several, many
@@ -324,17 +275,21 @@ See the [[https://docs.openfaas.com/cli/install/][OpenFaaS CLI install guide]]
 ** Create a cluster
 The easiest way of creating a k3s cluster is with [[https://github.com/alexellis/k3sup][k3sup]]:
 
- * Provision a Linux node with root (or sudo) SSH access (OS doesn't really
-   matter, Debian, Ubuntu, Fedora, Arch, Whatever. I'm testing with Debian 10.
-   This could be a Virtual Machine, another local computer, or a VPS cloud
-   instance anywhere. Just stick with the AMD64 platform, it'll be a LOT
-   easier.)
- * Setup your DNS for the new node. You need type =A= records pointing to
-   =CLUSTER= and =*.CLUSTER= (eg. =k3s.example.com= and =*.k3s.example.com=
+ * Provision a Linux node with root (or sudo) and SSH access (The distribution
+   doesn't really matter, Debian, Ubuntu, Fedora, Arch, Linux Whatever. I'm
+   testing with Debian 10. This could be a Virtual Machine, another local
+   computer, or a VPS cloud instance anywhere. Just stick with the AMD64
+   platform, it'll be a LOT easier.)
+ * Setup your DNS for the new node. You need to create type =A= records pointing
+   to =CLUSTER= and =*.CLUSTER= (eg. =k3s.example.com= and =*.k3s.example.com=
    pointing to the public IP address of your node.)
- * Setup SSH key based authentication from your workstation to the new node.
- * Login to the node and install =curl= (you will need this for k3sup to work:
-=apt-get update && apt-get install -y curl=
+ * Setup SSH key based authentication from your workstation to the new node, run
+   =ssh-copy-id root@<<CLUSTER>>=. You should turn off password authentication,
+   in =/etc/ssh/sshd_config=: set =PasswordAuthentication no=, then restart by
+   running =systemctl restart sshd=.
+ * Login to the node and install =curl= (if its not installed already in your OS
+   image; it is a requirement of =k3sup=.)
+On Debian: =apt-get update && apt-get install -y curl=
  * [[https://github.com/alexellis/k3sup#download-k3sup-tldr][Download and install k3sup]] on your local workstation.
  * Run k3sup to create the cluster:
 
@@ -352,3 +307,57 @@ k3sup install --host <<CLUSTER>> --user <<CLUSTER_SSH_USER>> \
 echo kubectl --kubeconfig=<<KUBE_CONFIG>> get nodes
 #+end_src
 
+** Getting Started
+
+Clone [[https://github.com/EnigmaCurry/literate-k3s][this repository]] to your system:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+git clone https://github.com/EnigmaCurry/literate-k3s.git \
+          ${HOME}/git/literate-k3s -o EnigmaCurry
+#+end_src
+
+(This sets the upstream remote name to =EnigmaCurry=. You'll use the default
+=origin= remote later, for your own self-hosted gitea repository.)
+
+Open =${HOME}/git/literate-k3s/k3s.org= inside of Emacs.
+
+(You should always open =k3s.org= first, because it loads some Emacs
+configuration when it loads that other files rely upon. See the [[Footnotes][Footnotes]]
+section.)
+
+ * Find the [[Core Config][Core Config]] section.
+ * You should review all of the core config code blocks, and edit them
+   appropriately for your environment, especially =CLUSTER=, and save the file.
+   (Saving automatically loads the code blocks into the Library of Babel (=M-x
+   org-babel-lob-ingest=), so you can reference these blocks by name, even in
+   other files.)
+
+Open =${HOME}/git/literate-k3s/traefik.org=
+
+ * Edit =TRAEFIK_ACME_EMAIL=, =TRAEFIK_WHOAMI_DOMAIN=, and any other variables
+   according to your needs, save the file.
+ * Follow the other steps as outlined: Tangle and Deploy Traefik, and test the
+   =whoami= service.
+
+Follow these general procedures going forward:
+
+ 1. For each new namespace, you create a new directory in =src/= and a new Org
+    file that you =#+INCLUDE= inside =k3s.org=.
+ 2. In the new org file, make config code blocks for any variables needed, use
+    [[https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax][NoWeb]] syntax to reference them: =<<variable_name>>=.
+ 3. Write and run any code blocks that perform initial setup.
+ 4. Create YAML code blocks and =tangle= them with =C-c C-v t=. If an Org
+    sub-tree heading is marked with =COMMENT=, it is disabled, and no blocks
+    under this heading will be tangled, and it will also not appear in the HTML
+    export. You can toggle a sub-tree =COMMENT= by pressing =C-c ;=.
+ 5. Commit changed files to git and push to the remote repository.
+
+Open =${HOME}/git/literate-k3s/gitea.org=, edit the variables, follow the
+deployment steps, tangle the file.
+
+Open =${HOME}/git/literate-k3s/flux.org=, edit the variables, follow the
+deployment steps, tangle the file.
+
+If you already have a cluster, the generated YAML files written to the =src=
+directory can now be applied to your cluster. But if you don't yet have a
+cluster, read on.
