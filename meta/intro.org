@@ -1,0 +1,346 @@
+* Literate K3s cluster with Org-Mode and GitOps
+** Introduction
+Literate Programming is a style of computer programming where you "weave
+together" code, configuration, prose text, and program results/output, presented
+as a single readable document; sometimes referred to as Executable Documentation
+or Reproducible Research. If you use a Literate Programming style, you will
+never forget to document how your program works, because your documentation /is/
+your program source code.
+
+[[https://k3s.io/][K3s]] is a distribution of Kubernetes (software for running Docker containers),
+which is easy to deploy to many kinds of computer systems, be it on bare-metal,
+or virtual machine, or in the cloud. It is exceedingly useful as a *self-hosted*
+variant of Kubernetes, which you can even run on a single node with at least 2GB
+or more of RAM (4GB recommended). The cluster you'll create will be suitable for
+public web services, served through [[https://doc.traefik.io/traefik/][Traefik]] ingress, and automatic TLS. Its
+focus is on the smaller scale, a single node, using Kubernetes more as a
+packaging thing, rather than a clustering thing, but you can easily build this
+up, and get true high availability if you desire, its just not the focus of this
+presentation. If you're on the even smaller scale (less than 2GB of RAM) this
+really may not be appropriate for you: Kubernetes (even k3s) is a memory hog
+compared to vanilla Docker on these small systems (I recommend Podman with
+Systemd services instead.)
+
+This is a collection of [[https://orgmode.org][org-mode]] and [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] documents. (Or if you're reading
+this online, you're probably reading the exported HTML version. You can find
+here the original [[attachment:k3s.org][k3s.org]] and [[attachment:config.org][config.org]] files used to generate this page.)
+These contain the entire code/documentation/config, for creating a [[https://k3s.io/][K3s]] cluster,
+from scratch, and they are the means with which to create and edit YAML
+manifests for your cluster. Essentially, this set of org files becomes your
+ultimate source of configuration for your entire cluster: to make a change to
+your cluster, you first need to make the change in the documentation. You should
+open these files (=k3s.org= and =config.org=) in Emacs, edit them in org-mode,
+run the setup commands described inside, and =tangle= the source files. A
+minimal tutorial on using Emacs with org-babel is included, but this expects
+some pre-existing Emacs knowledge.
+
+Having your entire cluster config inside of documentation may seem odd or
+overwhelming, (or it may sound great!) but there is another trick up Org's
+sleeve: =tangling=. If bringing both code and documentation together is called
+=weaving=, taking them apart again is called =tangling=. Tangling is an
+automatic process, which takes the literal snippets of code found inside these
+documentation files, and exports them out to normal individual files, somewhere
+else on your system. When you tangle, all of the code blocks in this file will
+overwrite all of the external files that they are associated with (those marked
+with the =:tangle FILE= code block header, writes itself to =FILE=). So,
+although the ultimate code and config is sourced from this documentation, you
+will also be able to see the code in its exported form, in the various external
+places, as separate files. You should treat these generated files as
+compiled/read-only, because any changes that you make to them would get
+over-written, the next time you =tangle= the documentation. However, if you keep
+those external files in a git repository, and make small regular commits, it
+will become much easier to track the changes in each file over time.
+
+It is these derivative files (a collection of YAML manifests), that you generate
+via =tangle=, and put in a git repository, which become the source of truth for
+your cluster state, through Flux. [[https://github.com/fluxcd/flux2][Flux version 2]] is a Continuous Delivery
+system, that synchronizes the state of your cluster (and all deployments) from
+the state of YAML manifest files in this git repository. With Flux, you never
+run cluster commands like =kubectl apply= or =helm install= manually, instead
+you commit these manifest files to the git repository, =git push=, and Flux
+applies the changes to the cluster, on your behalf. There will be a little bit
+of setup that you have to do manually with kubectl, in order to bootstrap Flux,
+but once Flux is running on your cluster, from that point on, you can control
+your entire cluster state simply by =tangling= this file, commiting the
+generated files to git, and pushing to the remote repository. Flux is
+continuously monitoring this repository for changes (checks every 1 minute) and
+automatically applies them.
+
+Flux supports reading manifests from any of the following formats: Vanilla K8s
+YAML, [[https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/][Kustomize]] YAML (used extensively in this document), and [[https://helm.sh/docs/topics/charts/][Helm Charts]], so
+you don't necessarily need to store /all/ of the YAML in this org file, you can
+still package things in an external repository, and just provide the
+configuration here in this document. It's up to you how deep this goes...
+
+** Using Emacs, org-mode, and babel
+*** Install Emacs and Configure
+  * Install [[https://www.gnu.org/software/emacs/][GNU Emacs]] (tested on version 27)
+  * Install [[https://orgmode.org/][org-mode]] (tested using latest from MELPA)
+  * Open the [[https://orgmode.org/manual/][Org Manual]] and keep it handy as a reference
+  * Open the [[https://orgmode.org/worg/org-contrib/babel/intro.html][Babel Manual]] and keep it handy as a reference
+
+ Here is [[https://github.com/enigmacurry/emacs][my own Emacs config]] based upon [[https://www.spacemacs.org/][spacemacs]]. 
+
+If you don't know the first thing about Emacs, the way you start it from your
+command line is by running =emacs=. In Emacs, you perform actions with keyboard
+shortcut sequences that you type. If you can spare an hour, utilize the builtin
+Emacs tutorial system: on your keyboard, press the =F1= key followed by the =t=
+key. Basic Emacs concepts like navigation, opening and saving files, are covered
+in the tutorial, and will not be mentioned again here.
+
+*** Open k3s.org in Emacs
+ The first time you open this file, a dialog will open warning you about the
+ execution of code, and asking for your permission to run an =eval= code line:
+
+#+begin_example
+The local variables list in k3s.org
+contains values that may not be safe (*).
+
+Do you want to apply it?  You can type
+y  -- to apply the local variables list.
+n  -- to ignore the local variables list.
+!  -- to apply the local variables list, and permanently mark these
+      values (*) as safe (in the future, they will be set automatically.)
+
+  * eval : (progn (org-babel-goto-named-src-block "k3s-org-emacs-load") (org-babel-execute-src-block) (outline-hide-sublevels 1))
+#+end_example
+
+ You should type =y= to proceed, or type =!= to proceed and always trust this
+ code from now on. Additionally, org-mode will ask a follow up question to gain
+ permission to run the code block named =k3s-org-emacs-load= (The same as if you
+ had run the code block yourself, with =C-c C-c=). You should type =y= again.
+ (This second question will always be asked, each time you open the file, even
+ if you had typed =!= to avoid the first question everytime. Sorry! It's a good
+ security design, which you should not attempt to circumvent.)
+
+ This automatic loading happens because of the =Local Variables= section found
+ at the very bottom of this file under the [[Footnotes][Footnotes]] (not visible in HTML
+ export). The =Local Variables= is a formal way to inform Emacs that you would
+ like to run some code when the file is opened. It could be dangerous to do this
+ in some situations, so it's a good thing that Emacs asked you this question! In
+ this case, it is setting up to run the code block found in this file named
+ =k3s-org-emacs-load=, in order to enable automatic HTML export whenever you
+ save this file, as well as a few other fixes for things. If you don't desire
+ this behaviour, remove the =eval= line from the =Local Variables= section at
+ the bottom of the [[Footnotes][Footnotes]] section, and you will no longer see this message on
+ load.
+
+ When you opened this file, it should have automatically loaded in =Org= mode
+ (or you might need to run =M-x org-mode=). 
+
+*** Evaluating Code Blocks
+ Most code blocks in this document DO NOT need to be evaluated. Instead, this
+ document usually relies upon Tangling instead (see next section). However, each
+ deployment section may include some code blocks that need to be evaluated, as
+ an initial setup procedure, only necessary to run one time. You do this
+ explicitly, in Emacs, by hand, telling Org mode to evaluate each code block.
+
+ See the [[https://orgmode.org/manual/Evaluating-Code-Blocks.html][Evaluating Code Blocks]] section of the Org manual, but basically it's
+ like this:
+
+[[https://ec-share.nyc3.digitaloceanspaces.com/emacs-org-mode-evaluate-code-block.gif]]
+
+  1. Code blocks start with =#+begin_src= and end with =#+end_src=.
+  2. Put your cursor inside the code block (anywhere between =begin_src= and
+     =end_src=)
+  3. Press =C-c C-c= to execute the code block. It will ask you to confirm.
+     Press =y= or =n=. The code block is now executed directly on your system.
+     (And if that command was =kubectl=, it executes it on your cluster!)
+  4. After the code finishes running, you will see the output of the command
+     automatically printed, directly below the code block in the =RESULTS=
+     section. (This behaviour has been disabled on some commands with the
+     argument =:results none=). Normally, these results are also exported in the
+     HTML version, but can be excluded from the HTML by applying the argument
+     =:exports code= (as opposed to =:exports both= which would include the
+     RESULTS in the HTML).
+
+*** Tangling Code Blocks
+ For most code blocks, including all YAML code blocks, these have the arguments
+ =:tangle FILE :eval no=, which means that these code blocks cannot be
+ evaluated, but instead are exported to another external FILE. Tangling is
+ applied globally, that is, tangling exports ALL of the code blocks in the
+ entire file, found with the =:tangle FILE= argument, all at the same time (each
+ to different FILEs).
+
+  1. To tangle the whole document, press =C-c C-v t= or =M-x org-babel-tangle=
+*** Editing code blocks
+ To edit a code block, you can just edit it directly in the Org document, but
+ sometimes it is easier to edit the code block inside of the major mode for the
+ particular programming language. Org can do this by opening the code block in a
+ secondary buffer, with only the code inside:
+
+  1. Put your cursor inside of any code block.
+  2. Press =C-c '= to open the new buffer containing only the code block.
+  3. Edit the buffer, save it with =M-RET '= (see helpful text at top of buffer)
+  4. You are returned back to the Org document and you'll see the changes in the
+     code block.
+
+*** Creating new code blocks
+ To insert a new code block, you can use a shortcut (as opposed to copying one of
+ the existing code block headers).
+
+  1. Press =C-c C-,= to open the template menu. Choose the template you want
+     from the menu. If you're using my config, =s= gets you a bash shell
+     template, =config= gets you a config variable template, and =yaml= gets you
+     a yaml tangle template. Just pressing the first letter gets you the
+     template.
+  2. A different, /faster/, way of doing the same thing, is to type at the
+     beginning of a new line =<s= or =<config= or =<yaml= then press =TAB=. The
+     text input automatically replaces with the content of the template. This
+     feature requires the org-tempo library (pre-installed in my Emacs config).
+  3. The list of templates can be customized, type =M-x customize-variable= and
+     enter =org-structure-template-alist=. (=Customize= is the Emacs way of
+     saving a setting permanently to your config, without needing to edit the
+     lisp configuration file yourself.) 
+
+** Export to HTML
+Org-mode can export to HTML for easier viewing on the web. The exported version
+removes all NoWeb references and prints the actual literal values of things.
+This is a great way to view your current cluster config in an online readable
+form.
+
+In org-mode, you can export the current document as a single HTML page, with the
+builtin org-mode exporter: type =C-c C-e h-h= or run =M-x
+org-html-export-to-html=. However, in this file, it is setup automatically to
+export HTML whenever the file is saved, see the [[Footnotes][Footnotes]] section. You can
+toggle this behaviour on and off, by executing =M-x
+toggle-org-html-export-on-save=.
+
+Normally, org-mode runs all of the code blocks in the file, every single time
+you export. This is undesirable in this case, as the setup code only needs to
+run one time. So, in this document, all of the code blocks have set =:eval
+never-export= which means that these code blocks are never evaluated (run) when
+exporting. Indeed, when you export to HTML, you should not see any confirmation
+dialog when exporting, as no code is being run at that time. In order to run a
+code block, you must do so explicitly, with your cursor inside the block, and
+then type =C-c C-c=.
+
+If you would like to live reload the browser page, on save, you can use the
+Python based [[https://pypi.org/project/livereload/][livereload server]]. First install it eg: =pip install livereload=,
+then run =livereload -w3 -o0= in the same directory as the exported file, it
+should open your web browser automatically to =http://127.0.0.1:35729/=. You
+should now automatically see the changes reload on save. The argument =-w3=
+waits three seconds before reloading the browser on save, which makes reloading
+a bit more reliable.
+
+** Getting Started
+
+Clone [[https://github.com/EnigmaCurry/literate-k3s][this repository]] to your system:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+git clone https://github.com/EnigmaCurry/literate-k3s.git \
+          ${HOME}/git/literate-k3s -o EnigmaCurry
+#+end_src
+
+(This sets the upstream remote name to =EnigmaCurry=. You'll use the default
+=origin= remote later, for your own self-hosted gitea repository.)
+
+Now open up =${HOME}/git/literate-k3s/config.org= inside of Emacs.
+
+ * =config.org= is your config file that feeds configuration variables into
+   k3s.org (this file).
+ * You should review all of the code blocks in =config.org=, and edit those
+   variables appropriately for your environment.
+
+Now open up =${HOME}/git/literate-k3s/k3s.org= inside of Emacs.
+
+ * Run Tangle - Press =C-c C-v t= or =M-x org-babel-tangle= to create all of the
+   derivative files into the =src/= directory.
+ * Run the code blocks in the [[Deploy Traefik][Deploy Traefik]] section.
+
+Follow these general procedures going forward:
+
+ 1. For each new namespace, you create a new directory in =src/=.
+ 2. Run code blocks as directed in each section, usually only as one-time setup.
+ 3. Make new variables in =config.org= and reference them in other code blocks via
+    [[https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax][NoWeb]] syntax, for example: =<<variable_name>>=.
+ 4. After changing any config, press =C-c C-v t=, to tangle the code blocks,
+    which creates the YAML manifests, and other files. If an Org sub-tree
+    heading is marked with =COMMENT=, it is disabled, and no blocks under this
+    heading will be tangled, and it will also not appear in the HTML export. You
+    can toggle a sub-tree =COMMENT= by pressing =C-c ;=.
+ 5. Commit changed files to git and push to the remote repository.
+
+If you already have a cluster, the generated YAML files written to the =src=
+directory can now be applied to your cluster. But if you don't yet have a
+cluster, read on.
+
+** Workstation tools
+To operate kubernetes, you need to install lots of different command line tools
+on your workstation (NOT on the cluster nodes). Here's a list of several, many
+of them are optional.
+
+*** kubectl
+=kubectl= is the main tool to access the Kubernetes API from the command line.
+You can use it to apply manifest files (YAML containing deployment
+configurations) to your cluster. This is mostly a manual tool, and useful during
+bootstrap of the cluster, but really once you get Flux installed, you won't need
+it for that purpose anymore. =kubectl= is still an indispensible tool for the
+purposes of retrieving logs and getting the system status.
+
+See the [[https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-using-native-package-management][kubectl install guide]].
+
+*** kubeseal
+=kubeseal= is the command line tool for [[https://github.com/bitnami-labs/sealed-secrets#sealed-secrets-for-kubernetes][bitnami-labs/sealed-secrets]], which is a
+system for storing encrypted secrets in public(ish) git repositories, which only
+your cluster can decrypt and read. Using sealed secrets will let you fully
+document your cluster, inside of a single git repository, while not leaking any
+private details to third parties.
+
+See the [[https://github.com/bitnami-labs/sealed-secrets/releases][kubeseal install guide]], note that you only need to install the "Client
+side" part for now.
+
+*** flux
+=flux= is the command line tool for interacting with the Flux2 system. 
+
+See the [[https://github.com/fluxcd/flux2/tree/main/install][flux cli install guide]].
+
+*** k3sup (optional)
+=k3sup= is a tool to bootstrap creating a k3s cluster on a remote server, and
+automatically create the config file on your workstation with the authentication
+token.
+
+See the [[https://github.com/alexellis/k3sup#download-k3sup-tldr][k3sup install guide]].
+
+*** CDK8s (optional)
+=CDK8s= is a tool to programmatically generate kubernetes manifests from Python,
+Typescript, or Java code.
+
+See the [[https://cdk8s.io/docs/latest/getting-started/][CDK8s install guide]]
+
+*** OpenFaaS (optional)
+=OpenFaaS CLI= lets you interact with OpenFaaS installed on your cluster, to
+create your own "serverless" functions.
+
+See the [[https://docs.openfaas.com/cli/install/][OpenFaaS CLI install guide]]
+
+** Create a cluster
+The easiest way of creating a k3s cluster is with [[https://github.com/alexellis/k3sup][k3sup]]:
+
+ * Provision a Linux node with root (or sudo) SSH access (OS doesn't really
+   matter, Debian, Ubuntu, Fedora, Arch, Whatever. I'm testing with Debian 10.
+   This could be a Virtual Machine, another local computer, or a VPS cloud
+   instance anywhere. Just stick with the AMD64 platform, it'll be a LOT
+   easier.)
+ * Setup your DNS for the new node. You need type =A= records pointing to
+   =CLUSTER= and =*.CLUSTER= (eg. =k3s.example.com= and =*.k3s.example.com=
+   pointing to the public IP address of your node.)
+ * Setup SSH key based authentication from your workstation to the new node.
+ * Login to the node and install =curl= (you will need this for k3sup to work:
+=apt-get update && apt-get install -y curl=
+ * [[https://github.com/alexellis/k3sup#download-k3sup-tldr][Download and install k3sup]] on your local workstation.
+ * Run k3sup to create the cluster:
+
+#+begin_src shell :noweb yes :eval never-export :exports code :results none
+mkdir -p ${HOME}/.kube
+k3sup install --host <<CLUSTER>> --user <<CLUSTER_SSH_USER>> \
+  --local-path <<KUBE_CONFIG>> --k3s-extra-args '--disable traefik'
+#+end_src
+
+ * Wait a minute or two for the cluster to come up.
+ * Now test to see if you can connect and output node status:
+
+ #+begin_src shell :noweb yes :eval never-export :exports both
+kubectl --kubeconfig=<<KUBE_CONFIG>> get nodes
+ #+end_src
+

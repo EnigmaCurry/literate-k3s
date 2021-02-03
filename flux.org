@@ -1,0 +1,183 @@
+=flux-system= is the namespace setup for [[https://github.com/fluxcd/flux2][Flux]].
+** FLUX_REPO_NAME
+The name of the repository containing these org files, and from which flux
+reads. Not including the domain, just the name.
+#+name: FLUX_REPO_NAME
+#+begin_src config :noweb yes :eval no
+literate-k3s
+#+end_src
+** FLUX_GIT_REMOTE
+This is the correct git remote URL if you are using self-hosted Gitea:
+ #+name: FLUX_GIT_REMOTE
+ #+begin_src config :noweb yes :eval no
+ ssh://git@git.k3s.example.com:2222/root/<<FLUX_REPO_NAME>>.git
+ #+end_src
+** flux-system setup
+Create the namespace directory
+#+begin_src shell :noweb yes :eval never-export :exports code
+mkdir -p src/flux-system
+#+end_src
+
+You need to [[https://github.com/fluxcd/flux2/tree/main/install][install the flux command line tool]], or you can [[https://blog.rymcg.tech/blog/k3s/k3s-01-setup#create-toolbox-container-optional][run it from a
+container]] or use the =flux-go= AUR package on Arch Linux.
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+flux install --version=latest --arch=amd64 --export > src/flux-system/gotk-components.yaml
+#+end_src
+
+#+RESULTS:
+** Deploy Flux
+    Tangle all the files, =C-c C-v t= then run:
+
+  #+begin_src shell :noweb yes :eval never-export :exports both
+  kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k src/flux-system
+  #+end_src
+
+** Create infrastructure repository
+You will now create a git repository on gitea, that will serve as the root
+source of all the manifests on your cluster. You will commit and push all of the
+generated YAML files to this repository and Flux will monitor this repository
+and keep the cluster in sync with its state.
+
+On Gitea, click the =+= icon in the upper right corner to create a new =New
+Repository=. Call the new repository the same as [[FLUX_REPO_NAME][FLUX_REPO_NAME]]. 
+
+Set the new gitea repository as the git origin remote:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+git remote remove origin
+git remote add origin <<FLUX_GIT_REMOTE>>
+#+end_src
+
+Add the src directory to the repository and commit it:
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
+git add src/
+git commit -m "Initial commit for new cluster <<CLUSTER>>"
+#+end_src
+
+Push the changes to the remote:
+#+begin_src shell :noweb yes :eval never-export :exports code
+git push -u origin
+#+end_src
+
+** Tell flux to watch the infrastructure repository
+This next command is interactive only, so you must run it in a separate
+terminal. Copy and paste it, but you also must replace =<<KUBE_CONFIG>>=,
+=<<FLUX_REPO_NAME>>=, and =<<FLUX_GIT_REMOTE>>= manually, with the same values
+as in your config.
+
+Create the =Source= resource:
+
+#+begin_example
+export KUBECONFIG=<<KUBE_CONFIG>>
+flux create source git <<FLUX_REPO_NAME>> \
+  --url=<<FLUX_GIT_REMOTE>> \
+  --ssh-key-algorithm=rsa \
+  --ssh-rsa-bits=4096 \
+  --branch=master \
+  --interval=1m
+#+end_example
+
+Flux will automatically create its own SSH key, and will output its public SSH
+key. You must copy this key and install it as a Deploy Key in the remote git
+repository settings. In Gitea, add the deploy key under the repository
+=Settings->Deploy Keys=. The deploy key does not require write privileges. Once
+installed, press =Y= and =Enter= to continue, and it will test that it works for
+you.
+
+The rest of these commands can run non-interactive, so go ahead and run these
+from Emacs Org.
+
+Create the =Kustomization= resource:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+flux create kustomization <<FLUX_REPO_NAME>> \
+  --source=<<FLUX_REPO_NAME>> \
+  --path="./src" \
+  --prune=true \
+  --interval=10m
+#+end_src
+
+The Source controller periodically pulls changes from the git repository. The
+Kustomize controller applies changes to the cluster. If you run into problems,
+you should check the logs of these two controllers:
+
+Check the logs of the flux Source controller:
+
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
+kubectl --kubeconfig=<<KUBE_CONFIG>> -n flux-system \
+        logs deployment/source-controller | tail -n 10
+#+end_src
+
+Check the logs of the flux Kustomize controller:
+
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
+kubectl --kubeconfig=<<KUBE_CONFIG>> -n flux-system \
+        logs deployment/source-controller | tail -n 10
+#+end_src
+** Test adding a new manfiest to the git repository
+OK now, in theory, you are done using =kubectl apply=. From now on, all you have
+to do is commit and push manifests to your git repository, and Flux will
+automatically apply them to your cluster. So let's test that out:
+
+Create a new namespace just for testing. Create the manifests:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+mkdir -p src/just-a-test
+cat <<EOF > src/just-a-test/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- namespace.yaml
+EOF
+cat <<EOF > src/just-a-test/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: just-a-test
+EOF
+#+end_src
+
+Commit the changes:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+git add src/just-a-test
+git commit -m "just-a-test"
+#+end_src
+
+Push the changes:
+#+begin_src shell :noweb yes :eval never-export :exports code
+git push origin
+#+end_src
+
+And in a little less than a minute, you should see the new namespace appear:
+#+begin_src shell :noweb yes :eval never-export :exports code
+kubectl --kubeconfig=<<KUBE_CONFIG>> get ns just-a-test
+#+end_src
+
+Now delete the =just-a-test= directory and commit:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+rm -rf src/just-a-test/
+git add src/just-a-test/
+git commit -m "remove just-a-test"
+#+end_src
+
+Push the changes again:
+#+begin_src shell :noweb yes :eval never-export :exports code
+git push origin
+#+end_src
+
+And in another minute or so, the namespace should be gone:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+kubectl --kubeconfig=<<KUBE_CONFIG>> get ns just-a-test
+#+end_src
+** src/flux-system/kustomization.yaml
+#+begin_src yaml :noweb yes :eval no :tangle src/flux-system/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- gotk-components.yaml
+#+end_src
+

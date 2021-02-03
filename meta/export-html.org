@@ -1,0 +1,2 @@
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="meta/css/build/solarized-dark.css" />
+#+INFOJS_OPT: view:showall toc:t ltoc:above mouse:underline buttons:0 path:meta/css/build/all.min.js

@@ -1,0 +1,465 @@
+* Traefik
+
+[[https://doc.traefik.io/traefik/][Traefik]] is a reverse proxy that will allow HTTP and TCP ingress to your cluster.
+This will give you public internet access to your container services, with
+automatic TLS by default, via Let's Encrypt. With k3s + traefik there is no
+requirement for any external load balancer.
+
+This config automatically redirects HTTP port 80 to HTTPs port 443. TCP port
+2222 forwards SSH traffic for [[file:gitea.org][Gitea]].
+
+** TRAEFIK_ACME_EMAIL
+ =TRAEFIK_ACME_EMAIL= is the email address to register with the ACME service
+ prodider. 
+#+name: TRAEFIK_ACME_EMAIL
+#+begin_src config :eval no
+you@example.com
+#+end_src
+** TRAEFIK_ACME_SERVER
+=TRAEFIK_ACME_SERVER= is the URL for the Let's Encrypt API (Or other ACME
+provider). 
+#+name: TRAEFIK_ACME_SERVER
+#+begin_src config :eval no
+https://acme-staging-v02.api.letsencrypt.org/directory
+#+end_src
+
+For production, use the =acme-v02= Lets Encrypt server :
+
+: https://acme-v02.api.letsencrypt.org/directory
+
+For staging, use the =acme-staging-v02= Let's Encrypt server :
+
+: https://acme-staging-v02.api.letsencrypt.org/directory
+
+The difference, is that the staging server has much more generous [[https://letsencrypt.org/docs/rate-limits/][rate limiting]],
+but will only provide certificates for testing purposes (ie, they appear INVALID
+in web browsers.) You really should start with the staging server for new
+deployments, because you may find you need to recreate the whole server a few
+times, and if you don't backup and restore the =acme.json= file that Traefik
+needs, it will request the certificates be issued again, incurring the wrath of
+the rate limit, which blocks you out for a week.
+
+** TRAEFIK_WHOAMI_DOMAIN
+[[https://github.com/traefik/whoami][traefik/whoami]] can be deployed to test Traefik functionality. It needs its own
+domain name to respond to. =TRAEFIK_WHOAMI_DOMAIN= is the subdomain that the
+whoami service responds to.
+#+name: TRAEFIK_WHOAMI_DOMAIN
+#+begin_src config :eval no
+whoami.k3s.example.com
+#+end_src
+** TRAEFIK_VERSION
+The version number of Traefik to install (eg. =2.3=).
+#+name: TRAEFIK_VERSION
+#+begin_src config :eval no
+v2.3
+#+end_src
+** TRAEFIK_LOG_LEVEL
+=TRAEFIK_LOG_LEVEL= is the filter level on the traefik log.
+#+name: TRAEFIK_LOG_LEVEL
+#+begin_src config :eval no
+INFO
+#+end_src
+** Make traefik directory
+#+begin_src shell :noweb yes :eval never-export :exports code
+mkdir -p src/kube-system/traefik
+#+end_src
+** Deploy Traefik
+  After setting the config, tangle the config by pressing =C-c C-v t=. Then
+  deploy Traefik via kubectl:
+
+  #+begin_src shell :noweb yes :eval never-export :exports both
+  kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k src/kube-system
+  #+end_src
+
+In some instances, you will need to run this command twice. If you get a
+dependency error, try the command again, and it should resolve itself the second
+time.
+
+** Test Traefik whoami service
+Test with TLS verification off:
+
+#+begin_src shell :noweb yes :eval never-export :exports both
+curl -Lk <<TRAEFIK_WHOAMI_DOMAIN>>
+#+end_src
+
+Test with TLS verification on:
+
+#+begin_src shell :noweb yes :eval never-export :exports both
+curl -L <<TRAEFIK_WHOAMI_DOMAIN>>
+#+end_src
+
+TLS will not verify until you use the production [[TRAEFIK_ACME_SERVER][TRAEFIK_ACME_SERVER]].
+
+** src/kube-system/traefik/kustomization.yaml
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- crd.yaml
+- rbac.yaml
+- pvc.yaml
+- daemonset.yaml
+- whoami.yaml
+#+end_src
+** src/kube-system/traefik/crd.yaml
+Traefik supports Kubernetes by way of creating new kubernetes resource types:
+[[https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/][Custom Resource Definitions (CRD)]]. Basically its a declarative mapping between
+Kubernetes API concepts and Traefik API concepts. These CRD are copied verbatim
+from the [[https://github.com/traefik/traefik/blob/v2.3/docs/content/reference/dynamic-configuration/kubernetes-crd-definition.yml][Traefik v2.3 documentation]], and may require updating if you use a
+different version. I used to just link a URL inside of kustomization.yaml, as it
+feels like boilerplate, but I think its better to document all of the CRD in the
+Org document, even if its a bit long:
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/crd.yaml
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: ingressroutes.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: IngressRoute
+    plural: ingressroutes
+    singular: ingressroute
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: middlewares.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: Middleware
+    plural: middlewares
+    singular: middleware
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: ingressroutetcps.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: IngressRouteTCP
+    plural: ingressroutetcps
+    singular: ingressroutetcp
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: ingressrouteudps.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: IngressRouteUDP
+    plural: ingressrouteudps
+    singular: ingressrouteudp
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: tlsoptions.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: TLSOption
+    plural: tlsoptions
+    singular: tlsoption
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: tlsstores.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: TLSStore
+    plural: tlsstores
+    singular: tlsstore
+  scope: Namespaced
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: traefikservices.traefik.containo.us
+
+spec:
+  group: traefik.containo.us
+  version: v1alpha1
+  names:
+    kind: TraefikService
+    plural: traefikservices
+    singular: traefikservice
+  scope: Namespaced
+
+#+end_src
+** src/kube-system/traefik/rbac.yaml
+RBAC is [[https://kubernetes.io/docs/reference/access-authn-authz/rbac/][Role Based Authentication Control]] and it grants Traefik extra privileges
+to watch the state of your cluster, and see when pods are created.
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/rbac.yaml
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: traefik-ingress-controller
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: traefik
+    app.kubernetes.io/instance: traefik
+  annotations:
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: kube-system
+  name: traefik-ingress-controller
+
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - endpoints
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+      - networking.k8s.io
+    resources:
+      - ingresses
+      - ingressclasses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses/status
+    verbs:
+      - update
+  - apiGroups:
+      - traefik.containo.us
+    resources:
+      - middlewares
+      - ingressroutes
+      - traefikservices
+      - ingressroutetcps
+      - ingressrouteudps
+      - tlsoptions
+      - tlsstores
+    verbs:
+      - get
+      - list
+      - watch
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: traefik-ingress-controller
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-ingress-controller
+subjects:
+  - kind: ServiceAccount
+    name: traefik-ingress-controller
+    namespace: kube-system
+#+end_src
+** src/kube-system/traefik/pvc.yaml
+a [[https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims][PersistentVolumeClaim]] allocates a permanent volume for a Pod. This is one is
+for 100MB to store the Traefik =acme.json= file.
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: traefik-data
+  namespace: kube-system
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100M
+  storageClassName: local-path
+#+end_src
+** src/kube-system/traefik/daemonset.yaml
+A [[https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/][DaemonSet]] is one method of deployment in Kubernetes (others being [[https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/][StatefulSet]]
+and [[https://kubernetes.io/docs/concepts/workloads/controllers/deployment/][Deployment]]). DaemonSet is cool because it replicates a given pod on to every
+single node in the cluster. We want Traefik to listen on every node and be able
+to direct traffic to any other node.
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: traefik-ingress-lb
+  name: traefik
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress-lb
+      name: traefik-ingress-lb
+  template:
+    metadata:
+      labels:
+        k8s-app: traefik-ingress-lb
+        name: traefik-ingress-lb
+    spec:
+      containers:
+      - args:
+        - --api
+        - --log.level=<<TRAEFIK_LOG_LEVEL>>
+        - --api.insecure=false
+        - --api.dashboard=false
+        - --accesslog
+        - --global.checknewversion=true
+        - --entryPoints.web.address=:80
+        - --entryPoints.websecure.address=:443
+        - --entrypoints.web.http.redirections.entryPoint.to=websecure
+        - --entrypoints.websecure.http.tls.certResolver=default
+        - --ping=true
+        - --providers.kubernetescrd=true
+        - --providers.kubernetesingress=true
+        - --certificatesresolvers.default.acme.storage=/traefik-data/acme.json
+        - --certificatesresolvers.default.acme.tlschallenge=true
+        - --certificatesresolvers.default.acme.caserver=<<TRAEFIK_ACME_SERVER>>
+        - --certificatesresolvers.default.acme.email=<<TRAEFIK_ACME_EMAIL>>
+        - --entrypoints.ssh.address=:2222
+        image: traefik:<<TRAEFIK_VERSION>>
+        name: traefik-ingress-lb
+        volumeMounts:
+        - name: traefik-data
+          mountPath: /traefik-data
+        ports:
+        - containerPort: 80
+          hostPort: 80
+          name: web
+        - containerPort: 443
+          hostPort: 443
+          name: websecure
+        - containerPort: 2222
+          hostPort: 2222
+          name: ssh
+        securityContext:
+          capabilities:
+            add:
+            - NET_BIND_SERVICE
+            drop:
+            - ALL
+      serviceAccountName: traefik-ingress-controller
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: traefik-data
+        persistentVolumeClaim:
+          claimName: traefik-data
+#+end_src
+
+** src/kube-system/traefk/whoami.yaml
+ [[https://github.com/traefik/whoami][traefik/whoami]] can be deployed to test Traefik functionality. It listens to the
+ domain [[TRAEFIK_WHOAMI_DOMAIN][TRAEFIK_WHOAMI_DOMAIN]] (eg. =whoami.k3s.example.com=).
+
+#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/whoami.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoami
+  namespace: kube-system
+spec:
+  ports:
+  - name: web
+    port: 80
+    protocol: TCP
+  selector:
+    app: whoami
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: TraefikService
+metadata:
+  name: whoami
+  namespace: kube-system
+
+spec:
+  weighted:
+    services:
+      - name: whoami
+        weight: 1
+        port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: whoami
+  name: whoami
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami
+  template:
+    metadata:
+      labels:
+        app: whoami
+    spec:
+      containers:
+      - image: containous/whoami
+        name: whoami
+        ports:
+        - containerPort: 80
+          name: web
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: whoami
+  namespace: kube-system
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`<<TRAEFIK_WHOAMI_DOMAIN>>`)
+    services:
+    - name: whoami
+      port: 80
+  tls:
+    certResolver: default
+#+end_src
+
+
+
