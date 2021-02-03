@@ -235,30 +235,37 @@ git clone https://github.com/EnigmaCurry/literate-k3s.git \
 (This sets the upstream remote name to =EnigmaCurry=. You'll use the default
 =origin= remote later, for your own self-hosted gitea repository.)
 
-Now open up =${HOME}/git/literate-k3s/config.org= inside of Emacs.
+Open =${HOME}/git/literate-k3s/k3s.org= inside of Emacs.
 
- * =config.org= is your config file that feeds configuration variables into
-   k3s.org (this file).
+(You should always open =k3s.org= first, because it loads some Emacs
+configuration when it loads that other files rely upon. See the [[Footnotes][Footnotes]]
+section.)
+
+Open =${HOME}/git/literate-k3s/config.org=.
+
+ * =config.org= contains key configuration variables for use across your entire
+   cluster.
  * You should review all of the code blocks in =config.org=, and edit those
-   variables appropriately for your environment.
+   variables appropriately for your environment, especially =CLUSTER=.
 
-Now open up =${HOME}/git/literate-k3s/k3s.org= inside of Emacs.
+Open =${HOME}/git/literate-k3s/traefik.org=
 
- * Run Tangle - Press =C-c C-v t= or =M-x org-babel-tangle= to create all of the
-   derivative files into the =src/= directory.
- * Run the code blocks in the [[Deploy Traefik][Deploy Traefik]] section.
+ * Edit =TRAEFIK_ACME_EMAIL=, =TRAEFIK_WHOAMI_DOMAIN=, and any other variables
+   according to your needs.
+ * Follow the other steps as outlined: make the directory, deploy Traefik, and
+   test the whoami service.
 
 Follow these general procedures going forward:
 
- 1. For each new namespace, you create a new directory in =src/=.
- 2. Run code blocks as directed in each section, usually only as one-time setup.
- 3. Make new variables in =config.org= and reference them in other code blocks via
-    [[https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax][NoWeb]] syntax, for example: =<<variable_name>>=.
- 4. After changing any config, press =C-c C-v t=, to tangle the code blocks,
-    which creates the YAML manifests, and other files. If an Org sub-tree
-    heading is marked with =COMMENT=, it is disabled, and no blocks under this
-    heading will be tangled, and it will also not appear in the HTML export. You
-    can toggle a sub-tree =COMMENT= by pressing =C-c ;=.
+ 1. For each new namespace, you create a new directory in =src/= and a new Org
+    file that you =#+INCLUDE= inside =k3s.org=.
+ 2. In the new org file, make config code blocks for any variables needed, use
+    [[https://orgmode.org/manual/Noweb-Reference-Syntax.html#Noweb-Reference-Syntax][NoWeb]] syntax to reference them: =<<variable_name>>=.
+ 3. Write and run any code blocks that perform initial setup.
+ 4. Create YAML code blocks and =tangle= them with =C-c C-v t=. If an Org
+    sub-tree heading is marked with =COMMENT=, it is disabled, and no blocks
+    under this heading will be tangled, and it will also not appear in the HTML
+    export. You can toggle a sub-tree =COMMENT= by pressing =C-c ;=.
  5. Commit changed files to git and push to the remote repository.
 
 If you already have a cluster, the generated YAML files written to the =src=
@@ -344,7 +351,4 @@ k3sup install --host <<CLUSTER>> --user <<CLUSTER_SSH_USER>> \
 #+begin_src shell :noweb yes :eval never-export :exports both
 echo kubectl --kubeconfig=<<KUBE_CONFIG>> get nodes
 #+end_src
-
-#+RESULTS:
-: kubectl --kubeconfig=/home/ryan/.kube/barrel.rymcg.tech-config get nodes
 
