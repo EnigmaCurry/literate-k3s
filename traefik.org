@@ -59,10 +59,6 @@ v2.3
 #+begin_src config :eval no
 INFO
 #+end_src
-** Make traefik directory
-#+begin_src shell :noweb yes :eval never-export :exports code
-mkdir -p src/kube-system/traefik
-#+end_src
 ** Deploy Traefik
   After setting the config, tangle the config by pressing =C-c C-v t=. Then
   deploy Traefik via kubectl:

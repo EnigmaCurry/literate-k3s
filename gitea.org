@@ -1,7 +1,3 @@
-* Make git-system/gitea directory
-#+begin_src shell :noweb yes :eval never-export :exports code
-mkdir -p src/git-system/gitea
-#+end_src
 * Gitea
 
  [[https://gitea.io/][Gitea]] is a self-hosted git platform, much like GitHub. You will need a git

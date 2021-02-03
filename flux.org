@@ -13,10 +13,6 @@ This is the correct git remote URL if you are using self-hosted Gitea:
  ssh://git@git.k3s.example.com:2222/root/<<FLUX_REPO_NAME>>.git
  #+end_src
 ** flux-system setup
-Create the namespace directory
-#+begin_src shell :noweb yes :eval never-export :exports code
-mkdir -p src/flux-system
-#+end_src
 
 You need to [[https://github.com/fluxcd/flux2/tree/main/install][install the flux command line tool]], or you can [[https://blog.rymcg.tech/blog/k3s/k3s-01-setup#create-toolbox-container-optional][run it from a
 container]] or use the =flux-go= AUR package on Arch Linux.
@@ -115,7 +111,7 @@ Check the logs of the flux Kustomize controller:
 kubectl --kubeconfig=<<KUBE_CONFIG>> -n flux-system \
         logs deployment/source-controller | tail -n 10
 #+end_src
-** Test adding a new manfiest to the git repository
+** Test adding a new manifest to the git repository
 OK now, in theory, you are done using =kubectl apply=. From now on, all you have
 to do is commit and push manifests to your git repository, and Flux will
 automatically apply them to your cluster. So let's test that out:

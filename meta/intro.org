@@ -252,8 +252,8 @@ Open =${HOME}/git/literate-k3s/traefik.org=
 
  * Edit =TRAEFIK_ACME_EMAIL=, =TRAEFIK_WHOAMI_DOMAIN=, and any other variables
    according to your needs.
- * Follow the other steps as outlined: make the directory, deploy Traefik, and
-   test the whoami service.
+ * Follow the other steps as outlined: Deploy Traefik, and test the =whoami=
+   service.
 
 Follow these general procedures going forward:
 
