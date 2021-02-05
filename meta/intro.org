@@ -22,17 +22,16 @@ compared to vanilla Docker on these small systems (I recommend Podman with
 Systemd services instead.)
 
 This is a collection of [[https://orgmode.org][org-mode]] and [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] documents. (Or if you're reading
-this online, you're probably reading the exported HTML version. You can find
-here the original [[attachment:k3s.org][k3s.org]] and [[attachment:config.org][config.org]] files used to generate this page.)
-These contain the entire code/documentation/config, for creating a [[https://k3s.io/][K3s]] cluster,
-from scratch, and they are the means with which to create and edit YAML
-manifests for your cluster. Essentially, this set of org files becomes your
-ultimate source of configuration for your entire cluster: to make a change to
-your cluster, you first need to make the change in the documentation. You should
-open these files (=k3s.org= and =config.org=) in Emacs, edit them in org-mode,
-run the setup commands described inside, and =tangle= the source files. A
-minimal tutorial on using Emacs with org-babel is included, but this expects
-some pre-existing Emacs knowledge.
+this online, you're probably reading the exported HTML version.) These contain
+the entire code/documentation/config, for creating a [[https://k3s.io/][K3s]] cluster, from scratch,
+and they are the means with which to create and edit YAML manifests for your
+cluster. Essentially, this set of org files becomes your ultimate source of
+configuration for your entire cluster: to make a change to your cluster, you
+first need to make the change in the documentation. You should open these files
+(=k3s.org= and =config.org=) in Emacs, edit them in org-mode, run the setup
+commands described inside, and =tangle= the source files. A minimal tutorial on
+using Emacs with org-babel is included, but this expects some pre-existing Emacs
+knowledge.
 
 Having your entire cluster config inside of documentation may seem odd or
 overwhelming, (or it may sound great!) but there is another trick up Org's
