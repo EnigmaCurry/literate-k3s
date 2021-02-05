@@ -131,36 +131,45 @@ n  -- to ignore the local variables list.
 *** Evaluating Code Blocks
  Most code blocks in this document DO NOT need to be evaluated. Instead, this
  document usually relies upon Tangling instead (see next section). However, each
- deployment section may include some code blocks that need to be evaluated, as
- an initial setup procedure, only necessary to run one time. You do this
- explicitly, in Emacs, by hand, telling Org mode to evaluate each code block.
+ deployment section may include some code blocks in the =shell= language, that
+ do need to be evaluated, only as an initial setup procedure, necessary to run
+ one time. You do this explicitly, in Emacs, by hand, telling Org mode to
+ evaluate each code block.
 
  See the [[https://orgmode.org/manual/Evaluating-Code-Blocks.html][Evaluating Code Blocks]] section of the Org manual, but basically it's
  like this:
 
 [[https://ec-share.nyc3.digitaloceanspaces.com/emacs-org-mode-evaluate-code-block.gif]]
 
-  1. Code blocks start with =#+begin_src= and end with =#+end_src=.
-  2. Put your cursor inside the code block (anywhere between =begin_src= and
+  1. Code blocks start with a line =#+begin_src= and end with another line
+     =#+end_src=. The code is all of the lines between these markers.
+  2. Each code block has a language, as the first header argument. This document
+     uses these languages: =shell=, =config=, =yaml=. Only the =shell= code
+     blocks need to be evaluated. The rest of the header line are arguments to
+     Org babel: =:noweb yes :results output=
+  3. Put your cursor inside the code block (anywhere between =begin_src= and
      =end_src=)
-  3. Press =C-c C-c= to execute the code block. It will ask you to confirm.
-     Press =y= or =n=. The code block is now executed directly on your system.
-     (And if that command was =kubectl=, it executes it on your cluster!)
-  4. After the code finishes running, you will see the output of the command
+  4. Press =C-c C-c= to execute the code block (you'll find that most Org
+     commands start with =C-c=). It will ask you to confirm. Press =y= or =n=.
+     The code block is now executed directly on your system. (And if that
+     command was =kubectl=, it executes it on your cluster!)
+  5. After the code finishes running, you will see the output of the command
      automatically printed, directly below the code block in the =RESULTS=
      section. (This behaviour has been disabled on some commands with the
      argument =:results none=). Normally, these results are also exported in the
      HTML version, but can be excluded from the HTML by applying the argument
      =:exports code= (as opposed to =:exports both= which would include the
      RESULTS in the HTML).
-
+  6. If you evaluate the code block again, the RESULTS will be replaced with the
+     new command output. You can clear the RESULTS manually with =C-c C-v k=.
+     
 *** Tangling Code Blocks
- For most code blocks, including all YAML code blocks, these have the arguments
- =:tangle FILE :eval no=, which means that these code blocks cannot be
- evaluated, but instead are exported to another external FILE. Tangling is
- applied globally, that is, tangling exports ALL of the code blocks in the
- entire file, found with the =:tangle FILE= argument, all at the same time (each
- to different FILEs).
+ For most non-shell code blocks, including all YAML code blocks, these have the
+ header arguments =:tangle FILE :eval no=, which means that these code blocks cannot be
+ evaluated, but when tangled, are exported to another external FILE. Tangling is
+ applied on the whole buffer (.org file), it finds all of the code blocks in
+ the same file, and for each one with the =:tangle FILE= argument, exports the
+ code to the specified FILE, overwriting any existing files.
 
   1. To tangle the whole document, press =C-c C-v t= or =M-x org-babel-tangle=
 *** Editing code blocks
@@ -179,15 +188,17 @@ n  -- to ignore the local variables list.
  To insert a new code block, you can use a shortcut (as opposed to copying one of
  the existing code block headers).
 
-  1. Press =C-c C-,= to open the template menu. Choose the template you want
-     from the menu. If you're using my config, =s= gets you a bash shell
-     template, =config= gets you a config variable template, and =yaml= gets you
-     a yaml tangle template. Just pressing the first letter gets you the
+  1. Press =C-c C-,= (Control "c" Control ",") to open the template menu. Choose
+     the template you want from the menu. If you're using my config, =s= gets
+     you a blank template, =sh= gets you a bash shell template, =config= gets
+     you a config variable template, and =yaml= gets you a yaml tangle template.
+     Just pressing enough characters to uniquely identify the name gets you the
      template.
   2. A different, /faster/, way of doing the same thing, is to type at the
-     beginning of a new line =<s= or =<config= or =<yaml= then press =TAB=. The
-     text input automatically replaces with the content of the template. This
-     feature requires the org-tempo library (pre-installed in my Emacs config).
+     beginning of a new line =<s= or =<sh= or =<config= or =<yaml= then press
+     =TAB=. The text input automatically replaces with the content of the
+     template. This feature requires the org-tempo library (pre-installed in my
+     Emacs config).
   3. The list of templates can be customized, type =M-x customize-variable= and
      enter =org-structure-template-alist=. (=Customize= is the Emacs way of
      saving a setting permanently to your config, without needing to edit the

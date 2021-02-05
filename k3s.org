@@ -7,24 +7,42 @@
 #+INCLUDE: "./meta/intro.org"
 
 * Core Config
+** Specify the core config file
+   Core config is intended to be loaded [[attachment:config.org][config.org]] by default, but you can
+   specify a different file instead. You need to set an Emacs variable in your
+   Emacs config file (Make sure to replace =k3s.example.com= with your actual
+   =<<CLUSTER>>== domain name, on /both lines/):
+
+#+begin_example
+(setq literate-k3s-default-config-file-k3s.example.com "~/git/literate-k3s/override.org")
+(org-babel-lob-ingest literate-k3s-default-config-file-k3s.example.com)
+#+end_example
+
+ =~/git/literate-k3s/override.org= is the absolute path of the new config file.
+
 ** CLUSTER
- =CLUSTER= is the domain name of your cluster:
- #+name: CLUSTER
- #+begin_src config :eval no
- k3s.example.com
- #+end_src
-** CLUSTER_SSH_USER
-  =CLUSTER_SSH_USER= is the admin SSH account of the cluster.
-  #+name: CLUSTER_SSH_USER
-  #+begin_src config :eval no
-  root
+  =CLUSTER= is the domain name of your cluster:
+  #+begin_src config :noweb yes :eval no
+  <<CLUSTER>>
   #+end_src
+** CLUSTER_SSH_USER
+   =CLUSTER_SSH_USER= is the admin SSH account of the cluster.
+   #+begin_src config :noweb yes :eval no
+   <<CLUSTER_SSH_USER>>
+   #+end_src
 ** KUBE_CONFIG
- =KUBE_CONFIG= is the local path to the kubectl config file
- #+name: KUBE_CONFIG
+  =KUBE_CONFIG= is the local path to the kubectl config file
+  #+begin_src config :noweb yes :eval no
+  <<KUBE_CONFIG>>
+  #+end_src
+** kubectl command
+ Since you'll need to specify the kubectl config file each and every time you use
+ =kubectl=, let's create a NoWeb alias for it (=<<kubectl>>=), to use in other
+ code blocks.
  #+begin_src config :noweb yes :eval no
- ${HOME}/.kube/<<CLUSTER>>-config
+ <<kubectl>>
  #+end_src
+
 * kube-system
 =kube-system= is the namespace for running system wide features, mostly network
 related. 
@@ -49,9 +67,18 @@ Here is the startup code block that =Local Variables= references:
 
 #+name: k3s-org-emacs-load
 #+begin_src elisp :noweb yes :eval never-export :results none
+<<literate-k3s-load-core-config>>
 <<literate-k3s-reload-config-before-tangle>>
 <<enable-export-on-save>>
 <<export-html-with-useful-ids>>
+#+end_src
+
+Here is code to load the core config file:
+#+name: literate-k3s-load-core-config
+#+begin_src elisp :noweb yes :exports code :eval never-export :results none
+  (if (boundp 'literate-k3s-default-config-file-<<CLUSTER>>)
+      (org-babel-lob-ingest literate-k3s-default-config-file-<<CLUSTER>>)
+    (org-babel-lob-ingest "config.org"))
 #+end_src
 
 Here is code to reload config.org before tangling and to automatically export
@@ -59,16 +86,21 @@ HTML whenever this file is saved:
 
 #+name: literate-k3s-reload-config-before-tangle
 #+begin_src elisp :noweb yes :exports code :eval never-export :results none
-  (org-babel-lob-ingest "config.org")
+  (if (not(boundp 'literate-k3s-default-config-file-<<CLUSTER>>))
+    (setq literate-k3s-default-config-file-<<CLUSTER>> "config.org"))
   (setq literate-k3s-buffer-<<CLUSTER>> (current-buffer))
   (defun literate-k3s-reload-config ()
     (org-babel-lob-ingest (buffer-file-name literate-k3s-buffer-<<CLUSTER>>))
-    (org-babel-lob-ingest "config.org"))
+    (org-babel-lob-ingest literate-k3s-default-config-file-<<CLUSTER>>))
   (literate-k3s-reload-config)
 
   (if (boundp 'literate-k3s-watch-dirs)
-      (add-to-list 'literate-k3s-watch-dirs default-directory)
-    (setq literate-k3s-watch-dirs (list default-directory)))
+      (progn
+        (add-to-list 'literate-k3s-watch-dirs default-directory)
+        (add-to-list 'literate-k3s-watch-dirs (concat default-directory "meta/"))
+        )
+    (setq literate-k3s-watch-dirs
+          (list default-directory (concat default-directory "meta/"))))
 
   (add-hook 'after-save-hook
             (lambda ()
@@ -186,3 +218,8 @@ Keep this at the very bottom of the file:
 # Local Variables:
 # eval: (progn (org-babel-goto-named-src-block "k3s-org-emacs-load") (org-babel-execute-src-block) (outline-hide-sublevels 1))
 # End:
+
+
+
+
+

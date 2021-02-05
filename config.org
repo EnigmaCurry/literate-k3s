@@ -1,0 +1,39 @@
+config.org is the default config file loaded by k3s.org. You can also copy this
+file to another file (eg. =override.org=) and use that as the core config file
+instead. For example this lets you use an alternate config not committed to git
+(=override.org= is listed in [[attachment:.gitignore][.gitignore]])
+
+Make sure to replace =k3s.example.com= with your actual =<<CLUSTER>>== domain
+name, on /both lines/ and put this in your Emacs config file:
+
+#+begin_example
+(setq literate-k3s-default-config-file-k3s.example.com "~/git/literate-k3s/override.org")
+(org-babel-lob-ingest literate-k3s-default-config-file-k3s.example.com)
+#+end_example
+
+* CLUSTER
+ =CLUSTER= is the domain name of your cluster:
+ #+name: CLUSTER
+ #+begin_src config :eval no
+ k3s.example.com
+ #+end_src
+* CLUSTER_SSH_USER
+  =CLUSTER_SSH_USER= is the admin SSH account of the cluster.
+  #+name: CLUSTER_SSH_USER
+  #+begin_src config :eval no
+  root
+  #+end_src
+* KUBE_CONFIG
+ =KUBE_CONFIG= is the local path to the kubectl config file
+ #+name: KUBE_CONFIG
+ #+begin_src config :noweb yes :eval no
+ ${HOME}/.kube/<<CLUSTER>>-config
+ #+end_src
+* kubectl command
+Since you'll need to specify the kubectl config file each and every time you use
+=kubectl=, let's create a NoWeb alias for it (=<<kubectl>>=), to use in other
+code blocks.
+#+name: kubectl
+#+begin_src config :noweb yes :eval no
+kubectl --kubeconfig=<<KUBE_CONFIG>>
+#+end_src

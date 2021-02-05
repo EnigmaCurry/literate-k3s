@@ -67,19 +67,19 @@ root@example.com
  echo "Generating passwords and tokens"
  POSTGRES_PASSWORD=$(openssl rand --base64 24)
  echo "Generating INTERNAL_TOKEN ..."
- INTERNAL_TOKEN=$(kubectl --kubeconfig=<<KUBE_CONFIG>> \
+ INTERNAL_TOKEN=$(<<kubectl>> \
     run -i --quiet --rm gen-passwd-${RANDOM} \
     --image=gitea/gitea:latest --restart=Never -- \
     gitea generate secret INTERNAL_TOKEN)
  echo "Succesfully created INTERNAL_TOKEN."
  echo "Generating SECRET_KEY ..."
- SECRET_KEY=$(kubectl --kubeconfig=<<KUBE_CONFIG>> \
+ SECRET_KEY=$(<<kubctl>> \
     run -i --quiet --rm gen-passwd-${RANDOM} \
     --image=gitea/gitea:latest --restart=Never -- \
     gitea generate secret SECRET_KEY)
  echo "Succesfully created SECRET_KEY."
  echo "Generating JWT_SECRET ..."
- JWT_SECRET=$(kubectl --kubeconfig=<<KUBE_CONFIG>> \
+ JWT_SECRET=$(<<kubectl>> \
     run -i --quiet --rm gen-passwd-${RANDOM} \
     --image=gitea/gitea:latest --restart=Never -- \
     gitea generate secret JWT_SECRET)
@@ -120,7 +120,7 @@ root@example.com
  DEFAULT_PRIVATE = private
 
  EOF
- kubectl --kubeconfig=<<KUBE_CONFIG>> \
+ <<kubectl>> \
     create secret generic gitea \
     --namespace git-system --dry-run=client -o json \
     --from-literal=POSTGRES_USER=$POSTGRES_USER \
@@ -144,7 +144,7 @@ root@example.com
     Tangle all the files, =C-c C-v t= then run:
 
   #+begin_src shell :noweb yes :eval never-export :exports both
-  kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k src/git-system
+  <<kubectl>> apply -k src/git-system
   #+end_src
 ** Create Admin account
 In order to login, you need to manually create the initial admin account via
@@ -155,28 +155,31 @@ GITEA_ADMIN_PASSWORD=$(openssl rand --base64 24)
 TMP_PASSWORD=$(mktemp --suffix .txt)
 echo ${GITEA_ADMIN_PASSWORD} > ${TMP_PASSWORD}
 echo "Gitea user <<GITEA_USER>> password written to ${TMP_PASSWORD}"
-kubectl -n git-system exec statefulset/gitea -i -- gitea admin user create \
+<<kubectl>> -n git-system exec statefulset/gitea -i -- gitea admin user create \
     --username <<GITEA_USER>> --password ${GITEA_ADMIN_PASSWORD} --admin \
     --email <<GITEA_EMAIL>> 
+echo "Run: cat ${TMP_PASSWORD}"
 #+end_src
 
-Find the password written to a temporary file, to make sure it doesn't
-accidentally get published in this Org file.
+Find the password written to the temporary file.
 
-Now you can login to your domain at https://git.<<CLUSTER>> 
+Now you can login to your domain at =https://git.<<CLUSTER>>= (eg.
+http://git.k3s.example.com)
 ** Create test repository
     1. Go to your gitea user profile, and find the =SSH/GPG Keys= section.
     2. Add your local workstation public SSH Key (from
        =${HOME}/.ssh/id_rsa.pub=, use =ssh-keygen= if you haven't got one yet.)
-    3. Create a new repository using the =+= icon in the upper right corner.
+    3. Create a new repository using the =+= icon in the upper right corner,
+       name it =test1=.
     4. From the repository page, find the =SSH= clone URL. (Should look like
        this: =ssh://git@git.k3s.example.com:2222/root/test1.git=)
     5. Test cloning it someplace: =git clone
        ssh://git@git.k3s.example.com:2222/root/test1.git=
 
 Assuming that's working, Traefik is providing Gitea SSH ingress (TCP not HTTP)
-on port 2222. That's neat! Port 2222 is from the gitea container, not your host
-SSH daemon (which still runs on regular port 22).
+on port 2222. That's neat! Port 2222 is connected to the gitea container,
+through traefik, not to your host SSH daemon (which still runs on regular port
+22).
 ** Mirror repositories to GitHub or elsewhere
 You can mirror your gitea repositories to another git host, like GitHub. This
 has to be setup separately for each repository you wish to mirror.

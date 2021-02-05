@@ -1,12 +1,17 @@
 * Traefik
 
-[[https://doc.traefik.io/traefik/][Traefik]] is a reverse proxy that will allow HTTP and TCP ingress to your cluster.
-This will give you public internet access to your container services, with
-automatic TLS by default, via Let's Encrypt. With k3s + traefik there is no
+[[https://doc.traefik.io/traefik/][Traefik]] is a reverse proxy that will allow HTTP(s) and TCP ingress to your
+cluster. This will let you run public web services from containers in your
+cluster, including automatic TLS forwarding by default (Using free Let's Encrypt
+certificates, or [[https://github.com/smallstep/certificates#step-certificates][any other ACME service]]). With k3s + traefik there is no
 requirement for any external load balancer.
 
-This config automatically redirects HTTP port 80 to HTTPs port 443. TCP port
-2222 forwards SSH traffic for [[file:gitea.org][Gitea]].
+This config automatically redirects HTTP port 80 to HTTPs port 443, and TCP port
+2222 forwards SSH traffic for [[file:gitea.org][Gitea]]. 
+
+The =whoami= service is a small test service, for testing the functionality of
+Traefik, including the TLS certificate creation process, and serving as the most
+basic example of setting up a Traefik IngressRoute.
 
 ** TRAEFIK_ACME_EMAIL
  =TRAEFIK_ACME_EMAIL= is the email address to register with the ACME service
@@ -44,8 +49,8 @@ the rate limit, which blocks you out for a week.
 domain name to respond to. =TRAEFIK_WHOAMI_DOMAIN= is the subdomain that the
 whoami service responds to.
 #+name: TRAEFIK_WHOAMI_DOMAIN
-#+begin_src config :eval no
-whoami.k3s.example.com
+#+begin_src config :noweb yes :eval no
+whoami.<<CLUSTER>>
 #+end_src
 ** TRAEFIK_VERSION
 The version number of Traefik to install (eg. =2.3=).
@@ -64,7 +69,7 @@ INFO
   deploy Traefik via kubectl:
 
   #+begin_src shell :noweb yes :eval never-export :exports both
-  kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k src/kube-system
+  <<kubectl>> apply -k src/kube-system
   #+end_src
 
 In some instances, you will need to run this command twice. If you get a
