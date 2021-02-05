@@ -86,4 +86,3 @@ made unique when necessary."
             ;; No more ancestors: add and increment a number.
             (inc-suffixf ref)))
         ref)))
-(unpackaged/org-export-html-with-useful-ids-mode)
