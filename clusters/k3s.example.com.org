@@ -1,0 +1,74 @@
+#+title: Literate K3s Cluster
+#+author: EnigmaCurry
+#+OPTIONS: ^:{}
+#+EXPORT_FILE_NAME: ../index.html
+#+INCLUDE: "../meta/export-html.org"
+#+INCLUDE: "../meta/github-ribbon.org"
+#+INCLUDE: "../meta/intro.org"
+
+* Core Config
+** CLUSTER
+  =CLUSTER= is the domain name of your cluster:
+  #+name: CLUSTER
+  #+begin_src config :noweb yes :eval no
+  k3s.example.com
+  #+end_src
+** CLUSTER_SSH_USER
+   =CLUSTER_SSH_USER= is the admin SSH account of the cluster.
+   #+name: CLUSTER_SSH_USER
+   #+begin_src config :noweb yes :eval no
+   root
+   #+end_src
+** KUBE_CONFIG
+  =KUBE_CONFIG= is the local path to the kubectl config file
+  #+name: KUBE_CONFIG
+  #+begin_src config :noweb yes :eval no
+  ${HOME}/.kube/<<CLUSTER>>-config
+  #+end_src
+** kubectl command
+ Since you'll need to specify the kubectl config file each and every time you use
+ =kubectl=, let's create a NoWeb alias for it (=<<kubectl>>=), to use in other
+ code blocks.
+ #+name: kubectl
+ #+begin_src config :noweb yes :eval no
+ kubectl --kubeconfig=<<KUBE_CONFIG>>
+ #+end_src
+
+* kube-system
+=kube-system= is the namespace for running system wide features, mostly network
+related. 
+#+INCLUDE: "../deployments/traefik.org"
+#+INCLUDE: "../deployments/sealed_secrets.org"
+* git-system
+=git-system= is the namespace created for Gitea.
+#+INCLUDE: "../deployments/gitea.org"
+* flux-system
+#+INCLUDE: "../deployments/flux.org"
+* LICENSE
+#+INCLUDE: "../LICENSE.org"
+* Footnotes
+
+This should be the very last section in this document. It is excluded from the
+HTML export. This section contains code that will run when Emacs loads this
+file. When Emacs loads a file, it searches for the =Local Variables= comment at
+the very bottom of the file, and loads variables defined there and runs any
+=eval= code listed.
+
+Here is the startup code block that =Local Variables= references:
+
+#+name: k3s-org-emacs-load
+#+begin_src elisp :noweb yes :eval never-export :results none
+(load-file "../meta/pre-tangle-auto-save-hook.el")
+(load-file "../meta/unpackaged.el")
+#+end_src
+
+Keep this at the very bottom of the file:
+
+# Local Variables:
+# eval: (progn (org-babel-goto-named-src-block "k3s-org-emacs-load") (org-babel-execute-src-block) (outline-hide-sublevels 1))
+# End:
+
+
+
+
+

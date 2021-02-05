@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-04 Thu 16:27 -->
+<!-- 2021-02-04 Thu 18:30 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Literate K3s Cluster</title>
@@ -351,11 +351,10 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#Core%20Config">2. Core Config</a>
 <ul>
-<li><a href="#Specify%20the%20core%20config%20file">2.1. Specify the core config file</a></li>
-<li><a href="#CLUSTER">2.2. CLUSTER</a></li>
-<li><a href="#CLUSTER_SSH_USER">2.3. CLUSTER_SSH_USER</a></li>
-<li><a href="#KUBE_CONFIG">2.4. KUBE_CONFIG</a></li>
-<li><a href="#kubectl%20command">2.5. kubectl command</a></li>
+<li><a href="#CLUSTER">2.1. CLUSTER</a></li>
+<li><a href="#CLUSTER_SSH_USER">2.2. CLUSTER_SSH_USER</a></li>
+<li><a href="#KUBE_CONFIG">2.3. KUBE_CONFIG</a></li>
+<li><a href="#kubectl%20command">2.4. kubectl command</a></li>
 </ul>
 </li>
 <li><a href="#kube-system">3. kube-system</a>
@@ -895,8 +894,8 @@ On Debian: <code>apt-get update &amp;&amp; apt-get install -y curl</code>
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #4f97d7;">set</span> -e
 mkdir -p $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube
-k3sup install --host music.enigmacurry.com --user root <span style="color: #2d9574;">\</span>
-  --local-path $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config --k3s-extra-args <span style="color: #2d9574;">'--disable traefik'</span>
+k3sup install --host k3s.example.com --user root <span style="color: #2d9574;">\</span>
+  --local-path $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config --k3s-extra-args <span style="color: #2d9574;">'--disable traefik'</span>
 </pre>
 </div>
 
@@ -906,7 +905,7 @@ k3sup install --host music.enigmacurry.com --user root <span style="color: #2d95
 </ul>
 
 <div class="org-src-container">
-<pre class="src src-shell"><span style="color: #4f97d7;">echo</span> kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config get nodes
+<pre class="src src-shell"><span style="color: #4f97d7;">echo</span> kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config get nodes
 </pre>
 </div>
 </div>
@@ -1000,73 +999,52 @@ cluster, read on.
 <h2 id="Core%20Config"><span class="section-number-2">2</span> Core Config</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-Specify%20the%20core%20config%20file" class="outline-3">
-<h3 id="Specify%20the%20core%20config%20file"><span class="section-number-3">2.1</span> Specify the core config file</h3>
-<div class="outline-text-3" id="text-2-1">
-<p>
-Core config is intended to be loaded <a target="_blank" href="config.org">config.org</a> by default, but you can
-specify a different file instead. You need to set an Emacs variable in your
-Emacs config file (Make sure to replace <code>k3s.example.com</code> with your actual
-<code>&lt;&lt;CLUSTER&gt;&gt;=</code> domain name, on <i>both lines</i>):
-</p>
-
-<pre class="example">
-(setq literate-k3s-default-config-file-k3s.example.com "~/git/literate-k3s/override.org")
-(org-babel-lob-ingest literate-k3s-default-config-file-k3s.example.com)
-</pre>
-
-<p>
-<code>~/git/literate-k3s/override.org</code> is the absolute path of the new config file.
-</p>
-</div>
-</div>
-
 <div id="outline-container-CLUSTER" class="outline-3">
-<h3 id="CLUSTER"><span class="section-number-3">2.2</span> CLUSTER</h3>
-<div class="outline-text-3" id="text-2-2">
+<h3 id="CLUSTER"><span class="section-number-3">2.1</span> CLUSTER</h3>
+<div class="outline-text-3" id="text-2-1">
 <p>
 <code>CLUSTER</code> is the domain name of your cluster:
 </p>
 <div class="org-src-container">
-<pre class="src src-config">music.enigmacurry.com
+<pre class="src src-config" id="orge472422">k3s.example.com
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-CLUSTER_SSH_USER" class="outline-3">
-<h3 id="CLUSTER_SSH_USER"><span class="section-number-3">2.3</span> CLUSTER_SSH_USER</h3>
-<div class="outline-text-3" id="text-2-3">
+<h3 id="CLUSTER_SSH_USER"><span class="section-number-3">2.2</span> CLUSTER_SSH_USER</h3>
+<div class="outline-text-3" id="text-2-2">
 <p>
 <code>CLUSTER_SSH_USER</code> is the admin SSH account of the cluster.
 </p>
 <div class="org-src-container">
-<pre class="src src-config">root
+<pre class="src src-config" id="org091abcf">root
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-KUBE_CONFIG" class="outline-3">
-<h3 id="KUBE_CONFIG"><span class="section-number-3">2.4</span> KUBE_CONFIG</h3>
-<div class="outline-text-3" id="text-2-4">
+<h3 id="KUBE_CONFIG"><span class="section-number-3">2.3</span> KUBE_CONFIG</h3>
+<div class="outline-text-3" id="text-2-3">
 <p>
 <code>KUBE_CONFIG</code> is the local path to the kubectl config file
 </p>
 <div class="org-src-container">
-<pre class="src src-config">${HOME}/.kube/music.enigmacurry.com-config
+<pre class="src src-config" id="org06a9fff">${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-kubectl%20command" class="outline-3">
-<h3 id="kubectl%20command"><span class="section-number-3">2.5</span> kubectl command</h3>
-<div class="outline-text-3" id="text-2-5">
+<h3 id="kubectl%20command"><span class="section-number-3">2.4</span> kubectl command</h3>
+<div class="outline-text-3" id="text-2-4">
 <p>
 Since you'll need to specify the kubectl config file each and every time you use
 <code>kubectl</code>, let's create a NoWeb alias for it (<code>&lt;&lt;kubectl&gt;&gt;</code>), to use in other
 code blocks.
 </p>
 <div class="org-src-container">
-<pre class="src src-config">kubectl --kubeconfig=${HOME}/.kube/music.enigmacurry.com-config
+<pre class="src src-config" id="orga2644cf">kubectl --kubeconfig=${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1094,7 +1072,7 @@ requirement for any external load balancer.
 
 <p>
 This config automatically redirects HTTP port 80 to HTTPs port 443, and TCP port
-2222 forwards SSH traffic for <a href="gitea.html">Gitea</a>. 
+2222 forwards SSH traffic for <a href="../deployments/gitea.html">Gitea</a>. 
 </p>
 
 <p>
@@ -1112,7 +1090,7 @@ basic example of setting up a Traefik IngressRoute.
 provider. 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org0830d1a">you@example.com
+<pre class="src src-config" id="org16b07dc">you@example.com
 </pre>
 </div>
 </div>
@@ -1125,7 +1103,7 @@ provider.
 provider). 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org7f46676">https://acme-staging-v02.api.letsencrypt.org/directory
+<pre class="src src-config" id="orgd03bf41">https://acme-staging-v02.api.letsencrypt.org/directory
 </pre>
 </div>
 
@@ -1168,7 +1146,7 @@ domain name to respond to. <code>TRAEFIK_WHOAMI_DOMAIN</code> is the subdomain t
 whoami service responds to.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org874b483">whoami.music.enigmacurry.com
+<pre class="src src-config" id="org030aa13">whoami.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1180,7 +1158,7 @@ whoami service responds to.
 The version number of Traefik to install (eg. <code>2.3</code>).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgcc9dd47">v2.3
+<pre class="src src-config" id="org977271a">v2.3
 </pre>
 </div>
 </div>
@@ -1192,7 +1170,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 <code>TRAEFIK_LOG_LEVEL</code> is the filter level on the traefik log.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orga141f88">INFO
+<pre class="src src-config" id="org45a8cd2">INFO
 </pre>
 </div>
 </div>
@@ -1206,7 +1184,7 @@ deploy Traefik via kubectl:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config apply -k src/kube-system
+<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config apply -k src/kube-system
 </pre>
 </div>
 
@@ -1226,7 +1204,7 @@ Test with TLS verification off:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">curl -Lk whoami.music.enigmacurry.com
+<pre class="src src-shell">curl -Lk whoami.k3s.example.com
 </pre>
 </div>
 
@@ -1235,12 +1213,12 @@ Test with TLS verification on:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">curl -L whoami.music.enigmacurry.com
+<pre class="src src-shell">curl -L whoami.k3s.example.com
 </pre>
 </div>
 
 <p>
-TLS will not verify until you use the production <a href="#org7f46676">TRAEFIK_ACME_SERVER</a>.
+TLS will not verify until you use the production <a href="#orgd03bf41">TRAEFIK_ACME_SERVER</a>.
 </p>
 </div>
 </div>
@@ -1578,7 +1556,7 @@ to direct traffic to any other node.
 <div class="outline-text-4" id="text-3-1-13">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It listens to the
-domain <a href="#org874b483">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
+domain <a href="#org030aa13">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
 </p>
 
 <div class="org-src-container">
@@ -1645,7 +1623,7 @@ domain <a href="#org874b483">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.exa
   - websecure
   <span style="color: #7590db;">routes</span>:
   - <span style="color: #7590db;">kind</span>: Rule
-    <span style="color: #7590db;">match</span>: Host(`whoami.music.enigmacurry.com`)
+    <span style="color: #7590db;">match</span>: Host(`whoami.k3s.example.com`)
     <span style="color: #7590db;">services</span>:
     - <span style="color: #7590db;">name</span>: whoami
       <span style="color: #7590db;">port</span>: 80
@@ -1677,7 +1655,7 @@ to install it to the cluster:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell"><span style="color: #4f97d7;">echo</span> kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download//controller.yaml
+<pre class="src src-shell"><span style="color: #4f97d7;">echo</span> kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download//controller.yaml
 </pre>
 </div>
 </div>
@@ -1711,7 +1689,7 @@ easily mirror these repositories to external hosts like GitHub.
 <h4 id="GITEA_DOMAIN"><span class="section-number-4">4.1.1</span> GITEA_DOMAIN</h4>
 <div class="outline-text-4" id="text-4-1-1">
 <div class="org-src-container">
-<pre class="src src-config" id="org4fd9a05">git.music.enigmacurry.com
+<pre class="src src-config" id="org963e3d2">git.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1723,7 +1701,7 @@ easily mirror these repositories to external hosts like GitHub.
 The size of the postgres database volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgbf99762">5Gi
+<pre class="src src-config" id="org175463c">5Gi
 </pre>
 </div>
 </div>
@@ -1735,7 +1713,7 @@ The size of the postgres database volume for gitea:
 The size of the data volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org0644176">5Gi
+<pre class="src src-config" id="org33b475a">5Gi
 </pre>
 </div>
 </div>
@@ -1748,7 +1726,7 @@ The size of the data volume for gitea:
 name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org3de7f84">root
+<pre class="src src-config" id="org96b808b">root
 </pre>
 </div>
 </div>
@@ -1760,7 +1738,7 @@ name.
 <code>GITEA_EMAIL</code> is the admin account email address:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org9c58c91">root@example.com
+<pre class="src src-config" id="orgac9aabc">root@example.com
 </pre>
 </div>
 </div>
@@ -1802,7 +1780,7 @@ rm -f src/git-system/gitea.sealed_secret.yaml
 <span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Generating passwords and tokens"</span>
 <span style="color: #7590db;">POSTGRES_PASSWORD</span>=$<span style="color: #4f97d7;">(</span><span style="color: #fa8072;">openssl</span> rand --base64 <span style="color: #a45bad;">24</span><span style="color: #4f97d7;">)</span>
 <span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Generating INTERNAL_TOKEN ..."</span>
-<span style="color: #7590db;">INTERNAL_TOKEN</span>=$<span style="color: #4f97d7;">(</span><span style="color: #fa8072;">kubectl</span> --kubeconfig=$<span style="color: #bc6ec5;">{</span><span style="color: #7590db;">HOME</span><span style="color: #bc6ec5;">}</span>/.kube/music.enigmacurry.com-config <span style="color: #2d9574;">\</span>
+<span style="color: #7590db;">INTERNAL_TOKEN</span>=$<span style="color: #4f97d7;">(</span><span style="color: #fa8072;">kubectl</span> --kubeconfig=$<span style="color: #bc6ec5;">{</span><span style="color: #7590db;">HOME</span><span style="color: #bc6ec5;">}</span>/.kube/k3s.example.com-config <span style="color: #2d9574;">\</span>
    run -i --quiet --rm gen-passwd-$<span style="color: #bc6ec5;">{</span><span style="color: #7590db;">RANDOM</span><span style="color: #bc6ec5;">}</span> <span style="color: #2d9574;">\</span>
    --image=gitea/gitea:latest --restart=Never -- <span style="color: #2d9574;">\</span>
    gitea generate secret INTERNAL_TOKEN<span style="color: #4f97d7;">)</span>
@@ -1814,7 +1792,7 @@ rm -f src/git-system/gitea.sealed_secret.yaml
    gitea generate secret SECRET_KEY<span style="color: #4f97d7;">)</span>
 <span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Succesfully created SECRET_KEY."</span>
 <span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Generating JWT_SECRET ..."</span>
-<span style="color: #7590db;">JWT_SECRET</span>=$<span style="color: #4f97d7;">(</span><span style="color: #fa8072;">kubectl</span> --kubeconfig=$<span style="color: #bc6ec5;">{</span><span style="color: #7590db;">HOME</span><span style="color: #bc6ec5;">}</span>/.kube/music.enigmacurry.com-config <span style="color: #2d9574;">\</span>
+<span style="color: #7590db;">JWT_SECRET</span>=$<span style="color: #4f97d7;">(</span><span style="color: #fa8072;">kubectl</span> --kubeconfig=$<span style="color: #bc6ec5;">{</span><span style="color: #7590db;">HOME</span><span style="color: #bc6ec5;">}</span>/.kube/k3s.example.com-config <span style="color: #2d9574;">\</span>
    run -i --quiet --rm gen-passwd-$<span style="color: #bc6ec5;">{</span><span style="color: #7590db;">RANDOM</span><span style="color: #bc6ec5;">}</span> <span style="color: #2d9574;">\</span>
    --image=gitea/gitea:latest --restart=Never -- <span style="color: #2d9574;">\</span>
    gitea generate secret JWT_SECRET<span style="color: #4f97d7;">)</span>
@@ -1822,12 +1800,12 @@ rm -f src/git-system/gitea.sealed_secret.yaml
 <span style="color: #7590db;">CONFIG_TMP</span>=$<span style="color: #4f97d7;">(</span><span style="color: #fa8072;">mktemp</span><span style="color: #4f97d7;">)</span>
 <span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Creating temporary plain text config: ${CONFIG_TMP}"</span>
 cat &lt;&lt;EOF &gt; $<span style="color: #7590db;">CONFIG_TMP</span>
-<span style="color: #ffff00; font-weight: bold;">APP_NAME = git.music.enigmacurry.com</span>
+<span style="color: #ffff00; font-weight: bold;">APP_NAME = git.k3s.example.com</span>
 
 <span style="color: #ffff00; font-weight: bold;">[server]</span>
-<span style="color: #ffff00; font-weight: bold;">DOMAIN = git.music.enigmacurry.com</span>
-<span style="color: #ffff00; font-weight: bold;">ROOT_URL = https://git.music.enigmacurry.com</span>
-<span style="color: #ffff00; font-weight: bold;">SSH_DOMAIN = git.music.enigmacurry.com</span>
+<span style="color: #ffff00; font-weight: bold;">DOMAIN = git.k3s.example.com</span>
+<span style="color: #ffff00; font-weight: bold;">ROOT_URL = https://git.k3s.example.com</span>
+<span style="color: #ffff00; font-weight: bold;">SSH_DOMAIN = git.k3s.example.com</span>
 <span style="color: #ffff00; font-weight: bold;">SSH_PORT = 2222</span>
 <span style="color: #ffff00; font-weight: bold;">START_SSH_SERVER = true</span>
 
@@ -1855,7 +1833,7 @@ cat &lt;&lt;EOF &gt; $<span style="color: #7590db;">CONFIG_TMP</span>
 <span style="color: #ffff00; font-weight: bold;">DEFAULT_PRIVATE = private</span>
 
 <span style="color: #ffff00; font-weight: bold;">EOF</span>
-kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config <span style="color: #2d9574;">\</span>
+kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config <span style="color: #2d9574;">\</span>
    create secret generic gitea <span style="color: #2d9574;">\</span>
    --namespace git-system --dry-run=client -o json <span style="color: #2d9574;">\</span>
    --from-literal=<span style="color: #7590db;">POSTGRES_USER</span>=$<span style="color: #7590db;">POSTGRES_USER</span> <span style="color: #2d9574;">\</span>
@@ -1888,7 +1866,7 @@ Tangle all the files, <code>C-c C-v t</code> then run:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config apply -k src/git-system
+<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config apply -k src/git-system
 </pre>
 </div>
 </div>
@@ -1906,7 +1884,7 @@ In order to login, you need to manually create the initial admin account via
 <span style="color: #7590db;">TMP_PASSWORD</span>=$<span style="color: #4f97d7;">(</span><span style="color: #fa8072;">mktemp</span> --suffix .txt<span style="color: #4f97d7;">)</span>
 <span style="color: #4f97d7;">echo</span> $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">GITEA_ADMIN_PASSWORD</span><span style="color: #4f97d7;">}</span> &gt; $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">TMP_PASSWORD</span><span style="color: #4f97d7;">}</span>
 <span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Gitea user root password written to ${TMP_PASSWORD}"</span>
-kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config -n git-system exec statefulset/gitea -i -- gitea admin user create <span style="color: #2d9574;">\</span>
+kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config -n git-system exec statefulset/gitea -i -- gitea admin user create <span style="color: #2d9574;">\</span>
     --username root --password $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">GITEA_ADMIN_PASSWORD</span><span style="color: #4f97d7;">}</span> --admin <span style="color: #2d9574;">\</span>
     --email root@example.com 
 <span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Run: cat ${TMP_PASSWORD}"</span>
@@ -2238,7 +2216,7 @@ mirror as well.
   - websecure
   <span style="color: #7590db;">routes</span>:
   - <span style="color: #7590db;">kind</span>: Rule
-    <span style="color: #7590db;">match</span>: Host(`git.music.enigmacurry.com`)
+    <span style="color: #7590db;">match</span>: Host(`git.k3s.example.com`)
     <span style="color: #7590db;">services</span>:
     - <span style="color: #7590db;">name</span>: gitea-web
       <span style="color: #7590db;">port</span>: 80
@@ -2310,7 +2288,7 @@ The name of the repository containing these org files, and from which flux
 reads. Not including the domain, just the name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgf9088b6">literate-k3s
+<pre class="src src-config" id="org0bea9a9">literate-k3s
 </pre>
 </div>
 </div>
@@ -2322,7 +2300,7 @@ reads. Not including the domain, just the name.
 This is the correct git remote URL if you are using self-hosted Gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org0307eec">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+<pre class="src src-config" id="org28dde79">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
 </pre>
 </div>
 </div>
@@ -2349,7 +2327,7 @@ Tangle all the files, <code>C-c C-v t</code> then run:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config apply -k src/flux-system
+<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config apply -k src/flux-system
 </pre>
 </div>
 </div>
@@ -2367,7 +2345,7 @@ and keep the cluster in sync with its state.
 
 <p>
 On Gitea, click the <code>+</code> icon in the upper right corner to create a new <code>New
-Repository</code>. Call the new repository the same as <a href="#orgf9088b6">FLUX_REPO_NAME</a>. 
+Repository</code>. Call the new repository the same as <a href="#org0bea9a9">FLUX_REPO_NAME</a>. 
 </p>
 
 <p>
@@ -2385,7 +2363,7 @@ Add the src directory to the repository and commit it:
 </p>
 <div class="org-src-container">
 <pre class="src src-shell">git add src/
-git commit -m <span style="color: #2d9574;">"Initial commit for new cluster music.enigmacurry.com"</span>
+git commit -m <span style="color: #2d9574;">"Initial commit for new cluster k3s.example.com"</span>
 </pre>
 </div>
 
@@ -2461,7 +2439,7 @@ Check the logs of the flux Source controller:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config -n flux-system <span style="color: #2d9574;">\</span>
+<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config -n flux-system <span style="color: #2d9574;">\</span>
         logs deployment/source-controller | tail -n <span style="color: #a45bad;">10</span>
 </pre>
 </div>
@@ -2471,7 +2449,7 @@ Check the logs of the flux Kustomize controller:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config -n flux-system <span style="color: #2d9574;">\</span>
+<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config -n flux-system <span style="color: #2d9574;">\</span>
         logs deployment/source-controller | tail -n <span style="color: #a45bad;">10</span>
 </pre>
 </div>
@@ -2529,7 +2507,7 @@ Push the changes:
 And in a little less than a minute, you should see the new namespace appear:
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config get ns just-a-test
+<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config get ns just-a-test
 </pre>
 </div>
 
@@ -2557,7 +2535,7 @@ And in another minute or so, the namespace should be gone:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/music.enigmacurry.com-config get ns just-a-test
+<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config get ns just-a-test
 </pre>
 </div>
 </div>
@@ -2632,8 +2610,8 @@ THE SOFTWARE.
 
 <p>
 <a href="https://github.com/alphapapa/unpackaged.el">alphapapa/unpackaged.el</a> is licensed under the <a href="https://github.com/alphapapa/unpackaged.el/blob/master/LICENSE">GNU General Public License v3.0</a>.
-Select functions from this package have been copied verbatim into the Footnotes
-section of <a target="_blank" href="k3s.org">k3s.org</a>, in order to improve the user experience using Org mode.
+Select functions from this package has been copied verbatim into
+<a target="_blank" href="meta/unpackaged.el">meta/unpackaged.el</a>, in order to improve the user experience using Org mode.
 These functions could be removed, and installed separately from the upstream
 package into your Emacs environment, its just that they are not packaged very
 well, so I instead opted to copy them here.
@@ -2643,7 +2621,7 @@ well, so I instead opted to copy them here.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: EnigmaCurry</p>
-<p class="date">Created: 2021-02-04 Thu 16:27</p>
+<p class="date">Created: 2021-02-04 Thu 18:30</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

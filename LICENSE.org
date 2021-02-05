@@ -43,8 +43,8 @@ The HTML export stylesheet and javascript code is forked from
 : THE SOFTWARE.
 
 [[https://github.com/alphapapa/unpackaged.el][alphapapa/unpackaged.el]] is licensed under the [[https://github.com/alphapapa/unpackaged.el/blob/master/LICENSE][GNU General Public License v3.0]].
-Select functions from this package have been copied verbatim into the Footnotes
-section of [[attachment:k3s.org][k3s.org]], in order to improve the user experience using Org mode.
+Select functions from this package has been copied verbatim into
+[[attachment:meta/unpackaged.el][meta/unpackaged.el]], in order to improve the user experience using Org mode.
 These functions could be removed, and installed separately from the upstream
 package into your Emacs environment, its just that they are not packaged very
 well, so I instead opted to copy them here.
