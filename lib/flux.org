@@ -18,7 +18,7 @@ You need to [[https://github.com/fluxcd/flux2/tree/main/install][install the flu
 container]] or use the =flux-go= AUR package on Arch Linux.
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-flux install --version=latest --arch=amd64 --export > src/flux-system/gotk-components.yaml
+flux install --version=latest --arch=amd64 --export > flux-system/gotk-components.yaml
 #+end_src
 
 #+RESULTS:
@@ -26,7 +26,7 @@ flux install --version=latest --arch=amd64 --export > src/flux-system/gotk-compo
     Tangle all the files, =C-c C-v t= then run:
 
   #+begin_src shell :noweb yes :eval never-export :exports both
-  kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k src/flux-system
+  kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k flux-system
   #+end_src
 
 ** Create infrastructure repository
@@ -47,7 +47,7 @@ git remote add origin <<FLUX_GIT_REMOTE>>
 
 Add the src directory to the repository and commit it:
 #+begin_src shell :noweb yes :eval never-export :exports code :results output
-git add src/
+git add .
 git commit -m "Initial commit for new cluster <<CLUSTER>>"
 #+end_src
 
@@ -119,14 +119,14 @@ automatically apply them to your cluster. So let's test that out:
 Create a new namespace just for testing. Create the manifests:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-mkdir -p src/just-a-test
-cat <<EOF > src/just-a-test/kustomization.yaml
+mkdir -p just-a-test
+cat <<EOF > just-a-test/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - namespace.yaml
 EOF
-cat <<EOF > src/just-a-test/namespace.yaml
+cat <<EOF > just-a-test/namespace.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -137,7 +137,7 @@ EOF
 Commit the changes:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-git add src/just-a-test
+git add just-a-test
 git commit -m "just-a-test"
 #+end_src
 
@@ -154,8 +154,8 @@ kubectl --kubeconfig=<<KUBE_CONFIG>> get ns just-a-test
 Now delete the =just-a-test= directory and commit:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-rm -rf src/just-a-test/
-git add src/just-a-test/
+rm -rf just-a-test/
+git add just-a-test/
 git commit -m "remove just-a-test"
 #+end_src
 
@@ -169,8 +169,8 @@ And in another minute or so, the namespace should be gone:
 #+begin_src shell :noweb yes :eval never-export :exports code
 kubectl --kubeconfig=<<KUBE_CONFIG>> get ns just-a-test
 #+end_src
-** src/flux-system/kustomization.yaml
-#+begin_src yaml :noweb yes :eval no :tangle src/flux-system/kustomization.yaml
+** flux-system/kustomization.yaml
+#+begin_src yaml :noweb yes :eval no :tangle flux-system/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:

@@ -1,10 +1,10 @@
 #+title: literate-k3s
 #+author: EnigmaCurry
 
-This repository an Emacs org-mode Literate Programming guide
-for creating and maintaining a Kubernetes cluster with [[https://www.k3s.io][K3s]]. It can also be
-[[https://enigmacurry.github.io/literate-k3s/][viewed on the web in HTML format]].
+This repository is an Emacs org-mode Literate Programming guide for creating and
+maintaining a Kubernetes cluster with [[https://www.k3s.io][K3s]]. 
 
-See [[file:k3s.org][k3s.org]]
+ * See the [[https://enigmacurry.github.io/literate-k3s/][example site on the web in HTML format]].
+ * See the example site Org-mode source code [[attachment:clusters/k3s.example.com/k3s.example.com.org][clusters/k3s.example.com]] 
+ * See [[file:LICENSE.org][LICENSE.org]]
 
-See [[file:LICENSE.org][LICENSE.org]]

@@ -69,7 +69,7 @@ INFO
   deploy Traefik via kubectl:
 
   #+begin_src shell :noweb yes :eval never-export :exports both
-  <<kubectl>> apply -k src/kube-system
+  <<kubectl>> apply -k kube-system
   #+end_src
 
 In some instances, you will need to run this command twice. If you get a
@@ -91,8 +91,8 @@ curl -L <<TRAEFIK_WHOAMI_DOMAIN>>
 
 TLS will not verify until you use the production [[TRAEFIK_ACME_SERVER][TRAEFIK_ACME_SERVER]].
 
-** src/kube-system/traefik/kustomization.yaml
-#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/kustomization.yaml
+** kube-system/traefik/kustomization.yaml
+#+begin_src yaml :noweb yes :eval no :tangle kube-system/traefik/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
@@ -102,7 +102,7 @@ resources:
 - daemonset.yaml
 - whoami.yaml
 #+end_src
-** src/kube-system/traefik/crd.yaml
+** kube-system/traefik/crd.yaml
 Traefik supports Kubernetes by way of creating new kubernetes resource types:
 [[https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/][Custom Resource Definitions (CRD)]]. Basically its a declarative mapping between
 Kubernetes API concepts and Traefik API concepts. These CRD are copied verbatim
@@ -111,7 +111,7 @@ different version. I used to just link a URL inside of kustomization.yaml, as it
 feels like boilerplate, but I think its better to document all of the CRD in the
 Org document, even if its a bit long:
 
-#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/crd.yaml
+#+begin_src yaml :noweb yes :eval no :tangle kube-system/traefik/crd.yaml
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
@@ -217,11 +217,11 @@ spec:
   scope: Namespaced
 
 #+end_src
-** src/kube-system/traefik/rbac.yaml
+** kube-system/traefik/rbac.yaml
 RBAC is [[https://kubernetes.io/docs/reference/access-authn-authz/rbac/][Role Based Authentication Control]] and it grants Traefik extra privileges
 to watch the state of your cluster, and see when pods are created.
 
-#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/rbac.yaml
+#+begin_src yaml :noweb yes :eval no :tangle kube-system/traefik/rbac.yaml
 kind: ServiceAccount
 apiVersion: v1
 metadata:
@@ -294,11 +294,11 @@ subjects:
     name: traefik-ingress-controller
     namespace: kube-system
 #+end_src
-** src/kube-system/traefik/pvc.yaml
+** kube-system/traefik/pvc.yaml
 a [[https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims][PersistentVolumeClaim]] allocates a permanent volume for a Pod. This is one is
 for 100MB to store the Traefik =acme.json= file.
 
-#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/pvc.yaml
+#+begin_src yaml :noweb yes :eval no :tangle kube-system/traefik/pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -312,13 +312,13 @@ spec:
       storage: 100M
   storageClassName: local-path
 #+end_src
-** src/kube-system/traefik/daemonset.yaml
+** kube-system/traefik/daemonset.yaml
 A [[https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/][DaemonSet]] is one method of deployment in Kubernetes (others being [[https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/][StatefulSet]]
 and [[https://kubernetes.io/docs/concepts/workloads/controllers/deployment/][Deployment]]). DaemonSet is cool because it replicates a given pod on to every
 single node in the cluster. We want Traefik to listen on every node and be able
 to direct traffic to any other node.
 
-#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/daemonset.yaml
+#+begin_src yaml :noweb yes :eval no :tangle kube-system/traefik/daemonset.yaml
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -386,11 +386,11 @@ spec:
           claimName: traefik-data
 #+end_src
 
-** src/kube-system/traefk/whoami.yaml
+** kube-system/traefk/whoami.yaml
  [[https://github.com/traefik/whoami][traefik/whoami]] can be deployed to test Traefik functionality. It listens to the
  domain [[TRAEFIK_WHOAMI_DOMAIN][TRAEFIK_WHOAMI_DOMAIN]] (eg. =whoami.k3s.example.com=).
 
-#+begin_src yaml :noweb yes :eval no :tangle src/kube-system/traefik/whoami.yaml
+#+begin_src yaml :noweb yes :eval no :tangle kube-system/traefik/whoami.yaml
 apiVersion: v1
 kind: Service
 metadata:

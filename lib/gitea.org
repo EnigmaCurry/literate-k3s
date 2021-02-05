@@ -57,11 +57,11 @@ root@example.com
  NOTE: this script is a little finnicky: it fails about 1 in 3 times, but you can
  safely run it again if it fails. (Fresh passwords are generated each time.)
  Check the results, and ensure the script finishes completely, and that the file
- =src/git-system/gitea.sealed_secret.yaml= is created.
+ =git-system/gitea.sealed_secret.yaml= is created.
 
  #+begin_src shell :noweb yes :eval never-export :exports code :results output
  set -e
- rm -f src/git-system/gitea.sealed_secret.yaml
+ rm -f git-system/gitea.sealed_secret.yaml
  POSTGRES_USER=gitea
  ## Generate passwords and tokens:
  echo "Generating passwords and tokens"
@@ -129,22 +129,22 @@ root@example.com
     --from-literal=JWT_SECRET=$JWT_SECRET \
     --from-literal=SECRET_KEY=$SECRET_KEY \
     --from-file=app.ini=${CONFIG_TMP} | kubeseal -o yaml > \
-  src/git-system/gitea.sealed_secret.yaml
+  git-system/gitea.sealed_secret.yaml
  rm ${CONFIG_TMP}
- echo "Gitea Sealed Secret created: src/git-system/gitea.sealed_secret.yaml"
+ echo "Gitea Sealed Secret created: git-system/gitea.sealed_secret.yaml"
  echo "Removed tempoary config file: ${CONFIG_TMP}"
  echo "Finished!"
  #+end_src
 
  If the script completes succesfully, you should see the message =Finished!= at
- the bottom of the result above, and =src/git-system/gitea.sealed_secret.yaml= should
+ the bottom of the result above, and =git-system/gitea.sealed_secret.yaml= should
  now exist. If you don't see =Finished!=, then run it again, it should work if
  you try it again...
 ** Deploy Gitea
     Tangle all the files, =C-c C-v t= then run:
 
   #+begin_src shell :noweb yes :eval never-export :exports both
-  <<kubectl>> apply -k src/git-system
+  <<kubectl>> apply -k git-system
   #+end_src
 ** Create Admin account
 In order to login, you need to manually create the initial admin account via
@@ -236,9 +236,9 @@ for the deployment key, with the one generated in the private key file
 
 Now when you push to this repository it should automatically push to the remote
 mirror as well.
-** src/git-system/gitea/kustomization.yaml
+** git-system/gitea/kustomization.yaml
 =kustomization.yaml= lists all of the =git-system= namespace manifests:
-#+begin_src yaml :noweb yes :eval no :tangle src/git-system/gitea/kustomization.yaml
+#+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
@@ -249,8 +249,8 @@ resources:
 - gitea.statefulset.yaml
 - gitea.ingress.yaml
 #+end_src
-** src/git-system/gitea/pvc.yaml
-     #+begin_src yaml :noweb yes :eval no :tangle src/git-system/gitea/pvc.yaml
+** git-system/gitea/pvc.yaml
+     #+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -278,8 +278,8 @@ spec:
   storageClassName: local-path
 
      #+end_src
-** src/git-system/gitea/database.yaml
-      #+begin_src yaml :noweb yes :eval no :tangle src/git-system/gitea/database.yaml
+** git-system/gitea/database.yaml
+      #+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/database.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -334,8 +334,8 @@ spec:
             claimName: gitea-postgres-data
 
       #+end_src
-** src/git-system/gitea/statefulset.yaml
-#+begin_src yaml :noweb yes :eval no :tangle src/git-system/gitea/statefulset.yaml
+** git-system/gitea/statefulset.yaml
+#+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/statefulset.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -409,8 +409,8 @@ spec:
             secretName: gitea
 
 #+end_src
-** src/git-system/gitea/ingress.yaml
-      #+begin_src yaml :noweb yes :eval no :tangle src/git-system/gitea/ingress.yaml
+** git-system/gitea/ingress.yaml
+      #+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/ingress.yaml
 apiVersion: traefik.containo.us/v1alpha1
 kind: TraefikService
 metadata:
@@ -460,16 +460,16 @@ spec:
 
       #+end_src
 
-* src/git-system/kustomization.yaml
-#+begin_src yaml :noweb yes :eval no :tangle src/git-system/kustomization.yaml
+* git-system/kustomization.yaml
+#+begin_src yaml :noweb yes :eval no :tangle git-system/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - namespace.yaml
 #+end_src
-* src/git-system/namespace.yaml
+* git-system/namespace.yaml
 =namespace.yaml= creates the =git-system= namespace:
-#+begin_src yaml :noweb yes :eval no :tangle src/git-system/namespace.yaml
+#+begin_src yaml :noweb yes :eval no :tangle git-system/namespace.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
