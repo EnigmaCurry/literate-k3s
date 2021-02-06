@@ -1,5 +1,3 @@
-* Traefik
-
 [[https://doc.traefik.io/traefik/][Traefik]] is a reverse proxy that will allow HTTP(s) and TCP ingress to your
 cluster. This will let you run public web services from containers in your
 cluster, including automatic TLS forwarding by default (Using free Let's Encrypt
@@ -13,58 +11,7 @@ The =whoami= service is a small test service, for testing the functionality of
 Traefik, including the TLS certificate creation process, and serving as the most
 basic example of setting up a Traefik IngressRoute.
 
-** TRAEFIK_ACME_EMAIL
- =TRAEFIK_ACME_EMAIL= is the email address to register with the ACME service
- provider. 
-#+name: TRAEFIK_ACME_EMAIL
-#+begin_src config :eval no
-you@example.com
-#+end_src
-** TRAEFIK_ACME_SERVER
-=TRAEFIK_ACME_SERVER= is the URL for the Let's Encrypt API (Or other ACME
-provider). 
-#+name: TRAEFIK_ACME_SERVER
-#+begin_src config :eval no
-https://acme-staging-v02.api.letsencrypt.org/directory
-#+end_src
-
-For production, use the =acme-v02= Lets Encrypt server :
-
-: https://acme-v02.api.letsencrypt.org/directory
-
-For staging, use the =acme-staging-v02= Let's Encrypt server :
-
-: https://acme-staging-v02.api.letsencrypt.org/directory
-
-The difference, is that the staging server has much more generous [[https://letsencrypt.org/docs/rate-limits/][rate limiting]],
-but will only provide certificates for testing purposes (ie, they appear INVALID
-in web browsers.) You really should start with the staging server for new
-deployments, because you may find you need to recreate the whole server a few
-times, and if you don't backup and restore the =acme.json= file that Traefik
-needs, it will request the certificates be issued again, incurring the wrath of
-the rate limit, which blocks you out for a week.
-
-** TRAEFIK_WHOAMI_DOMAIN
-[[https://github.com/traefik/whoami][traefik/whoami]] can be deployed to test Traefik functionality. It needs its own
-domain name to respond to. =TRAEFIK_WHOAMI_DOMAIN= is the subdomain that the
-whoami service responds to.
-#+name: TRAEFIK_WHOAMI_DOMAIN
-#+begin_src config :noweb yes :eval no
-whoami.<<CLUSTER>>
-#+end_src
-** TRAEFIK_VERSION
-The version number of Traefik to install (eg. =2.3=).
-#+name: TRAEFIK_VERSION
-#+begin_src config :eval no
-v2.3
-#+end_src
-** TRAEFIK_LOG_LEVEL
-=TRAEFIK_LOG_LEVEL= is the filter level on the traefik log.
-#+name: TRAEFIK_LOG_LEVEL
-#+begin_src config :eval no
-INFO
-#+end_src
-** Deploy Traefik
+* Deploy Traefik
 Create the traefik deployment directory underneath the namespace directory:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
@@ -82,7 +29,7 @@ In some instances, you will need to run this command twice. If you get a
 dependency error, try the command again, and it should resolve itself the second
 time.
 
-** Test Traefik whoami service
+* Test Traefik whoami service
 Test with TLS verification off:
 
 #+begin_src shell :noweb yes :eval never-export :exports both
@@ -97,7 +44,7 @@ curl -L <<TRAEFIK_WHOAMI_DOMAIN>>
 
 TLS will not verify until you use the production [[TRAEFIK_ACME_SERVER][TRAEFIK_ACME_SERVER]].
 
-** kube-system/traefik/kustomization.yaml
+* kube-system/traefik/kustomization.yaml
 #+begin_src yaml :noweb yes :eval no :tangle kube-system/traefik/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -108,7 +55,7 @@ resources:
 - daemonset.yaml
 - whoami.yaml
 #+end_src
-** kube-system/traefik/crd.yaml
+* kube-system/traefik/crd.yaml
 Traefik supports Kubernetes by way of creating new kubernetes resource types:
 [[https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/][Custom Resource Definitions (CRD)]]. Basically its a declarative mapping between
 Kubernetes API concepts and Traefik API concepts. These CRD are copied verbatim
@@ -223,7 +170,7 @@ spec:
   scope: Namespaced
 
 #+end_src
-** kube-system/traefik/rbac.yaml
+* kube-system/traefik/rbac.yaml
 RBAC is [[https://kubernetes.io/docs/reference/access-authn-authz/rbac/][Role Based Authentication Control]] and it grants Traefik extra privileges
 to watch the state of your cluster, and see when pods are created.
 
@@ -300,7 +247,7 @@ subjects:
     name: traefik-ingress-controller
     namespace: kube-system
 #+end_src
-** kube-system/traefik/pvc.yaml
+* kube-system/traefik/pvc.yaml
 a [[https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims][PersistentVolumeClaim]] allocates a permanent volume for a Pod. This is one is
 for 100MB to store the Traefik =acme.json= file.
 
@@ -318,7 +265,7 @@ spec:
       storage: 100M
   storageClassName: local-path
 #+end_src
-** kube-system/traefik/daemonset.yaml
+* kube-system/traefik/daemonset.yaml
 A [[https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/][DaemonSet]] is one method of deployment in Kubernetes (others being [[https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/][StatefulSet]]
 and [[https://kubernetes.io/docs/concepts/workloads/controllers/deployment/][Deployment]]). DaemonSet is cool because it replicates a given pod on to every
 single node in the cluster. We want Traefik to listen on every node and be able
@@ -392,7 +339,7 @@ spec:
           claimName: traefik-data
 #+end_src
 
-** kube-system/traefk/whoami.yaml
+* kube-system/traefk/whoami.yaml
  [[https://github.com/traefik/whoami][traefik/whoami]] can be deployed to test Traefik functionality. It listens to the
  domain [[TRAEFIK_WHOAMI_DOMAIN][TRAEFIK_WHOAMI_DOMAIN]] (eg. =whoami.k3s.example.com=).
 

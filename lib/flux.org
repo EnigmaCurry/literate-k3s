@@ -1,24 +1,24 @@
 =flux-system= is the namespace setup for [[https://github.com/fluxcd/flux2][Flux]].
-** FLUX_REPO_NAME
+* FLUX_REPO_NAME
 The name of the repository containing these org files, and from which flux
 reads. Not including the domain, just the name.
 #+name: FLUX_REPO_NAME
 #+begin_src config :noweb yes :eval no
 literate-k3s
 #+end_src
-** FLUX_GIT_REMOTE
+* FLUX_GIT_REMOTE
 This is the correct git remote URL if you are using self-hosted Gitea:
  #+name: FLUX_GIT_REMOTE
  #+begin_src config :noweb yes :eval no
  ssh://git@git.k3s.example.com:2222/root/<<FLUX_REPO_NAME>>.git
  #+end_src
-** Create directory
+* Create directory
 Create the =flux-system= namespace:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
 mkdir -p <<SRC_DIR>>/flux-system
 #+end_src
-** flux-system setup
+* flux-system setup
 
 You need to [[https://github.com/fluxcd/flux2/tree/main/install][install the flux command line tool]], or you can [[https://blog.rymcg.tech/blog/k3s/k3s-01-setup#create-toolbox-container-optional][run it from a
 container]] or use the =flux-go= AUR package on Arch Linux.
@@ -28,14 +28,14 @@ flux install --version=latest --arch=amd64 --export > flux-system/gotk-component
 #+end_src
 
 #+RESULTS:
-** Deploy Flux
-    Tangle all the files, =C-c C-v t= then run:
+* Deploy Flux
+   Tangle all the files, =C-c C-v t= then run:
 
-  #+begin_src shell :noweb yes :eval never-export :exports both
-  kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k flux-system
-  #+end_src
+ #+begin_src shell :noweb yes :eval never-export :exports both
+ kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k flux-system
+ #+end_src
 
-** Create infrastructure repository
+* Create infrastructure repository
 You will now create a git repository on gitea, that will serve as the root
 source of all the manifests on your cluster. You will commit and push all of the
 generated YAML files to this repository and Flux will monitor this repository
@@ -62,7 +62,7 @@ Push the changes to the remote:
 git push -u origin
 #+end_src
 
-** Tell flux to watch the infrastructure repository
+* Tell flux to watch the infrastructure repository
 This next command is interactive only, so you must run it in a separate
 terminal. Copy and paste it, but you also must replace =<<KUBE_CONFIG>>=,
 =<<FLUX_REPO_NAME>>=, and =<<FLUX_GIT_REMOTE>>= manually, with the same values
@@ -117,7 +117,7 @@ Check the logs of the flux Kustomize controller:
 kubectl --kubeconfig=<<KUBE_CONFIG>> -n flux-system \
         logs deployment/source-controller | tail -n 10
 #+end_src
-** Test adding a new manifest to the git repository
+* Test adding a new manifest to the git repository
 OK now, in theory, you are done using =kubectl apply=. From now on, all you have
 to do is commit and push manifests to your git repository, and Flux will
 automatically apply them to your cluster. So let's test that out:
@@ -175,7 +175,7 @@ And in another minute or so, the namespace should be gone:
 #+begin_src shell :noweb yes :eval never-export :exports code
 kubectl --kubeconfig=<<KUBE_CONFIG>> get ns just-a-test
 #+end_src
-** flux-system/kustomization.yaml
+* flux-system/kustomization.yaml
 #+begin_src yaml :noweb yes :eval no :tangle flux-system/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization

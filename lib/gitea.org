@@ -1,6 +1,3 @@
-
-* Gitea
-
  [[https://gitea.io/][Gitea]] is a self-hosted git platform, much like GitHub. You will need a git
  platform to store your cluster config repository, which Flux will use to keep
  your cluster in sync. Storing this inside the cluster makes logical sense.
@@ -9,44 +6,14 @@
 
  [[https://www.postgresql.org/][Postgresql]] will serve the backend database for Gitea.
 
-** GITEA_DOMAIN
-#+name: GITEA_DOMAIN
-#+begin_src config :noweb yes :eval no
-git.<<CLUSTER>>
-#+end_src
-** GITEA_POSTGRES_PVC_SIZE
-The size of the postgres database volume for gitea:
-#+name: GITEA_POSTGRES_PVC_SIZE
-#+begin_src config :noweb yes :eval no
-5Gi
-#+end_src
-** GITEA_PVC_SIZE
-The size of the data volume for gitea:
-#+name: GITEA_PVC_SIZE
-#+begin_src config :noweb yes :eval no
-5Gi
-#+end_src
-** GITEA_USER
-=GITEA_USER= is the admin account name to create. Note: =admin= is a reserved
-name.
-#+name: GITEA_USER
-#+begin_src config :noweb yes :eval no
-root
-#+end_src
-** GITEA_EMAIL
-=GITEA_EMAIL= is the admin account email address:
-#+name: GITEA_EMAIL
-#+begin_src config :noweb yes :eval no
-root@example.com
-#+end_src
-** Create directory
+* Create directory
 Create the gitea deployment directory underneath the namespace directory:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
 mkdir -p <<SRC_DIR>>/git-system/gitea/
 #+end_src
 
-** Create Gitea Secrets
+* Create Gitea Secrets
  As initial setup, you must create the Sealed Secret, containing the Gitea
  configuration file, the database password, and other Gitea application specific
  tokens/secrets. The database password is generated randomly via =openssl rand=
@@ -148,13 +115,13 @@ mkdir -p <<SRC_DIR>>/git-system/gitea/
  the bottom of the result above, and =git-system/gitea/sealed_secret.yaml= should
  now exist. If you don't see =Finished!=, then run it again, it should work if
  you try it again...
-** Deploy Gitea
+* Deploy Gitea
     Tangle all the files, =C-c C-v t= then run:
 
   #+begin_src shell :noweb yes :eval never-export :exports both
   <<kubectl>> apply -k git-system
   #+end_src
-** Create Admin account
+* Create Admin account
 In order to login, you need to manually create the initial admin account via
 =kubectl=, afterward you can add more accounts via the web interface.
 
@@ -173,7 +140,7 @@ Find the password written to the temporary file.
 
 Now you can login to your domain at =https://git.<<CLUSTER>>= (eg.
 http://git.k3s.example.com)
-** Create test repository
+* Create test repository
     1. Go to your gitea user profile, and find the =SSH/GPG Keys= section.
     2. Add your local workstation public SSH Key (from
        =${HOME}/.ssh/id_rsa.pub=, use =ssh-keygen= if you haven't got one yet.)
@@ -188,7 +155,7 @@ Assuming that's working, Traefik is providing Gitea SSH ingress (TCP not HTTP)
 on port 2222. That's neat! Port 2222 is connected to the gitea container,
 through traefik, not to your host SSH daemon (which still runs on regular port
 22).
-** Mirror repositories to GitHub or elsewhere
+* Mirror repositories to GitHub or elsewhere
 You can mirror your gitea repositories to another git host, like GitHub. This
 has to be setup separately for each repository you wish to mirror.
 
@@ -244,7 +211,7 @@ for the deployment key, with the one generated in the private key file
 
 Now when you push to this repository it should automatically push to the remote
 mirror as well.
-** git-system/gitea/kustomization.yaml
+* git-system/gitea/kustomization.yaml
 =kustomization.yaml= lists all of the =git-system= namespace manifests:
 #+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -256,7 +223,7 @@ resources:
 - statefulset.yaml
 - ingress.yaml
 #+end_src
-** git-system/gitea/pvc.yaml
+* git-system/gitea/pvc.yaml
      #+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -285,7 +252,7 @@ spec:
   storageClassName: local-path
 
      #+end_src
-** git-system/gitea/database.yaml
+* git-system/gitea/database.yaml
       #+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/database.yaml
 apiVersion: v1
 kind: Service
@@ -341,7 +308,7 @@ spec:
             claimName: gitea-postgres-data
 
       #+end_src
-** git-system/gitea/statefulset.yaml
+* git-system/gitea/statefulset.yaml
 #+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/statefulset.yaml
 apiVersion: v1
 kind: Service
@@ -416,7 +383,7 @@ spec:
             secretName: gitea
 
 #+end_src
-** git-system/gitea/ingress.yaml
+* git-system/gitea/ingress.yaml
       #+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/ingress.yaml
 apiVersion: traefik.containo.us/v1alpha1
 kind: TraefikService

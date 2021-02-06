@@ -162,14 +162,27 @@ n  -- to ignore the local variables list.
      new command output. You can clear the RESULTS manually with =C-c C-v k=.
      
 *** Tangling Code Blocks
- For most non-shell code blocks, including all YAML code blocks, these have the
- header arguments =:tangle FILE :eval no=, which means that these code blocks cannot be
- evaluated, but when tangled, are exported to another external FILE. Tangling is
- applied on the whole buffer (.org file), it finds all of the code blocks in
- the same file, and for each one with the =:tangle FILE= argument, exports the
- code to the specified FILE, overwriting any existing files.
+For most non-shell code blocks, (including all YAML code blocks,) you have the
+header arguments =:tangle FILE :eval no=, which means that these code blocks
+cannot be evaluated, but are tangled instead. Tangling copies the contents of
+each code blocks into another external FILE (overwriting any existing).
 
-  1. To tangle the whole document, press =C-c C-v t= or =M-x org-babel-tangle=
+In vanilla Org-mode, you tangle the current document by running =C-c C-v t= or
+=M-x org-babel-tangle=. However, this doesn't quite work for our purposes,
+because org-babel-tangle only operates on the current file, and ignores INCLUDES
+(for the purposes of tangling). Since you have a variety of different Org files,
+all in different directories, you need a system that can handle tangling across
+all these files, all at once.
+
+This system extends vanilla Org-mode tangling. Instead of running
+=org-babel-tangle= manually on a single file, this system runs
+=org-resolve-deps-tangle=, automatically when you save any Org file.
+=org-resolve-deps-tangle= tangles your current file, and finds all of the files
+marked as =INCLUDE=, and runs tangle on all of them, as well. This is setup
+automatically in the =auto-save= hook linked from the =Local Variables=. So all
+you have to do is save the file, and =org-resolve-deps-tangle= runs
+automatically.
+
 *** Editing code blocks
  To edit a code block, you can just edit it directly in the Org document, but
  sometimes it is easier to edit the code block inside of the major mode for the
@@ -211,8 +224,7 @@ form.
 In org-mode, you can export the current document as a single HTML page, with the
 builtin org-mode exporter: type =C-c C-e h-h= or run =M-x
 org-html-export-to-html=. However, in this file, it is setup automatically to
-export HTML whenever the file is saved, see =Local Variables=. You can toggle
-this behaviour on and off, by executing =M-x toggle-org-html-export-on-save=.
+export HTML whenever the file is saved, see =Local Variables=.
 
 Normally, org-mode runs all of the code blocks in the file, every single time
 you export. This is undesirable in this case, as the setup code only needs to
@@ -327,10 +339,14 @@ git clone https://github.com/EnigmaCurry/literate-k3s.git \
 (This sets the upstream remote name to =EnigmaCurry=. You'll use the default
 =origin= remote later, for your own self-hosted gitea repository.)
 
-Open =${HOME}/git/literate-k3s/k3s.org= inside of Emacs.
+Open =${HOME}/git/literate-k3s/clusters/k3s.example.com/k3s.example.com.org=
+inside of Emacs. This is the Example site included with this repository. You can
+copy the =k3s.example.com= directory, as a template, and name it the name of
+your new cluster.
 
-(You should always open =k3s.org= first, because it loads some Emacs
-configuration when it loads that other files rely upon. See =Local Variables=.)
+Before you open any other file, you should always open your main cluster file
+(=k3s.example.com.org=) /first/, as it sets up some config when Emacs loads the
+file. (See =Local Variables=).
 
  * Find the [[Core Config][Core Config]] section.
  * You should review all of the core config code blocks, and edit them
@@ -338,8 +354,10 @@ configuration when it loads that other files rely upon. See =Local Variables=.)
    (Saving automatically loads the code blocks into the Library of Babel (=M-x
    org-babel-lob-ingest=), so you can reference these blocks by name, even in
    other files.)
+ * Do the same for all the other config blocks in each of the sections, starting
+   with Traefik, Gitea, and Flux.
 
-Open =${HOME}/git/literate-k3s/traefik.org=
+Open =${HOME}/git/literate-k3s/lib/traefik.org=
 
  * Edit =TRAEFIK_ACME_EMAIL=, =TRAEFIK_WHOAMI_DOMAIN=, and any other variables
    according to your needs, save the file.
