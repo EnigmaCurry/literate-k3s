@@ -12,6 +12,12 @@ This is the correct git remote URL if you are using self-hosted Gitea:
  #+begin_src config :noweb yes :eval no
  ssh://git@git.k3s.example.com:2222/root/<<FLUX_REPO_NAME>>.git
  #+end_src
+** Create directory
+Create the =flux-system= namespace:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+mkdir -p <<SRC_DIR>>/flux-system
+#+end_src
 ** flux-system setup
 
 You need to [[https://github.com/fluxcd/flux2/tree/main/install][install the flux command line tool]], or you can [[https://blog.rymcg.tech/blog/k3s/k3s-01-setup#create-toolbox-container-optional][run it from a

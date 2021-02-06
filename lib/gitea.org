@@ -1,3 +1,4 @@
+
 * Gitea
 
  [[https://gitea.io/][Gitea]] is a self-hosted git platform, much like GitHub. You will need a git
@@ -38,6 +39,13 @@ root
 #+begin_src config :noweb yes :eval no
 root@example.com
 #+end_src
+** Create directory
+Create the gitea deployment directory underneath the namespace directory:
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+mkdir -p <<SRC_DIR>>/git-system/gitea/
+#+end_src
+
 ** Create Gitea Secrets
  As initial setup, you must create the Sealed Secret, containing the Gitea
  configuration file, the database password, and other Gitea application specific
@@ -131,13 +139,13 @@ root@example.com
     --from-file=app.ini=${CONFIG_TMP} | kubeseal -o yaml > \
   git-system/gitea.sealed_secret.yaml
  rm ${CONFIG_TMP}
- echo "Gitea Sealed Secret created: git-system/gitea.sealed_secret.yaml"
+ echo "Gitea Sealed Secret created: git-system/gitea/sealed_secret.yaml"
  echo "Removed tempoary config file: ${CONFIG_TMP}"
  echo "Finished!"
  #+end_src
 
  If the script completes succesfully, you should see the message =Finished!= at
- the bottom of the result above, and =git-system/gitea.sealed_secret.yaml= should
+ the bottom of the result above, and =git-system/gitea/sealed_secret.yaml= should
  now exist. If you don't see =Finished!=, then run it again, it should work if
  you try it again...
 ** Deploy Gitea
@@ -242,12 +250,11 @@ mirror as well.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- namespace.yaml
-- gitea.sealed_secret.yaml
-- gitea.pvc.yaml
-- gitea.database.yaml
-- gitea.statefulset.yaml
-- gitea.ingress.yaml
+- sealed_secret.yaml
+- pvc.yaml
+- database.yaml
+- statefulset.yaml
+- ingress.yaml
 #+end_src
 ** git-system/gitea/pvc.yaml
      #+begin_src yaml :noweb yes :eval no :tangle git-system/gitea/pvc.yaml

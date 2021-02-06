@@ -68,7 +68,7 @@ INFO
 Create the traefik deployment directory underneath the namespace directory:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-mkdir -p 
+mkdir -p <<SRC_DIR>>/kube-system/traefik
 #+end_src
 
 After setting the config, tangle the config by pressing =C-c C-v

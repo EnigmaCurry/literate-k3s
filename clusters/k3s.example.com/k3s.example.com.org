@@ -9,6 +9,16 @@
 # eval: (progn (load-file "../../meta/org-meta.el"))
 # End:
 
+* Create directories
+Create all of the directories necessary for tangling this config. (These are always re-iterated
+in the individual configs, but this gets you going quicker):
+
+#+begin_src shell :noweb yes :eval never-export :exports code
+mkdir -p <<SRC_DIR>>/kube-system/traefik
+mkdir -p <<SRC_DIR>>/git-system/gitea
+mkdir -p <<SRC_DIR>>/flux-system
+#+end_src
+
 * Core Config
 ** CLUSTER
   =CLUSTER= is the domain name of your cluster:
@@ -22,6 +32,19 @@
    #+begin_src config :noweb yes :eval no
    root
    #+end_src
+** SRC_DIR
+=SRC_DIR= is an absolute path reference to the current directory that contains
+this file. It is also the destination directory for tangling. If you cloned the
+repository to a path structure other than the suggestion in the introduction
+guide, you should update this variable accordingly, /however/, don't change this
+to directory to anything other than the one that contains this file, because
+org-mode is not configured for tangling to any other directory.
+
+#+name: SRC_DIR
+#+begin_src config :noweb yes :eval no
+${HOME}/git/literate-k3s/clusters/<<CLUSTER>>
+#+end_src
+
 ** KUBE_CONFIG
   =KUBE_CONFIG= is the local path to the kubectl config file
   #+name: KUBE_CONFIG
@@ -44,10 +67,6 @@ related.
 #+INCLUDE: "../../lib/sealed_secrets.org"
 * git-system
 =git-system= is the namespace created for Gitea.
-** Create directories
-#+begin_src shell :noweb yes :eval never-export :exports code
-
-#+end_src
 #+INCLUDE: "../../lib/gitea.org"
 * flux-system
 #+INCLUDE: "../../lib/flux.org"
