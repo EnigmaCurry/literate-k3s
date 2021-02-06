@@ -86,12 +86,12 @@ Emacs tutorial system: on your keyboard, press the =F1= key followed by the =t=
 key. Basic Emacs concepts like navigation, opening and saving files, are covered
 in the tutorial, and will not be mentioned again here.
 
-*** Open k3s.org in Emacs
- The first time you open this file, a dialog will open warning you about the
- execution of code, and asking for your permission to run an =eval= code line:
+*** Open k3s.example.com.org in Emacs
+ When you use Emacs to open one of the main Org files, a dialog will open asking
+ you for permission to execute some code:
 
 #+begin_example
-The local variables list in k3s.org
+The local variables list in k3s.example.com.org
 contains values that may not be safe (*).
 
 Do you want to apply it?  You can type
@@ -100,30 +100,25 @@ n  -- to ignore the local variables list.
 !  -- to apply the local variables list, and permanently mark these
       values (*) as safe (in the future, they will be set automatically.)
 
-  * eval : (progn (org-babel-goto-named-src-block "k3s-org-emacs-load") (org-babel-execute-src-block) (outline-hide-sublevels 1))
+  * eval : (progn (load-file "../../meta/org-meta.el"))
 #+end_example
 
  You should type =y= to proceed, or type =!= to proceed and always trust this
- code from now on. Additionally, org-mode will ask a follow up question to gain
- permission to run the code block named =k3s-org-emacs-load= (The same as if you
- had run the code block yourself, with =C-c C-c=). You should type =y= again.
- (This second question will always be asked, each time you open the file, even
- if you had typed =!= to avoid the first question everytime. Sorry! It's a good
- security design, which you should not attempt to circumvent.)
+ code from now on.
 
  This automatic loading happens because of the =Local Variables= found at the
  top of the file. The =Local Variables= is a formal way to inform Emacs that you
  would like to run some code when the file is opened. It could be dangerous to
  do this in some situations, so it's a good thing that Emacs asked you this
- question! In this case, it is setting up to run the code block found in this
- file named =k3s-org-emacs-load=, in order to enable automatic HTML export
- whenever you save this file, as well as a few other fixes for things. If you
- don't desire this behaviour, remove the =eval= line from the =Local Variables=
+ question! In this case, it is setting up to run the included emacs lisp file
+ meta/org-meta.el, in order to enable automatic export (YAML and HTML) whenever
+ you save this file, as well as a few other fixes for things. If you don't
+ desire this behaviour, remove the =eval= line from the =Local Variables=
  section at the top of the file, and you will no longer see this message on
  load.
 
  When you opened this file, it should have automatically loaded in =Org= mode
- (or you might need to run =M-x org-mode=). 
+ (or you might need to run =M-x org-mode=).
 
 *** Evaluating Code Blocks
  Most code blocks in this document DO NOT need to be evaluated. Instead, this
