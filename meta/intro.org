@@ -28,10 +28,9 @@ and they are the means with which to create and edit YAML manifests for your
 cluster. Essentially, this set of org files becomes your ultimate source of
 configuration for your entire cluster: to make a change to your cluster, you
 first need to make the change in the documentation. You should open these files
-(=k3s.org= and =config.org=) in Emacs, edit them in org-mode, run the setup
-commands described inside, and =tangle= the source files. A minimal tutorial on
-using Emacs with org-babel is included, but this expects some pre-existing Emacs
-knowledge.
+in Emacs, edit them in org-mode, run the setup commands described inside, and
+=tangle= the source files. A minimal tutorial on using Emacs with org-babel is
+included, but this expects some pre-existing Emacs knowledge.
 
 Having your entire cluster config inside of documentation may seem odd or
 overwhelming, (or it may sound great!) but there is another trick up Org's
@@ -41,7 +40,7 @@ automatic process, which takes the literal snippets of code found inside these
 documentation files, and exports them out to normal individual files, somewhere
 else on your system. When you tangle, all of the code blocks in this file will
 overwrite all of the external files that they are associated with (those marked
-with the =:tangle FILE= code block header, writes itself to =FILE=). So,
+with the =:tangle FILE= code block header, will write itself to =FILE=). So,
 although the ultimate code and config is sourced from this documentation, you
 will also be able to see the code in its exported form, in the various external
 places, as separate files. You should treat these generated files as
@@ -50,20 +49,20 @@ over-written, the next time you =tangle= the documentation. However, if you keep
 those external files in a git repository, and make small regular commits, it
 will become much easier to track the changes in each file over time.
 
-It is these derivative files (a collection of YAML manifests), that you generate
-via =tangle=, and put in a git repository, which become the source of truth for
-your cluster state, through Flux. [[https://github.com/fluxcd/flux2][Flux version 2]] is a Continuous Delivery
-system, that synchronizes the state of your cluster (and all deployments) from
-the state of YAML manifest files in this git repository. With Flux, you never
-run cluster commands like =kubectl apply= or =helm install= manually, instead
-you commit these manifest files to the git repository, =git push=, and Flux
-applies the changes to the cluster, on your behalf. There will be a little bit
-of setup that you have to do manually with kubectl, in order to bootstrap Flux,
-but once Flux is running on your cluster, from that point on, you can control
-your entire cluster state simply by =tangling= this file, commiting the
-generated files to git, and pushing to the remote repository. Flux is
-continuously monitoring this repository for changes (checks every 1 minute) and
-automatically applies them.
+It is these derivative files (a collection of YAML manifests grouped in
+directories for each namespace), that you generate via =tangle=, and put in a
+git repository, which become the actual source of truth for your cluster state,
+through Flux. [[https://github.com/fluxcd/flux2][Flux version 2]] is a Continuous Delivery system, that synchronizes
+the state of your cluster (and all deployments) from the state of YAML manifest
+files in this git repository. With Flux, you never run cluster commands like
+=kubectl apply= or =helm install= manually, instead you commit these manifest
+files to the git repository, =git push=, and Flux applies the changes to the
+cluster, on your behalf. There will be a little bit of setup that you have to do
+manually with kubectl, in order to bootstrap Flux, but once Flux is running on
+your cluster, from that point on, you can control your entire cluster state
+simply by =tangling=, then committing the generated files to git, and pushing to
+the remote repository. Flux is continuously monitoring this repository for
+changes (checks every 1 minute) and automatically applies them.
 
 Flux supports reading manifests from any of the following formats: Vanilla K8s
 YAML, [[https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/][Kustomize]] YAML (used extensively in this document), and [[https://helm.sh/docs/topics/charts/][Helm Charts]], so
@@ -237,11 +236,11 @@ then type =C-c C-c=.
 
 If you would like to live reload the browser page, on save, you can use the
 Python based [[https://pypi.org/project/livereload/][livereload server]]. First install it eg: =pip install livereload=,
-then run =livereload -w3 -o0= in the same directory as the exported file, it
-should open your web browser automatically to =http://127.0.0.1:35729/=. You
-should now automatically see the changes reload on save. The argument =-w3=
-waits three seconds before reloading the browser on save, which makes reloading
-a bit more reliable.
+then run =livereload -w3 -o0 -t index.html= in the same directory as the
+exported file, it should open your web browser automatically to
+=http://127.0.0.1:35729/=. You should now automatically see the changes reload
+on save. The argument =-w3= waits three seconds before reloading the browser on
+save, which makes reloading a bit more reliable.
 
 ** Workstation tools
 To operate kubernetes, you need to install lots of different command line tools
