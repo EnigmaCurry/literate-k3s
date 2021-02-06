@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-05 Fri 15:20 -->
+<!-- 2021-02-05 Fri 15:58 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Literate K3s Cluster</title>
@@ -357,72 +357,61 @@ for the JavaScript code in this tag.
 <li><a href="#kubectl%20command">2.4. kubectl command</a></li>
 </ul>
 </li>
-<li><a href="#kube-system">3. kube-system</a></li>
-<li><a href="#Traefik">4. Traefik</a>
+<li><a href="#kube-system">3. kube-system</a>
 <ul>
-<li><a href="#TRAEFIK_ACME_EMAIL">4.1. TRAEFIK_ACME_EMAIL</a></li>
-<li><a href="#TRAEFIK_ACME_SERVER">4.2. TRAEFIK_ACME_SERVER</a></li>
-<li><a href="#TRAEFIK_WHOAMI_DOMAIN">4.3. TRAEFIK_WHOAMI_DOMAIN</a></li>
-<li><a href="#TRAEFIK_VERSION">4.4. TRAEFIK_VERSION</a></li>
-<li><a href="#TRAEFIK_LOG_LEVEL">4.5. TRAEFIK_LOG_LEVEL</a></li>
-<li><a href="#Deploy%20Traefik">4.6. Deploy Traefik</a></li>
-<li><a href="#Test%20Traefik%20whoami%20service">4.7. Test Traefik whoami service</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefik%2Fkustomization.yaml">4.8. src/kube-system/traefik/kustomization.yaml</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefik%2Fcrd.yaml">4.9. src/kube-system/traefik/crd.yaml</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefik%2Frbac.yaml">4.10. src/kube-system/traefik/rbac.yaml</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefik%2Fpvc.yaml">4.11. src/kube-system/traefik/pvc.yaml</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefik%2Fdaemonset.yaml">4.12. src/kube-system/traefik/daemonset.yaml</a></li>
-<li><a href="#src%2Fkube-system%2Ftraefk%2Fwhoami.yaml">4.13. src/kube-system/traefk/whoami.yaml</a></li>
+<li><a href="#Traefik">3.1. Traefik</a>
+<ul>
+<li><a href="#TRAEFIK_ACME_EMAIL">3.1.1. TRAEFIK_ACME_EMAIL</a></li>
+<li><a href="#TRAEFIK_ACME_SERVER">3.1.2. TRAEFIK_ACME_SERVER</a></li>
+<li><a href="#TRAEFIK_WHOAMI_DOMAIN">3.1.3. TRAEFIK_WHOAMI_DOMAIN</a></li>
+<li><a href="#TRAEFIK_VERSION">3.1.4. TRAEFIK_VERSION</a></li>
+<li><a href="#TRAEFIK_LOG_LEVEL">3.1.5. TRAEFIK_LOG_LEVEL</a></li>
+<li><a href="#Deploy%20Traefik">3.1.6. Deploy Traefik</a></li>
+<li><a href="#Test%20Traefik%20whoami%20service">3.1.7. Test Traefik whoami service</a></li>
+<li><a href="#kube-system%2Ftraefik%2Fkustomization.yaml">3.1.8. kube-system/traefik/kustomization.yaml</a></li>
+<li><a href="#kube-system%2Ftraefik%2Fcrd.yaml">3.1.9. kube-system/traefik/crd.yaml</a></li>
+<li><a href="#kube-system%2Ftraefik%2Frbac.yaml">3.1.10. kube-system/traefik/rbac.yaml</a></li>
+<li><a href="#kube-system%2Ftraefik%2Fpvc.yaml">3.1.11. kube-system/traefik/pvc.yaml</a></li>
+<li><a href="#kube-system%2Ftraefik%2Fdaemonset.yaml">3.1.12. kube-system/traefik/daemonset.yaml</a></li>
+<li><a href="#kube-system%2Ftraefk%2Fwhoami.yaml">3.1.13. kube-system/traefk/whoami.yaml</a></li>
 </ul>
 </li>
-<li><a href="#Sealed%20Secrets">5. Sealed Secrets</a>
+<li><a href="#Sealed%20Secrets">3.2. Sealed Secrets</a>
 <ul>
-<li><a href="#Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster">5.1. Install bitnami-labs/sealed-secrets to the cluster</a></li>
+<li><a href="#Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster">3.2.1. Install bitnami-labs/sealed-secrets to the cluster</a></li>
 </ul>
 </li>
-<li><a href="#git-system">6. git-system</a></li>
-<li><a href="#Gitea">7. Gitea</a>
-<ul>
-<li><a href="#GITEA_DOMAIN">7.1. GITEA_DOMAIN</a></li>
-<li><a href="#GITEA_POSTGRES_PVC_SIZE">7.2. GITEA_POSTGRES_PVC_SIZE</a></li>
-<li><a href="#GITEA_PVC_SIZE">7.3. GITEA_PVC_SIZE</a></li>
-<li><a href="#GITEA_USER">7.4. GITEA_USER</a></li>
-<li><a href="#GITEA_EMAIL">7.5. GITEA_EMAIL</a></li>
-<li><a href="#Create%20Gitea%20Secrets">7.6. Create Gitea Secrets</a></li>
-<li><a href="#Deploy%20Gitea">7.7. Deploy Gitea</a></li>
-<li><a href="#Create%20Admin%20account">7.8. Create Admin account</a></li>
-<li><a href="#Create%20test%20repository">7.9. Create test repository</a></li>
-<li><a href="#Mirror%20repositories%20to%20GitHub%20or%20elsewhere">7.10. Mirror repositories to GitHub or elsewhere</a></li>
-<li><a href="#src%2Fgit-system%2Fgitea%2Fkustomization.yaml">7.11. src/git-system/gitea/kustomization.yaml</a></li>
-<li><a href="#src%2Fgit-system%2Fgitea%2Fpvc.yaml">7.12. src/git-system/gitea/pvc.yaml</a></li>
-<li><a href="#src%2Fgit-system%2Fgitea%2Fdatabase.yaml">7.13. src/git-system/gitea/database.yaml</a></li>
-<li><a href="#src%2Fgit-system%2Fgitea%2Fstatefulset.yaml">7.14. src/git-system/gitea/statefulset.yaml</a></li>
-<li><a href="#src%2Fgit-system%2Fgitea%2Fingress.yaml">7.15. src/git-system/gitea/ingress.yaml</a></li>
 </ul>
 </li>
-<li><a href="#src%2Fgit-system%2Fkustomization.yaml">8. src/git-system/kustomization.yaml</a></li>
-<li><a href="#src%2Fgit-system%2Fnamespace.yaml">9. src/git-system/namespace.yaml</a></li>
-<li><a href="#flux-system">10. flux-system</a>
+<li><a href="#git-system">4. git-system</a>
 <ul>
-<li><a href="#FLUX_REPO_NAME">10.1. FLUX_REPO_NAME</a></li>
-<li><a href="#FLUX_GIT_REMOTE">10.2. FLUX_GIT_REMOTE</a></li>
-<li><a href="#flux-system%20setup">10.3. flux-system setup</a></li>
-<li><a href="#Deploy%20Flux">10.4. Deploy Flux</a></li>
-<li><a href="#Create%20infrastructure%20repository">10.5. Create infrastructure repository</a></li>
-<li><a href="#Tell%20flux%20to%20watch%20the%20infrastructure%20repository">10.6. Tell flux to watch the infrastructure repository</a></li>
-<li><a href="#Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository">10.7. Test adding a new manifest to the git repository</a></li>
-<li><a href="#src%2Fflux-system%2Fkustomization.yaml">10.8. src/flux-system/kustomization.yaml</a></li>
+<li><a href="#Create%20directories">4.1. Create directories</a>
+<ul>
+<li><a href="#Gitea">4.1.1. Gitea</a></li>
+<li><a href="#git-system%2Fkustomization.yaml">4.1.2. git-system/kustomization.yaml</a></li>
+<li><a href="#git-system%2Fnamespace.yaml">4.1.3. git-system/namespace.yaml</a></li>
 </ul>
 </li>
-<li><a href="#LICENSE">11. LICENSE</a></li>
+</ul>
+</li>
+<li><a href="#flux-system">5. flux-system</a>
+<ul>
+<li><a href="#FLUX_REPO_NAME">5.1. FLUX_REPO_NAME</a></li>
+<li><a href="#FLUX_GIT_REMOTE">5.2. FLUX_GIT_REMOTE</a></li>
+<li><a href="#flux-system%20setup">5.3. flux-system setup</a></li>
+<li><a href="#Deploy%20Flux">5.4. Deploy Flux</a></li>
+<li><a href="#Create%20infrastructure%20repository">5.5. Create infrastructure repository</a></li>
+<li><a href="#Tell%20flux%20to%20watch%20the%20infrastructure%20repository">5.6. Tell flux to watch the infrastructure repository</a></li>
+<li><a href="#Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository">5.7. Test adding a new manifest to the git repository</a></li>
+<li><a href="#flux-system%2Fkustomization.yaml">5.8. flux-system/kustomization.yaml</a></li>
+</ul>
+</li>
+<li><a href="#LICENSE">6. LICENSE</a></li>
 </ul>
 </div>
 </div>
 <a class="github-fork-ribbon" href="https://github.com/EnigmaCurry/literate-k3s" 
   data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a> 
-
-
-
 <div id="outline-container-Literate%20K3s%20cluster%20with%20Org-Mode%20and%20GitOps" class="outline-2">
 <h2 id="Literate%20K3s%20cluster%20with%20Org-Mode%20and%20GitOps"><span class="section-number-2">1</span> Literate K3s cluster with Org-Mode and GitOps</h2>
 <div class="outline-text-2" id="text-1">
@@ -478,7 +467,7 @@ automatic process, which takes the literal snippets of code found inside these
 documentation files, and exports them out to normal individual files, somewhere
 else on your system. When you tangle, all of the code blocks in this file will
 overwrite all of the external files that they are associated with (those marked
-with the <code>:tangle FILE</code>
+with the <code>:tangle FILE</code> code block header, writes itself to <code>FILE</code>). So,
 although the ultimate code and config is sourced from this documentation, you
 will also be able to see the code in its exported form, in the various external
 places, as separate files. You should treat these generated files as
@@ -650,10 +639,10 @@ new command output. You can clear the RESULTS manually with <code>C-c C-v k</cod
 <div class="outline-text-4" id="text-1-2-4">
 <p>
 For most non-shell code blocks, including all YAML code blocks, these have the
-header arguments <code>:tangle FILE:eval no</code>, which means that these code blocks cannot be
+header arguments <code>:tangle FILE :eval no</code>, which means that these code blocks cannot be
 evaluated, but when tangled, are exported to another external FILE. Tangling is
 applied on the whole buffer (.org file), it finds all of the code blocks in
-the same file, and for each one with the <code>:tangle FILE</code>
+the same file, and for each one with the <code>:tangle FILE</code> argument, exports the
 code to the specified FILE, overwriting any existing files.
 </p>
 
@@ -991,8 +980,6 @@ cluster, read on.
 </div>
 </div>
 
-
-
 <div id="outline-container-Core%20Config" class="outline-2">
 <h2 id="Core%20Config"><span class="section-number-2">2</span> Core Config</h2>
 <div class="outline-text-2" id="text-2">
@@ -1004,7 +991,7 @@ cluster, read on.
 <code>CLUSTER</code> is the domain name of your cluster:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgdbd97a0">k3s.example.com
+<pre class="src src-config" id="orgb97dd52">k3s.example.com
 </pre>
 </div>
 </div>
@@ -1016,7 +1003,7 @@ cluster, read on.
 <code>CLUSTER_SSH_USER</code> is the admin SSH account of the cluster.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org78fd1d4">root
+<pre class="src src-config" id="org6fb3b15">root
 </pre>
 </div>
 </div>
@@ -1028,7 +1015,7 @@ cluster, read on.
 <code>KUBE_CONFIG</code> is the local path to the kubectl config file
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org516c2b4">${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="org62184fc">${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1042,7 +1029,7 @@ Since you'll need to specify the kubectl config file each and every time you use
 code blocks.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org138d8b5">kubectl --kubeconfig=${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="org7bb8bbc">kubectl --kubeconfig=${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1057,10 +1044,9 @@ code blocks.
 related. 
 </p>
 </div>
-</div>
-<div id="outline-container-Traefik" class="outline-2">
-<h2 id="Traefik"><span class="section-number-2">4</span> Traefik</h2>
-<div class="outline-text-2" id="text-4">
+<div id="outline-container-Traefik" class="outline-3">
+<h3 id="Traefik"><span class="section-number-3">3.1</span> Traefik</h3>
+<div class="outline-text-3" id="text-3-1">
 <p>
 <a href="https://doc.traefik.io/traefik/">Traefik</a> is a reverse proxy that will allow HTTP(s) and TCP ingress to your
 cluster. This will let you run public web services from containers in your
@@ -1071,7 +1057,7 @@ requirement for any external load balancer.
 
 <p>
 This config automatically redirects HTTP port 80 to HTTPs port 443, and TCP port
-2222 forwards SSH traffic for <a href="gitea.html">Gitea</a>. 
+2222 forwards SSH traffic for <a href="../../lib/gitea.html">Gitea</a>. 
 </p>
 
 <p>
@@ -1081,28 +1067,28 @@ basic example of setting up a Traefik IngressRoute.
 </p>
 </div>
 
-<div id="outline-container-TRAEFIK_ACME_EMAIL" class="outline-3">
-<h3 id="TRAEFIK_ACME_EMAIL"><span class="section-number-3">4.1</span> TRAEFIK_ACME_EMAIL</h3>
-<div class="outline-text-3" id="text-4-1">
+<div id="outline-container-TRAEFIK_ACME_EMAIL" class="outline-4">
+<h4 id="TRAEFIK_ACME_EMAIL"><span class="section-number-4">3.1.1</span> TRAEFIK_ACME_EMAIL</h4>
+<div class="outline-text-4" id="text-3-1-1">
 <p>
 <code>TRAEFIK_ACME_EMAIL</code> is the email address to register with the ACME service
 provider. 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org7247bea">you@example.com
+<pre class="src src-config" id="org53e2532">you@example.com
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-TRAEFIK_ACME_SERVER" class="outline-3">
-<h3 id="TRAEFIK_ACME_SERVER"><span class="section-number-3">4.2</span> TRAEFIK_ACME_SERVER</h3>
-<div class="outline-text-3" id="text-4-2">
+<div id="outline-container-TRAEFIK_ACME_SERVER" class="outline-4">
+<h4 id="TRAEFIK_ACME_SERVER"><span class="section-number-4">3.1.2</span> TRAEFIK_ACME_SERVER</h4>
+<div class="outline-text-4" id="text-3-1-2">
 <p>
 <code>TRAEFIK_ACME_SERVER</code> is the URL for the Let's Encrypt API (Or other ACME
 provider). 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgf2b497a">https://acme-staging-v02.api.letsencrypt.org/directory
+<pre class="src src-config" id="orgedff559">https://acme-staging-v02.api.letsencrypt.org/directory
 </pre>
 </div>
 
@@ -1136,54 +1122,63 @@ the rate limit, which blocks you out for a week.
 </div>
 </div>
 
-<div id="outline-container-TRAEFIK_WHOAMI_DOMAIN" class="outline-3">
-<h3 id="TRAEFIK_WHOAMI_DOMAIN"><span class="section-number-3">4.3</span> TRAEFIK_WHOAMI_DOMAIN</h3>
-<div class="outline-text-3" id="text-4-3">
+<div id="outline-container-TRAEFIK_WHOAMI_DOMAIN" class="outline-4">
+<h4 id="TRAEFIK_WHOAMI_DOMAIN"><span class="section-number-4">3.1.3</span> TRAEFIK_WHOAMI_DOMAIN</h4>
+<div class="outline-text-4" id="text-3-1-3">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It needs its own
 domain name to respond to. <code>TRAEFIK_WHOAMI_DOMAIN</code> is the subdomain that the
 whoami service responds to.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org1505c5c">whoami.k3s.example.com
+<pre class="src src-config" id="org425644d">whoami.k3s.example.com
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-TRAEFIK_VERSION" class="outline-3">
-<h3 id="TRAEFIK_VERSION"><span class="section-number-3">4.4</span> TRAEFIK_VERSION</h3>
-<div class="outline-text-3" id="text-4-4">
+<div id="outline-container-TRAEFIK_VERSION" class="outline-4">
+<h4 id="TRAEFIK_VERSION"><span class="section-number-4">3.1.4</span> TRAEFIK_VERSION</h4>
+<div class="outline-text-4" id="text-3-1-4">
 <p>
 The version number of Traefik to install (eg. <code>2.3</code>).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgffd4450">v2.3
+<pre class="src src-config" id="org1c71913">v2.3
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-TRAEFIK_LOG_LEVEL" class="outline-3">
-<h3 id="TRAEFIK_LOG_LEVEL"><span class="section-number-3">4.5</span> TRAEFIK_LOG_LEVEL</h3>
-<div class="outline-text-3" id="text-4-5">
+<div id="outline-container-TRAEFIK_LOG_LEVEL" class="outline-4">
+<h4 id="TRAEFIK_LOG_LEVEL"><span class="section-number-4">3.1.5</span> TRAEFIK_LOG_LEVEL</h4>
+<div class="outline-text-4" id="text-3-1-5">
 <p>
 <code>TRAEFIK_LOG_LEVEL</code> is the filter level on the traefik log.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org181b1d9">INFO
+<pre class="src src-config" id="org201a45e">INFO
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-Deploy%20Traefik" class="outline-3">
-<h3 id="Deploy%20Traefik"><span class="section-number-3">4.6</span> Deploy Traefik</h3>
-<div class="outline-text-3" id="text-4-6">
+<div id="outline-container-Deploy%20Traefik" class="outline-4">
+<h4 id="Deploy%20Traefik"><span class="section-number-4">3.1.6</span> Deploy Traefik</h4>
+<div class="outline-text-4" id="text-3-1-6">
 <p>
-After setting the config, tangle the config by pressing <code>C-c C-v t</code>. Then
-deploy Traefik via kubectl:
+Create the traefik deployment directory underneath the namespace directory:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config apply -k src/kube-system
+<pre class="src src-shell">mkdir -p 
+</pre>
+</div>
+
+<p>
+After setting the config, tangle the config by pressing <code>C-c C-v
+  t</code>. Then deploy Traefik via kubectl:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config apply -k kube-system
 </pre>
 </div>
 
@@ -1195,9 +1190,9 @@ time.
 </div>
 </div>
 
-<div id="outline-container-Test%20Traefik%20whoami%20service" class="outline-3">
-<h3 id="Test%20Traefik%20whoami%20service"><span class="section-number-3">4.7</span> Test Traefik whoami service</h3>
-<div class="outline-text-3" id="text-4-7">
+<div id="outline-container-Test%20Traefik%20whoami%20service" class="outline-4">
+<h4 id="Test%20Traefik%20whoami%20service"><span class="section-number-4">3.1.7</span> Test Traefik whoami service</h4>
+<div class="outline-text-4" id="text-3-1-7">
 <p>
 Test with TLS verification off:
 </p>
@@ -1217,14 +1212,14 @@ Test with TLS verification on:
 </div>
 
 <p>
-TLS will not verify until you use the production <a href="#orgf2b497a">TRAEFIK_ACME_SERVER</a>.
+TLS will not verify until you use the production <a href="#orgedff559">TRAEFIK_ACME_SERVER</a>.
 </p>
 </div>
 </div>
 
-<div id="outline-container-src%2Fkube-system%2Ftraefik%2Fkustomization.yaml" class="outline-3">
-<h3 id="src%2Fkube-system%2Ftraefik%2Fkustomization.yaml"><span class="section-number-3">4.8</span> src/kube-system/traefik/kustomization.yaml</h3>
-<div class="outline-text-3" id="text-4-8">
+<div id="outline-container-kube-system%2Ftraefik%2Fkustomization.yaml" class="outline-4">
+<h4 id="kube-system%2Ftraefik%2Fkustomization.yaml"><span class="section-number-4">3.1.8</span> kube-system/traefik/kustomization.yaml</h4>
+<div class="outline-text-4" id="text-3-1-8">
 <div class="org-src-container">
 <pre class="src src-yaml"><span style="color: #7590db;">apiVersion</span>: kustomize.config.k8s.io/v1beta1
 <span style="color: #7590db;">kind</span>: Kustomization
@@ -1238,9 +1233,9 @@ TLS will not verify until you use the production <a href="#orgf2b497a">TRAEFIK_A
 </div>
 </div>
 </div>
-<div id="outline-container-src%2Fkube-system%2Ftraefik%2Fcrd.yaml" class="outline-3">
-<h3 id="src%2Fkube-system%2Ftraefik%2Fcrd.yaml"><span class="section-number-3">4.9</span> src/kube-system/traefik/crd.yaml</h3>
-<div class="outline-text-3" id="text-4-9">
+<div id="outline-container-kube-system%2Ftraefik%2Fcrd.yaml" class="outline-4">
+<h4 id="kube-system%2Ftraefik%2Fcrd.yaml"><span class="section-number-4">3.1.9</span> kube-system/traefik/crd.yaml</h4>
+<div class="outline-text-4" id="text-3-1-9">
 <p>
 Traefik supports Kubernetes by way of creating new kubernetes resource types:
 <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/">Custom Resource Definitions (CRD)</a>. Basically its a declarative mapping between
@@ -1360,9 +1355,9 @@ Org document, even if its a bit long:
 </div>
 </div>
 </div>
-<div id="outline-container-src%2Fkube-system%2Ftraefik%2Frbac.yaml" class="outline-3">
-<h3 id="src%2Fkube-system%2Ftraefik%2Frbac.yaml"><span class="section-number-3">4.10</span> src/kube-system/traefik/rbac.yaml</h3>
-<div class="outline-text-3" id="text-4-10">
+<div id="outline-container-kube-system%2Ftraefik%2Frbac.yaml" class="outline-4">
+<h4 id="kube-system%2Ftraefik%2Frbac.yaml"><span class="section-number-4">3.1.10</span> kube-system/traefik/rbac.yaml</h4>
+<div class="outline-text-4" id="text-3-1-10">
 <p>
 RBAC is <a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/">Role Based Authentication Control</a> and it grants Traefik extra privileges
 to watch the state of your cluster, and see when pods are created.
@@ -1444,9 +1439,9 @@ to watch the state of your cluster, and see when pods are created.
 </div>
 </div>
 </div>
-<div id="outline-container-src%2Fkube-system%2Ftraefik%2Fpvc.yaml" class="outline-3">
-<h3 id="src%2Fkube-system%2Ftraefik%2Fpvc.yaml"><span class="section-number-3">4.11</span> src/kube-system/traefik/pvc.yaml</h3>
-<div class="outline-text-3" id="text-4-11">
+<div id="outline-container-kube-system%2Ftraefik%2Fpvc.yaml" class="outline-4">
+<h4 id="kube-system%2Ftraefik%2Fpvc.yaml"><span class="section-number-4">3.1.11</span> kube-system/traefik/pvc.yaml</h4>
+<div class="outline-text-4" id="text-3-1-11">
 <p>
 a <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims">PersistentVolumeClaim</a> allocates a permanent volume for a Pod. This is one is
 for 100MB to store the Traefik <code>acme.json</code> file.
@@ -1469,9 +1464,9 @@ for 100MB to store the Traefik <code>acme.json</code> file.
 </div>
 </div>
 </div>
-<div id="outline-container-src%2Fkube-system%2Ftraefik%2Fdaemonset.yaml" class="outline-3">
-<h3 id="src%2Fkube-system%2Ftraefik%2Fdaemonset.yaml"><span class="section-number-3">4.12</span> src/kube-system/traefik/daemonset.yaml</h3>
-<div class="outline-text-3" id="text-4-12">
+<div id="outline-container-kube-system%2Ftraefik%2Fdaemonset.yaml" class="outline-4">
+<h4 id="kube-system%2Ftraefik%2Fdaemonset.yaml"><span class="section-number-4">3.1.12</span> kube-system/traefik/daemonset.yaml</h4>
+<div class="outline-text-4" id="text-3-1-12">
 <p>
 A <a href="https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/">DaemonSet</a> is one method of deployment in Kubernetes (others being <a href="https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/">StatefulSet</a>
 and <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a>). DaemonSet is cool because it replicates a given pod on to every
@@ -1550,12 +1545,12 @@ to direct traffic to any other node.
 </div>
 </div>
 
-<div id="outline-container-src%2Fkube-system%2Ftraefk%2Fwhoami.yaml" class="outline-3">
-<h3 id="src%2Fkube-system%2Ftraefk%2Fwhoami.yaml"><span class="section-number-3">4.13</span> src/kube-system/traefk/whoami.yaml</h3>
-<div class="outline-text-3" id="text-4-13">
+<div id="outline-container-kube-system%2Ftraefk%2Fwhoami.yaml" class="outline-4">
+<h4 id="kube-system%2Ftraefk%2Fwhoami.yaml"><span class="section-number-4">3.1.13</span> kube-system/traefk/whoami.yaml</h4>
+<div class="outline-text-4" id="text-3-1-13">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It listens to the
-domain <a href="#org1505c5c">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
+domain <a href="#org425644d">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
 </p>
 
 <div class="org-src-container">
@@ -1633,14 +1628,9 @@ domain <a href="#org1505c5c">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.exa
 </div>
 </div>
 </div>
-
-
-
-
-
-<div id="outline-container-Sealed%20Secrets" class="outline-2">
-<h2 id="Sealed%20Secrets"><span class="section-number-2">5</span> Sealed Secrets</h2>
-<div class="outline-text-2" id="text-5">
+<div id="outline-container-Sealed%20Secrets" class="outline-3">
+<h3 id="Sealed%20Secrets"><span class="section-number-3">3.2</span> Sealed Secrets</h3>
+<div class="outline-text-3" id="text-3-2">
 <p>
 This Org file is not an appropriate place to store private things like passwords
 or API tokens, because it may accidentally be published to the web. These things
@@ -1650,9 +1640,9 @@ copy of the secrets in our git repository. Only the cluster can decrypt sealed
 secrets.
 </p>
 </div>
-<div id="outline-container-Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster" class="outline-3">
-<h3 id="Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster"><span class="section-number-3">5.1</span> Install bitnami-labs/sealed-secrets to the cluster</h3>
-<div class="outline-text-3" id="text-5-1">
+<div id="outline-container-Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster" class="outline-4">
+<h4 id="Install%20bitnami-labs%2Fsealed-secrets%20to%20the%20cluster"><span class="section-number-4">3.2.1</span> Install bitnami-labs/sealed-secrets to the cluster</h4>
+<div class="outline-text-4" id="text-3-2-1">
 <p>
 You should have already installed the command line client (See <code>Workstation
 Tools</code>). Now it's time to install the cluster side portion:
@@ -1665,19 +1655,25 @@ Tools</code>). Now it's time to install the cluster side portion:
 </div>
 </div>
 </div>
-
-
+</div>
 <div id="outline-container-git-system" class="outline-2">
-<h2 id="git-system"><span class="section-number-2">6</span> git-system</h2>
-<div class="outline-text-2" id="text-6">
+<h2 id="git-system"><span class="section-number-2">4</span> git-system</h2>
+<div class="outline-text-2" id="text-4">
 <p>
 <code>git-system</code> is the namespace created for Gitea.
 </p>
 </div>
+<div id="outline-container-Create%20directories" class="outline-3">
+<h3 id="Create%20directories"><span class="section-number-3">4.1</span> Create directories</h3>
+<div class="outline-text-3" id="text-4-1">
+<div class="org-src-container">
+<pre class="src src-shell">
+</pre>
 </div>
-<div id="outline-container-Gitea" class="outline-2">
-<h2 id="Gitea"><span class="section-number-2">7</span> Gitea</h2>
-<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-Gitea" class="outline-4">
+<h4 id="Gitea"><span class="section-number-4">4.1.1</span> Gitea</h4>
+<div class="outline-text-4" id="text-4-1-1">
 <p>
 <a href="https://gitea.io/">Gitea</a> is a self-hosted git platform, much like GitHub. You will need a git
 platform to store your cluster config repository, which Flux will use to keep
@@ -1691,67 +1687,62 @@ easily mirror these repositories to external hosts like GitHub.
 </p>
 </div>
 
-<div id="outline-container-GITEA_DOMAIN" class="outline-3">
-<h3 id="GITEA_DOMAIN"><span class="section-number-3">7.1</span> GITEA_DOMAIN</h3>
-<div class="outline-text-3" id="text-7-1">
+<ol class="org-ol">
+<li><a id="GITEA_DOMAIN"></a>GITEA_DOMAIN<br />
+<div class="outline-text-5" id="text-4-1-1-1">
 <div class="org-src-container">
-<pre class="src src-config" id="orga469ace">git.k3s.example.com
+<pre class="src src-config" id="orgd5b9c64">git.k3s.example.com
 </pre>
 </div>
 </div>
-</div>
-<div id="outline-container-GITEA_POSTGRES_PVC_SIZE" class="outline-3">
-<h3 id="GITEA_POSTGRES_PVC_SIZE"><span class="section-number-3">7.2</span> GITEA_POSTGRES_PVC_SIZE</h3>
-<div class="outline-text-3" id="text-7-2">
+</li>
+<li><a id="GITEA_POSTGRES_PVC_SIZE"></a>GITEA_POSTGRES_PVC_SIZE<br />
+<div class="outline-text-5" id="text-4-1-1-2">
 <p>
 The size of the postgres database volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgd25fe53">5Gi
+<pre class="src src-config" id="org4a0208b">5Gi
 </pre>
 </div>
 </div>
-</div>
-<div id="outline-container-GITEA_PVC_SIZE" class="outline-3">
-<h3 id="GITEA_PVC_SIZE"><span class="section-number-3">7.3</span> GITEA_PVC_SIZE</h3>
-<div class="outline-text-3" id="text-7-3">
+</li>
+<li><a id="GITEA_PVC_SIZE"></a>GITEA_PVC_SIZE<br />
+<div class="outline-text-5" id="text-4-1-1-3">
 <p>
 The size of the data volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgb08871a">5Gi
+<pre class="src src-config" id="orgdc4c93f">5Gi
 </pre>
 </div>
 </div>
-</div>
-<div id="outline-container-GITEA_USER" class="outline-3">
-<h3 id="GITEA_USER"><span class="section-number-3">7.4</span> GITEA_USER</h3>
-<div class="outline-text-3" id="text-7-4">
+</li>
+<li><a id="GITEA_USER"></a>GITEA_USER<br />
+<div class="outline-text-5" id="text-4-1-1-4">
 <p>
 <code>GITEA_USER</code> is the admin account name to create. Note: <code>admin</code> is a reserved
 name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgddd9fb9">root
+<pre class="src src-config" id="org4008c38">root
 </pre>
 </div>
 </div>
-</div>
-<div id="outline-container-GITEA_EMAIL" class="outline-3">
-<h3 id="GITEA_EMAIL"><span class="section-number-3">7.5</span> GITEA_EMAIL</h3>
-<div class="outline-text-3" id="text-7-5">
+</li>
+<li><a id="GITEA_EMAIL"></a>GITEA_EMAIL<br />
+<div class="outline-text-5" id="text-4-1-1-5">
 <p>
 <code>GITEA_EMAIL</code> is the admin account email address:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org0a6b6a0">root@example.com
+<pre class="src src-config" id="orga9686c5">root@example.com
 </pre>
 </div>
 </div>
-</div>
-<div id="outline-container-Create%20Gitea%20Secrets" class="outline-3">
-<h3 id="Create%20Gitea%20Secrets"><span class="section-number-3">7.6</span> Create Gitea Secrets</h3>
-<div class="outline-text-3" id="text-7-6">
+</li>
+<li><a id="Create%20Gitea%20Secrets"></a>Create Gitea Secrets<br />
+<div class="outline-text-5" id="text-4-1-1-6">
 <p>
 As initial setup, you must create the Sealed Secret, containing the Gitea
 configuration file, the database password, and other Gitea application specific
@@ -1775,12 +1766,12 @@ other manifest files, inside your git repostiory.
 NOTE: this script is a little finnicky: it fails about 1 in 3 times, but you can
 safely run it again if it fails. (Fresh passwords are generated each time.)
 Check the results, and ensure the script finishes completely, and that the file
-<code>src/git-system/gitea.sealed_secret.yaml</code> is created.
+<code>git-system/gitea.sealed_secret.yaml</code> is created.
 </p>
 
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #4f97d7;">set</span> -e
-rm -f src/git-system/gitea.sealed_secret.yaml
+rm -f git-system/gitea.sealed_secret.yaml
 <span style="color: #7590db;">POSTGRES_USER</span>=gitea
 <span style="color: #2aa1ae; background-color: #292e34;">## </span><span style="color: #2aa1ae; background-color: #292e34;">Generate passwords and tokens:</span>
 <span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Generating passwords and tokens"</span>
@@ -1848,9 +1839,9 @@ kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: 
    --from-literal=<span style="color: #7590db;">JWT_SECRET</span>=$<span style="color: #7590db;">JWT_SECRET</span> <span style="color: #2d9574;">\</span>
    --from-literal=<span style="color: #7590db;">SECRET_KEY</span>=$<span style="color: #7590db;">SECRET_KEY</span> <span style="color: #2d9574;">\</span>
    --from-file=app.ini=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">CONFIG_TMP</span><span style="color: #4f97d7;">}</span> | kubeseal -o yaml &gt; <span style="color: #2d9574;">\</span>
- src/git-system/gitea.sealed_secret.yaml
+ git-system/gitea.sealed_secret.yaml
 rm $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">CONFIG_TMP</span><span style="color: #4f97d7;">}</span>
-<span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Gitea Sealed Secret created: src/git-system/gitea.sealed_secret.yaml"</span>
+<span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Gitea Sealed Secret created: git-system/gitea.sealed_secret.yaml"</span>
 <span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Removed tempoary config file: ${CONFIG_TMP}"</span>
 <span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"Finished!"</span>
 </pre>
@@ -1858,28 +1849,26 @@ rm $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">CONFIG_T
 
 <p>
 If the script completes succesfully, you should see the message <code>Finished!</code> at
-the bottom of the result above, and <code>src/git-system/gitea.sealed_secret.yaml</code> should
+the bottom of the result above, and <code>git-system/gitea.sealed_secret.yaml</code> should
 now exist. If you don't see <code>Finished!</code>, then run it again, it should work if
 you try it again&#x2026;
 </p>
 </div>
-</div>
-<div id="outline-container-Deploy%20Gitea" class="outline-3">
-<h3 id="Deploy%20Gitea"><span class="section-number-3">7.7</span> Deploy Gitea</h3>
-<div class="outline-text-3" id="text-7-7">
+</li>
+<li><a id="Deploy%20Gitea"></a>Deploy Gitea<br />
+<div class="outline-text-5" id="text-4-1-1-7">
 <p>
 Tangle all the files, <code>C-c C-v t</code> then run:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config apply -k src/git-system
+<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config apply -k git-system
 </pre>
 </div>
 </div>
-</div>
-<div id="outline-container-Create%20Admin%20account" class="outline-3">
-<h3 id="Create%20Admin%20account"><span class="section-number-3">7.8</span> Create Admin account</h3>
-<div class="outline-text-3" id="text-7-8">
+</li>
+<li><a id="Create%20Admin%20account"></a>Create Admin account<br />
+<div class="outline-text-5" id="text-4-1-1-8">
 <p>
 In order to login, you need to manually create the initial admin account via
 <code>kubectl</code>, afterward you can add more accounts via the web interface.
@@ -1906,10 +1895,9 @@ Now you can login to your domain at <code>https://git.&lt;&lt;CLUSTER&gt;&gt;</c
 <a href="http://git.k3s.example.com">http://git.k3s.example.com</a>)
 </p>
 </div>
-</div>
-<div id="outline-container-Create%20test%20repository" class="outline-3">
-<h3 id="Create%20test%20repository"><span class="section-number-3">7.9</span> Create test repository</h3>
-<div class="outline-text-3" id="text-7-9">
+</li>
+<li><a id="Create%20test%20repository"></a>Create test repository<br />
+<div class="outline-text-5" id="text-4-1-1-9">
 <ol class="org-ol">
 <li>Go to your gitea user profile, and find the <code>SSH/GPG Keys</code> section.</li>
 <li>Add your local workstation public SSH Key (from
@@ -1929,10 +1917,9 @@ through traefik, not to your host SSH daemon (which still runs on regular port
 22).
 </p>
 </div>
-</div>
-<div id="outline-container-Mirror%20repositories%20to%20GitHub%20or%20elsewhere" class="outline-3">
-<h3 id="Mirror%20repositories%20to%20GitHub%20or%20elsewhere"><span class="section-number-3">7.10</span> Mirror repositories to GitHub or elsewhere</h3>
-<div class="outline-text-3" id="text-7-10">
+</li>
+<li><a id="Mirror%20repositories%20to%20GitHub%20or%20elsewhere"></a>Mirror repositories to GitHub or elsewhere<br />
+<div class="outline-text-5" id="text-4-1-1-10">
 <p>
 You can mirror your gitea repositories to another git host, like GitHub. This
 has to be setup separately for each repository you wish to mirror.
@@ -1998,10 +1985,9 @@ Now when you push to this repository it should automatically push to the remote
 mirror as well.
 </p>
 </div>
-</div>
-<div id="outline-container-src%2Fgit-system%2Fgitea%2Fkustomization.yaml" class="outline-3">
-<h3 id="src%2Fgit-system%2Fgitea%2Fkustomization.yaml"><span class="section-number-3">7.11</span> src/git-system/gitea/kustomization.yaml</h3>
-<div class="outline-text-3" id="text-7-11">
+</li>
+<li><a id="git-system%2Fgitea%2Fkustomization.yaml"></a>git-system/gitea/kustomization.yaml<br />
+<div class="outline-text-5" id="text-4-1-1-11">
 <p>
 <code>kustomization.yaml</code> lists all of the <code>git-system</code> namespace manifests:
 </p>
@@ -2018,10 +2004,9 @@ mirror as well.
 </pre>
 </div>
 </div>
-</div>
-<div id="outline-container-src%2Fgit-system%2Fgitea%2Fpvc.yaml" class="outline-3">
-<h3 id="src%2Fgit-system%2Fgitea%2Fpvc.yaml"><span class="section-number-3">7.12</span> src/git-system/gitea/pvc.yaml</h3>
-<div class="outline-text-3" id="text-7-12">
+</li>
+<li><a id="git-system%2Fgitea%2Fpvc.yaml"></a>git-system/gitea/pvc.yaml<br />
+<div class="outline-text-5" id="text-4-1-1-12">
 <div class="org-src-container">
 <pre class="src src-yaml"><span style="color: #7590db;">apiVersion</span>: v1
 <span style="color: #7590db;">kind</span>: PersistentVolumeClaim
@@ -2052,10 +2037,9 @@ mirror as well.
 </pre>
 </div>
 </div>
-</div>
-<div id="outline-container-src%2Fgit-system%2Fgitea%2Fdatabase.yaml" class="outline-3">
-<h3 id="src%2Fgit-system%2Fgitea%2Fdatabase.yaml"><span class="section-number-3">7.13</span> src/git-system/gitea/database.yaml</h3>
-<div class="outline-text-3" id="text-7-13">
+</li>
+<li><a id="git-system%2Fgitea%2Fdatabase.yaml"></a>git-system/gitea/database.yaml<br />
+<div class="outline-text-5" id="text-4-1-1-13">
 <div class="org-src-container">
 <pre class="src src-yaml"><span style="color: #7590db;">apiVersion</span>: v1
 <span style="color: #7590db;">kind</span>: Service
@@ -2113,10 +2097,9 @@ mirror as well.
 </pre>
 </div>
 </div>
-</div>
-<div id="outline-container-src%2Fgit-system%2Fgitea%2Fstatefulset.yaml" class="outline-3">
-<h3 id="src%2Fgit-system%2Fgitea%2Fstatefulset.yaml"><span class="section-number-3">7.14</span> src/git-system/gitea/statefulset.yaml</h3>
-<div class="outline-text-3" id="text-7-14">
+</li>
+<li><a id="git-system%2Fgitea%2Fstatefulset.yaml"></a>git-system/gitea/statefulset.yaml<br />
+<div class="outline-text-5" id="text-4-1-1-14">
 <div class="org-src-container">
 <pre class="src src-yaml"><span style="color: #7590db;">apiVersion</span>: v1
 <span style="color: #7590db;">kind</span>: Service
@@ -2193,10 +2176,9 @@ mirror as well.
 </pre>
 </div>
 </div>
-</div>
-<div id="outline-container-src%2Fgit-system%2Fgitea%2Fingress.yaml" class="outline-3">
-<h3 id="src%2Fgit-system%2Fgitea%2Fingress.yaml"><span class="section-number-3">7.15</span> src/git-system/gitea/ingress.yaml</h3>
-<div class="outline-text-3" id="text-7-15">
+</li>
+<li><a id="git-system%2Fgitea%2Fingress.yaml"></a>git-system/gitea/ingress.yaml<br />
+<div class="outline-text-5" id="text-4-1-1-15">
 <div class="org-src-container">
 <pre class="src src-yaml"><span style="color: #7590db;">apiVersion</span>: traefik.containo.us/v1alpha1
 <span style="color: #7590db;">kind</span>: TraefikService
@@ -2248,12 +2230,13 @@ mirror as well.
 </pre>
 </div>
 </div>
-</div>
+</li>
+</ol>
 </div>
 
-<div id="outline-container-src%2Fgit-system%2Fkustomization.yaml" class="outline-2">
-<h2 id="src%2Fgit-system%2Fkustomization.yaml"><span class="section-number-2">8</span> src/git-system/kustomization.yaml</h2>
-<div class="outline-text-2" id="text-8">
+<div id="outline-container-git-system%2Fkustomization.yaml" class="outline-4">
+<h4 id="git-system%2Fkustomization.yaml"><span class="section-number-4">4.1.2</span> git-system/kustomization.yaml</h4>
+<div class="outline-text-4" id="text-4-1-2">
 <div class="org-src-container">
 <pre class="src src-yaml"><span style="color: #7590db;">apiVersion</span>: kustomize.config.k8s.io/v1beta1
 <span style="color: #7590db;">kind</span>: Kustomization
@@ -2263,9 +2246,9 @@ mirror as well.
 </div>
 </div>
 </div>
-<div id="outline-container-src%2Fgit-system%2Fnamespace.yaml" class="outline-2">
-<h2 id="src%2Fgit-system%2Fnamespace.yaml"><span class="section-number-2">9</span> src/git-system/namespace.yaml</h2>
-<div class="outline-text-2" id="text-9">
+<div id="outline-container-git-system%2Fnamespace.yaml" class="outline-4">
+<h4 id="git-system%2Fnamespace.yaml"><span class="section-number-4">4.1.3</span> git-system/namespace.yaml</h4>
+<div class="outline-text-4" id="text-4-1-3">
 <p>
 <code>namespace.yaml</code> creates the <code>git-system</code> namespace:
 </p>
@@ -2278,71 +2261,71 @@ mirror as well.
 </div>
 </div>
 </div>
-
-
+</div>
+</div>
 <div id="outline-container-flux-system" class="outline-2">
-<h2 id="flux-system"><span class="section-number-2">10</span> flux-system</h2>
-<div class="outline-text-2" id="text-10">
+<h2 id="flux-system"><span class="section-number-2">5</span> flux-system</h2>
+<div class="outline-text-2" id="text-5">
 <p>
 <code>flux-system</code> is the namespace setup for <a href="https://github.com/fluxcd/flux2">Flux</a>.
 </p>
 </div>
 <div id="outline-container-FLUX_REPO_NAME" class="outline-3">
-<h3 id="FLUX_REPO_NAME"><span class="section-number-3">10.1</span> FLUX_REPO_NAME</h3>
-<div class="outline-text-3" id="text-10-1">
+<h3 id="FLUX_REPO_NAME"><span class="section-number-3">5.1</span> FLUX_REPO_NAME</h3>
+<div class="outline-text-3" id="text-5-1">
 <p>
 The name of the repository containing these org files, and from which flux
 reads. Not including the domain, just the name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orga5506d4">literate-k3s
+<pre class="src src-config" id="org1bdfa88">literate-k3s
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-FLUX_GIT_REMOTE" class="outline-3">
-<h3 id="FLUX_GIT_REMOTE"><span class="section-number-3">10.2</span> FLUX_GIT_REMOTE</h3>
-<div class="outline-text-3" id="text-10-2">
+<h3 id="FLUX_GIT_REMOTE"><span class="section-number-3">5.2</span> FLUX_GIT_REMOTE</h3>
+<div class="outline-text-3" id="text-5-2">
 <p>
 This is the correct git remote URL if you are using self-hosted Gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org7ad8dfe">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+<pre class="src src-config" id="org05772d0">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-flux-system%20setup" class="outline-3">
-<h3 id="flux-system%20setup"><span class="section-number-3">10.3</span> flux-system setup</h3>
-<div class="outline-text-3" id="text-10-3">
+<h3 id="flux-system%20setup"><span class="section-number-3">5.3</span> flux-system setup</h3>
+<div class="outline-text-3" id="text-5-3">
 <p>
 You need to <a href="https://github.com/fluxcd/flux2/tree/main/install">install the flux command line tool</a>, or you can <a href="https://blog.rymcg.tech/blog/k3s/k3s-01-setup#create-toolbox-container-optional">run it from a
 container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">flux install --version=latest --arch=amd64 --export &gt; src/flux-system/gotk-components.yaml
+<pre class="src src-shell">flux install --version=latest --arch=amd64 --export &gt; flux-system/gotk-components.yaml
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-Deploy%20Flux" class="outline-3">
-<h3 id="Deploy%20Flux"><span class="section-number-3">10.4</span> Deploy Flux</h3>
-<div class="outline-text-3" id="text-10-4">
+<h3 id="Deploy%20Flux"><span class="section-number-3">5.4</span> Deploy Flux</h3>
+<div class="outline-text-3" id="text-5-4">
 <p>
 Tangle all the files, <code>C-c C-v t</code> then run:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config apply -k src/flux-system
+<pre class="src src-shell">kubectl --kubeconfig=$<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/.kube/k3s.example.com-config apply -k flux-system
 </pre>
 </div>
 </div>
 </div>
 
 <div id="outline-container-Create%20infrastructure%20repository" class="outline-3">
-<h3 id="Create%20infrastructure%20repository"><span class="section-number-3">10.5</span> Create infrastructure repository</h3>
-<div class="outline-text-3" id="text-10-5">
+<h3 id="Create%20infrastructure%20repository"><span class="section-number-3">5.5</span> Create infrastructure repository</h3>
+<div class="outline-text-3" id="text-5-5">
 <p>
 You will now create a git repository on gitea, that will serve as the root
 source of all the manifests on your cluster. You will commit and push all of the
@@ -2352,7 +2335,7 @@ and keep the cluster in sync with its state.
 
 <p>
 On Gitea, click the <code>+</code> icon in the upper right corner to create a new <code>New
-Repository</code>. Call the new repository the same as <a href="#orga5506d4">FLUX_REPO_NAME</a>. 
+Repository</code>. Call the new repository the same as <a href="#org1bdfa88">FLUX_REPO_NAME</a>. 
 </p>
 
 <p>
@@ -2369,7 +2352,7 @@ git remote add origin ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
 Add the src directory to the repository and commit it:
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">git add src/
+<pre class="src src-shell">git add .
 git commit -m <span style="color: #2d9574;">"Initial commit for new cluster k3s.example.com"</span>
 </pre>
 </div>
@@ -2385,8 +2368,8 @@ Push the changes to the remote:
 </div>
 
 <div id="outline-container-Tell%20flux%20to%20watch%20the%20infrastructure%20repository" class="outline-3">
-<h3 id="Tell%20flux%20to%20watch%20the%20infrastructure%20repository"><span class="section-number-3">10.6</span> Tell flux to watch the infrastructure repository</h3>
-<div class="outline-text-3" id="text-10-6">
+<h3 id="Tell%20flux%20to%20watch%20the%20infrastructure%20repository"><span class="section-number-3">5.6</span> Tell flux to watch the infrastructure repository</h3>
+<div class="outline-text-3" id="text-5-6">
 <p>
 This next command is interactive only, so you must run it in a separate
 terminal. Copy and paste it, but you also must replace <code>&lt;&lt;KUBE_CONFIG&gt;&gt;</code>,
@@ -2463,8 +2446,8 @@ Check the logs of the flux Kustomize controller:
 </div>
 </div>
 <div id="outline-container-Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository" class="outline-3">
-<h3 id="Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository"><span class="section-number-3">10.7</span> Test adding a new manifest to the git repository</h3>
-<div class="outline-text-3" id="text-10-7">
+<h3 id="Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository"><span class="section-number-3">5.7</span> Test adding a new manifest to the git repository</h3>
+<div class="outline-text-3" id="text-5-7">
 <p>
 OK now, in theory, you are done using <code>kubectl apply</code>. From now on, all you have
 to do is commit and push manifests to your git repository, and Flux will
@@ -2476,14 +2459,14 @@ Create a new namespace just for testing. Create the manifests:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">mkdir -p src/just-a-test
-cat &lt;&lt;EOF &gt; src/just-a-test/kustomization.yaml
+<pre class="src src-shell">mkdir -p just-a-test
+cat &lt;&lt;EOF &gt; just-a-test/kustomization.yaml
 <span style="color: #ffff00; font-weight: bold;">apiVersion: kustomize.config.k8s.io/v1beta1</span>
 <span style="color: #ffff00; font-weight: bold;">kind: Kustomization</span>
 <span style="color: #ffff00; font-weight: bold;">resources:</span>
 <span style="color: #ffff00; font-weight: bold;">- namespace.yaml</span>
 <span style="color: #ffff00; font-weight: bold;">EOF</span>
-cat &lt;&lt;EOF &gt; src/just-a-test/namespace.yaml
+cat &lt;&lt;EOF &gt; just-a-test/namespace.yaml
 <span style="color: #ffff00; font-weight: bold;">apiVersion: v1</span>
 <span style="color: #ffff00; font-weight: bold;">kind: Namespace</span>
 <span style="color: #ffff00; font-weight: bold;">metadata:</span>
@@ -2497,7 +2480,7 @@ Commit the changes:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">git add src/just-a-test
+<pre class="src src-shell">git add just-a-test
 git commit -m <span style="color: #2d9574;">"just-a-test"</span>
 </pre>
 </div>
@@ -2523,8 +2506,8 @@ Now delete the <code>just-a-test</code> directory and commit:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">rm -rf src/just-a-test/
-git add src/just-a-test/
+<pre class="src src-shell">rm -rf just-a-test/
+git add just-a-test/
 git commit -m <span style="color: #2d9574;">"remove just-a-test"</span>
 </pre>
 </div>
@@ -2547,9 +2530,9 @@ And in another minute or so, the namespace should be gone:
 </div>
 </div>
 </div>
-<div id="outline-container-src%2Fflux-system%2Fkustomization.yaml" class="outline-3">
-<h3 id="src%2Fflux-system%2Fkustomization.yaml"><span class="section-number-3">10.8</span> src/flux-system/kustomization.yaml</h3>
-<div class="outline-text-3" id="text-10-8">
+<div id="outline-container-flux-system%2Fkustomization.yaml" class="outline-3">
+<h3 id="flux-system%2Fkustomization.yaml"><span class="section-number-3">5.8</span> flux-system/kustomization.yaml</h3>
+<div class="outline-text-3" id="text-5-8">
 <div class="org-src-container">
 <pre class="src src-yaml"><span style="color: #7590db;">apiVersion</span>: kustomize.config.k8s.io/v1beta1
 <span style="color: #7590db;">kind</span>: Kustomization
@@ -2560,12 +2543,9 @@ And in another minute or so, the namespace should be gone:
 </div>
 </div>
 </div>
-
-
-
 <div id="outline-container-LICENSE" class="outline-2">
-<h2 id="LICENSE"><span class="section-number-2">11</span> LICENSE</h2>
-<div class="outline-text-2" id="text-11">
+<h2 id="LICENSE"><span class="section-number-2">6</span> LICENSE</h2>
+<div class="outline-text-2" id="text-6">
 <pre class="example">
 Copyright 2021 EnigmaCurry - https://github.com/EnigmaCurry/literate-k3s
 
@@ -2631,7 +2611,7 @@ well, so I instead opted to copy them here.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: EnigmaCurry</p>
-<p class="date">Created: 2021-02-05 Fri 15:20</p>
+<p class="date">Created: 2021-02-05 Fri 15:58</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

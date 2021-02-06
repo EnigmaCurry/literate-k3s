@@ -5,6 +5,9 @@
 #+INCLUDE: "../../meta/export-html.org"
 #+INCLUDE: "../../meta/github-ribbon.org"
 #+INCLUDE: "../../meta/intro.org"
+# Local Variables:
+# eval: (progn (load-file "../../meta/org-meta.el"))
+# End:
 
 * Core Config
 ** CLUSTER
@@ -41,28 +44,12 @@ related.
 #+INCLUDE: "../../lib/sealed_secrets.org"
 * git-system
 =git-system= is the namespace created for Gitea.
+** Create directories
+#+begin_src shell :noweb yes :eval never-export :exports code
+
+#+end_src
 #+INCLUDE: "../../lib/gitea.org"
 * flux-system
 #+INCLUDE: "../../lib/flux.org"
 * LICENSE
 #+INCLUDE: "../../LICENSE.org"
-* Footnotes
-
-This should be the very last section in this document. It is excluded from the
-HTML export. This section contains code that will run when Emacs loads this
-file. When Emacs loads a file, it searches for the =Local Variables= comment at
-the very bottom of the file, and loads variables defined there and runs any
-=eval= code listed.
-
-The eval line runs the code from [[attachment:../../meta/org-meta.el][meta/org-meta.el]]
-
-Keep this at the very bottom of the file:
-
-# Local Variables:
-# eval: (progn (load-file "../../meta/org-meta.el"))
-# End:
-
-
-
-
-
