@@ -57,6 +57,7 @@
                   (message (buffer-file-name (current-buffer)))
                   (literate-k3s-reload-config)
                   (with-current-buffer (buffer-name literate-k3s-buffer)
+                    ;; export to HTML:
                     (org-html-export-to-html)
                     ;; Copy CSS and javascript files if they don't exist yet in the output dir (never updated again):
                     (when (not (file-exists-p (concat literate-k3s-src-dir "meta/css/build/")))
@@ -83,6 +84,9 @@
                     ;;;; This is the OPPOSITE of what I wanted, so my version exports relative to the document /doing/ the INCLUDE.
                     ;;;; SEE https://github.com/EnigmaCurry/org-resolve-deps/commit/ab4170dd43cc3de7be60bb2480d9869dab0e8182
                     (org-resolve-deps-tangle)
+                    ;; Create .gitignore if it does not exist
+                    (when (not (file-exists-p (concat literate-k3s-src-dir ".gitignore")))
+                      (write-region ".org-resolve-deps.org" nil (concat literate-k3s-src-dir ".gitignore")))
                     ))))
     (add-hook 'org-babel-pre-tangle-hook
               (lambda ()
