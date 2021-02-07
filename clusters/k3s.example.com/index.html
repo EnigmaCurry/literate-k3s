@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-07 Sun 08:36 -->
+<!-- 2021-02-07 Sun 13:05 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Literate K3s Cluster</title>
@@ -353,9 +353,8 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#CLUSTER">2.1. CLUSTER</a></li>
 <li><a href="#CLUSTER_SSH_USER">2.2. CLUSTER_SSH_USER</a></li>
-<li><a href="#SRC_DIR">2.3. SRC_DIR</a></li>
-<li><a href="#KUBE_CONFIG">2.4. KUBE_CONFIG</a></li>
-<li><a href="#kubectl%20command">2.5. kubectl command</a></li>
+<li><a href="#KUBE_CONFIG">2.3. KUBE_CONFIG</a></li>
+<li><a href="#kubectl%20command">2.4. kubectl command</a></li>
 </ul>
 </li>
 <li><a href="#Create%20directories%20for%20namespaces">3. Create directories for namespaces</a></li>
@@ -459,7 +458,11 @@ together" code, configuration, prose text, and program results/output, presented
 as a single readable document; sometimes referred to as Executable Documentation
 or Reproducible Research. If you use a Literate Programming style, you will
 never forget to document how your program works, because your documentation <i>is</i>
-your program source code.
+your program source code. (Well now, it's still possible for your documentation
+to be <i>wrong</i> or <i>contradictory</i>, but at least with Literate Programming, the
+error is sitting right in front of your face. The first time you do Ctrl-F from
+any web browser, and thereby search your entire code base, I think you'll
+understand the power of this.)
 </p>
 
 <p>
@@ -593,15 +596,15 @@ code from now on.
 </p>
 
 <p>
-This automatic loading happens because of the <code>Local Variables</code> found at the
-top of the file. The <code>Local Variables</code> is a formal way to inform Emacs that you
+This automatic loading happens because of the <code>Emacs Local Variables</code> found at the
+bottom of the file. The <code>Emacs Local Variables</code> is a formal way to inform Emacs that you
 would like to run some code when the file is opened. It could be dangerous to
 do this in some situations, so it's a good thing that Emacs asked you this
 question! In this case, it is setting up to run the included emacs lisp file
 meta/org-meta.el, in order to enable automatic export (YAML and HTML) whenever
 you save this file, as well as a few other fixes for things. If you don't
-desire this behaviour, remove the <code>eval</code> line from the <code>Local Variables</code>
-section at the top of the file, and you will no longer see this message on
+desire this behaviour, remove the <code>eval</code> line from the <code>Emacs Local Variables</code>
+section at the bottom of the file, and you will no longer see this message on
 load.
 </p>
 
@@ -686,7 +689,7 @@ This system extends vanilla Org-mode tangling. Instead of running
 <code>org-resolve-deps-tangle</code>, automatically when you save any Org file.
 <code>org-resolve-deps-tangle</code> tangles your current file, and finds all of the files
 marked as <code>INCLUDE</code>, and runs tangle on all of them, as well. This is setup
-automatically in the <code>auto-save</code> hook linked from the <code>Local Variables</code>. So all
+automatically in the <code>auto-save</code> hook linked from the <code>Emacs Local Variables</code>. So all
 you have to do is save the file, and <code>org-resolve-deps-tangle</code> runs
 automatically.
 </p>
@@ -756,7 +759,7 @@ form.
 In org-mode, you can export the current document as a single HTML page, with the
 builtin org-mode exporter: type <code>C-c C-e h-h</code> or run <code>M-x
 org-html-export-to-html</code>. However, in this file, it is setup automatically to
-export HTML whenever the file is saved, see <code>Local Variables</code>.
+export HTML whenever the file is saved, see <code>Emacs Local Variables</code>.
 </p>
 
 <p>
@@ -964,7 +967,7 @@ your new cluster.
 <p>
 Before you open any other file, you should always open your main cluster file
 (<code>k3s.example.com.org</code>) <i>first</i>, as it sets up some config when Emacs loads the
-file. (See <code>Local Variables</code>).
+file. (See <code>Emacs Local Variables</code>).
 </p>
 
 <ul class="org-ul">
@@ -1033,10 +1036,10 @@ cluster, read on.
 <h3 id="CLUSTER"><span class="section-number-3">2.1</span> CLUSTER</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
-<code>CLUSTER</code> is the domain name of your cluster:
+Set <code>CLUSTER</code> to be the domain name for your cluster:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org686eeb0">k3s.example.com
+<pre class="src src-config" id="orgdc13637">k3s.example.com
 </pre>
 </div>
 </div>
@@ -1045,56 +1048,37 @@ cluster, read on.
 <h3 id="CLUSTER_SSH_USER"><span class="section-number-3">2.2</span> CLUSTER_SSH_USER</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
-<code>CLUSTER_SSH_USER</code> is the admin SSH account of the cluster.
+Set <code>CLUSTER_SSH_USER</code> to be the admin SSH account of the cluster (usually
+root).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgb39523f">root
+<pre class="src src-config" id="org639db03">root
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-SRC_DIR" class="outline-3">
-<h3 id="SRC_DIR"><span class="section-number-3">2.3</span> SRC_DIR</h3>
-<div class="outline-text-3" id="text-2-3">
-<p>
-<code>SRC_DIR</code> is an absolute path reference to the current directory that contains
-this file. It is also the destination directory for tangling. If you cloned the
-repository to the path structure suggested in the introduction guide, this
-setting should already be correct. If you cloned to a different directory,
-should update this variable accordingly, <i>however</i>, don't change this directory
-to anything other than the one that contains this file, because org-mode is not
-configured for tangling to any other directory.
-</p>
-
-<div class="org-src-container">
-<pre class="src src-config" id="orge03eee2">${HOME}/git/literate-k3s/clusters/k3s.example.com
-</pre>
-</div>
-</div>
-</div>
-
 <div id="outline-container-KUBE_CONFIG" class="outline-3">
-<h3 id="KUBE_CONFIG"><span class="section-number-3">2.4</span> KUBE_CONFIG</h3>
-<div class="outline-text-3" id="text-2-4">
+<h3 id="KUBE_CONFIG"><span class="section-number-3">2.3</span> KUBE_CONFIG</h3>
+<div class="outline-text-3" id="text-2-3">
 <p>
 <code>KUBE_CONFIG</code> is the local path to the kubectl config file
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org5d3742f">${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="org29a4568">${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-kubectl%20command" class="outline-3">
-<h3 id="kubectl%20command"><span class="section-number-3">2.5</span> kubectl command</h3>
-<div class="outline-text-3" id="text-2-5">
+<h3 id="kubectl%20command"><span class="section-number-3">2.4</span> kubectl command</h3>
+<div class="outline-text-3" id="text-2-4">
 <p>
 Since you'll need to specify the kubectl config file each and every time you use
 <code>kubectl</code>, let's create a NoWeb alias for it (<code>&lt;&lt;kubectl&gt;&gt;</code>), to use in other
 code blocks.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org6e122e6">kubectl --kubeconfig=${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="orgafc256e">kubectl --kubeconfig=${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1105,16 +1089,13 @@ code blocks.
 <h2 id="Create%20directories%20for%20namespaces"><span class="section-number-2">3</span> Create directories for namespaces</h2>
 <div class="outline-text-2" id="text-3">
 <p>
-Create all of the directories necessary for tangling this config. (These are
-also re-iterated in the setup instructions for each individual config below, but
-this gets you going quicker, because tangling will fail until you create all of
-these):
+Create all of the directories necessary for tangling this config:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">mkdir -p $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/git/literate-k3s/clusters/k3s.example.com/kube-system/traefik
-mkdir -p $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/git/literate-k3s/clusters/k3s.example.com/git-system/gitea
-mkdir -p $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/git/literate-k3s/clusters/k3s.example.com/flux-system
+<pre class="src src-shell">mkdir -p /home/ryan/git/vendor/enigmacurry/literate-k3s/clusters/k3s.example.com//kube-system/traefik
+mkdir -p /home/ryan/git/vendor/enigmacurry/literate-k3s/clusters/k3s.example.com//git-system/gitea
+mkdir -p /home/ryan/git/vendor/enigmacurry/literate-k3s/clusters/k3s.example.com//flux-system/
 </pre>
 </div>
 </div>
@@ -1140,7 +1121,7 @@ related.
 provider. 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org4ecafa0">you@example.com
+<pre class="src src-config" id="org83d4e74">you@example.com
 </pre>
 </div>
 </div>
@@ -1153,7 +1134,7 @@ provider.
 provider). 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgeb6b7bb">https://acme-staging-v02.api.letsencrypt.org/directory
+<pre class="src src-config" id="orgb97f490">https://acme-staging-v02.api.letsencrypt.org/directory
 </pre>
 </div>
 
@@ -1196,7 +1177,7 @@ domain name to respond to. <code>TRAEFIK_WHOAMI_DOMAIN</code> is the subdomain t
 whoami service responds to.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org2a0b665">whoami.k3s.example.com
+<pre class="src src-config" id="org940d643">whoami.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1208,7 +1189,7 @@ whoami service responds to.
 The version number of Traefik to install (eg. <code>2.3</code>).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgaa9a5c2">v2.3
+<pre class="src src-config" id="orgaf18ab8">v2.3
 </pre>
 </div>
 </div>
@@ -1220,7 +1201,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 <code>TRAEFIK_LOG_LEVEL</code> is the filter level on the traefik log.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgb9e9b44">INFO
+<pre class="src src-config" id="org579d830">INFO
 </pre>
 </div>
 </div>
@@ -1257,7 +1238,7 @@ Create the traefik deployment directory underneath the namespace directory:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">mkdir -p $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/git/literate-k3s/clusters/k3s.example.com/kube-system/traefik
+<pre class="src src-shell">mkdir -p /home/ryan/git/vendor/enigmacurry/literate-k3s/clusters/k3s.example.com//kube-system/traefik
 </pre>
 </div>
 
@@ -1301,7 +1282,7 @@ Test with TLS verification on:
 </div>
 
 <p>
-TLS will not verify until you use the production <a href="#orgeb6b7bb">TRAEFIK_ACME_SERVER</a>.
+TLS will not verify until you use the production <a href="#orgb97f490">TRAEFIK_ACME_SERVER</a>.
 </p>
 </div>
 </div>
@@ -1639,7 +1620,7 @@ to direct traffic to any other node.
 <div class="outline-text-4" id="text-4-2-8">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It listens to the
-domain <a href="#org2a0b665">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
+domain <a href="#org940d643">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
 </p>
 
 <div class="org-src-container">
@@ -1760,7 +1741,7 @@ Tools</code>). Now it's time to install the cluster side portion:
 <h4 id="GITEA_DOMAIN"><span class="section-number-4">5.1.1</span> GITEA_DOMAIN</h4>
 <div class="outline-text-4" id="text-5-1-1">
 <div class="org-src-container">
-<pre class="src src-config" id="orgf7a887e">git.k3s.example.com
+<pre class="src src-config" id="org721dc10">git.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1772,7 +1753,7 @@ Tools</code>). Now it's time to install the cluster side portion:
 The size of the postgres database volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org2c97bb5">5Gi
+<pre class="src src-config" id="org7a83859">5Gi
 </pre>
 </div>
 </div>
@@ -1784,7 +1765,7 @@ The size of the postgres database volume for gitea:
 The size of the data volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org21256d7">5Gi
+<pre class="src src-config" id="orgcf5a1a9">5Gi
 </pre>
 </div>
 </div>
@@ -1797,7 +1778,7 @@ The size of the data volume for gitea:
 name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org7b71236">root
+<pre class="src src-config" id="org2c98008">root
 </pre>
 </div>
 </div>
@@ -1809,7 +1790,7 @@ name.
 <code>GITEA_EMAIL</code> is the admin account email address:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org9e0ee92">root@example.com
+<pre class="src src-config" id="orgb90de4a">root@example.com
 </pre>
 </div>
 </div>
@@ -1839,7 +1820,7 @@ Create the gitea deployment directory underneath the namespace directory:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">mkdir -p $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/git/literate-k3s/clusters/k3s.example.com/git-system/gitea/
+<pre class="src src-shell">mkdir -p /home/ryan/git/vendor/enigmacurry/literate-k3s/clusters/k3s.example.com//git-system/gitea/
 </pre>
 </div>
 </div>
@@ -2390,7 +2371,7 @@ The name of the repository containing these org files, and from which flux
 reads. Not including the domain, just the name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org68418b4">literate-k3s
+<pre class="src src-config" id="org9346d02">music.enigmacurry.com
 </pre>
 </div>
 </div>
@@ -2398,11 +2379,8 @@ reads. Not including the domain, just the name.
 <div id="outline-container-FLUX_GIT_REMOTE" class="outline-4">
 <h4 id="FLUX_GIT_REMOTE"><span class="section-number-4">6.1.2</span> FLUX_GIT_REMOTE</h4>
 <div class="outline-text-4" id="text-6-1-2">
-<p>
-This is the correct git remote URL if you are using self-hosted Gitea:
-</p>
 <div class="org-src-container">
-<pre class="src src-config" id="org1320d21">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+<pre class="src src-config" id="orgb731526">ssh://git@github.com:EnigmaCurry/music.enigmacurry.com.git
 </pre>
 </div>
 </div>
@@ -2423,7 +2401,7 @@ Create the <code>flux-system</code> namespace:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">mkdir -p $<span style="color: #4f97d7;">{</span><span style="color: #7590db;">HOME</span><span style="color: #4f97d7;">}</span>/git/literate-k3s/clusters/k3s.example.com/flux-system
+<pre class="src src-shell">mkdir -p /home/ryan/git/vendor/enigmacurry/literate-k3s/clusters/k3s.example.com//flux-system
 </pre>
 </div>
 </div>
@@ -2468,7 +2446,7 @@ and keep the cluster in sync with its state.
 
 <p>
 On Gitea, click the <code>+</code> icon in the upper right corner to create a new <code>New
-Repository</code>. Call the new repository the same as <a href="#org68418b4">FLUX_REPO_NAME</a>. 
+Repository</code>. Call the new repository the same as <a href="#org9346d02">FLUX_REPO_NAME</a>. 
 </p>
 
 <p>
@@ -2477,7 +2455,7 @@ Set the new gitea repository as the git origin remote:
 
 <div class="org-src-container">
 <pre class="src src-shell">git remote remove origin
-git remote add origin ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+git remote add origin ssh://git@github.com:EnigmaCurry/music.enigmacurry.com.git
 </pre>
 </div>
 
@@ -2543,8 +2521,8 @@ Create the <code>Kustomization</code> resource:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">flux create kustomization literate-k3s <span style="color: #2d9574;">\</span>
-  --source=literate-k3s <span style="color: #2d9574;">\</span>
+<pre class="src src-shell">flux create kustomization music.enigmacurry.com <span style="color: #2d9574;">\</span>
+  --source=music.enigmacurry.com <span style="color: #2d9574;">\</span>
   --path=<span style="color: #2d9574;">"./src"</span> <span style="color: #2d9574;">\</span>
   --prune=true <span style="color: #2d9574;">\</span>
   --interval=<span style="color: #a45bad;">10m</span>
@@ -2680,6 +2658,10 @@ And in another minute or so, the namespace should be gone:
 <div id="outline-container-LICENSE" class="outline-2">
 <h2 id="LICENSE"><span class="section-number-2">7</span> LICENSE</h2>
 <div class="outline-text-2" id="text-7">
+<p>
+Here is the license for <a href="https://github.com/EnigmaCurry/literate-k3s">enigmacurry/literate-k3s</a> and its accompanying libraries:
+</p>
+
 <pre class="example">
 Copyright 2021 EnigmaCurry - https://github.com/EnigmaCurry/literate-k3s
 
@@ -2745,7 +2727,7 @@ well, so I instead opted to copy them here.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: EnigmaCurry</p>
-<p class="date">Created: 2021-02-07 Sun 08:36</p>
+<p class="date">Created: 2021-02-07 Sun 13:05</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

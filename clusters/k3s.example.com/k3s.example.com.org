@@ -11,31 +11,18 @@
 
 * Core Config
 ** CLUSTER
-  =CLUSTER= is the domain name of your cluster:
-  #+name: CLUSTER
-  #+begin_src config :noweb yes :eval no
-  k3s.example.com
-  #+end_src
-** CLUSTER_SSH_USER
-   =CLUSTER_SSH_USER= is the admin SSH account of the cluster.
-   #+name: CLUSTER_SSH_USER
-   #+begin_src config :noweb yes :eval no
-   root
-   #+end_src
-** SRC_DIR
-=SRC_DIR= is an absolute path reference to the current directory that contains
-this file. It is also the destination directory for tangling. If you cloned the
-repository to the path structure suggested in the introduction guide, this
-setting should already be correct. If you cloned to a different directory,
-should update this variable accordingly, /however/, don't change this directory
-to anything other than the one that contains this file, because org-mode is not
-configured for tangling to any other directory.
-
-#+name: SRC_DIR
+Set =CLUSTER= to be the domain name for your cluster:
+#+name: CLUSTER
 #+begin_src config :noweb yes :eval no
-${HOME}/git/literate-k3s/clusters/<<CLUSTER>>
+k3s.example.com
 #+end_src
-
+** CLUSTER_SSH_USER
+Set =CLUSTER_SSH_USER= to be the admin SSH account of the cluster (usually
+root).
+#+name: CLUSTER_SSH_USER
+#+begin_src config :noweb yes :eval no
+root
+#+end_src
 ** KUBE_CONFIG
   =KUBE_CONFIG= is the local path to the kubectl config file
   #+name: KUBE_CONFIG
@@ -52,16 +39,15 @@ ${HOME}/git/literate-k3s/clusters/<<CLUSTER>>
  #+end_src
 
 * Create directories for namespaces
-Create all of the directories necessary for tangling this config. (These are
-also re-iterated in the setup instructions for each individual config below, but
-this gets you going quicker, because tangling will fail until you create all of
-these):
+Create all of the directories necessary for tangling this config:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
 mkdir -p <<SRC_DIR>>/kube-system/traefik
 mkdir -p <<SRC_DIR>>/git-system/gitea
-mkdir -p <<SRC_DIR>>/flux-system
+mkdir -p <<SRC_DIR>>/flux-system/
 #+end_src
+
+#+RESULTS:
 
 * kube-system
 =kube-system= is the namespace for running system wide features, mostly network
@@ -164,15 +150,25 @@ The name of the repository containing these org files, and from which flux
 reads. Not including the domain, just the name.
 #+name: FLUX_REPO_NAME
 #+begin_src config :noweb yes :eval no
-literate-k3s
+music.enigmacurry.com
 #+end_src
 *** FLUX_GIT_REMOTE
-This is the correct git remote URL if you are using self-hosted Gitea:
  #+name: FLUX_GIT_REMOTE
  #+begin_src config :noweb yes :eval no
- ssh://git@git.k3s.example.com:2222/root/<<FLUX_REPO_NAME>>.git
+ ssh://git@github.com:EnigmaCurry/music.enigmacurry.com.git
  #+end_src
 ** Flux Deployment
 #+INCLUDE: "../../lib/flux.org"
 * LICENSE
 #+INCLUDE: "../../LICENSE.org"
+* COMMENT Emacs Local Variables
+This section contains the =Local Variables= that [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Specifying-File-Variables.html#Specifying-File-Variables][Emacs reads when it loads this
+file]]. This section must be located "no more than 3000 characters from the end of
+the file", so you need to keep this as the very last section of this document.
+This section is excluded from the HTML output because it is tagged with
+=COMMENT=. 
+
+# Local Variables:
+# eval: (progn (load-file "../../meta/org-meta.el") (literate-k3s-init))
+# End:
+
