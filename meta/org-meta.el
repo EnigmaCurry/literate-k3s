@@ -1,5 +1,6 @@
 ;; Remember the directory where literate-k3s is cloned to
 (setq literate-k3s-org-root (file-name-directory (directory-file-name (file-name-directory load-file-name))))
+
 ;; bootstrap quelpa and use-package:
 (unless (package-installed-p 'quelpa)
   (with-temp-buffer
