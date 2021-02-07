@@ -1,17 +1,4 @@
 =flux-system= is the namespace setup for [[https://github.com/fluxcd/flux2][Flux]].
-* FLUX_REPO_NAME
-The name of the repository containing these org files, and from which flux
-reads. Not including the domain, just the name.
-#+name: FLUX_REPO_NAME
-#+begin_src config :noweb yes :eval no
-literate-k3s
-#+end_src
-* FLUX_GIT_REMOTE
-This is the correct git remote URL if you are using self-hosted Gitea:
- #+name: FLUX_GIT_REMOTE
- #+begin_src config :noweb yes :eval no
- ssh://git@git.k3s.example.com:2222/root/<<FLUX_REPO_NAME>>.git
- #+end_src
 * Create directory
 Create the =flux-system= namespace:
 

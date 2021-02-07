@@ -1,3 +1,5 @@
+Here is the license for [[https://github.com/EnigmaCurry/literate-k3s][enigmacurry/literate-k3s]] and its accompanying libraries:
+
 : Copyright 2021 EnigmaCurry - https://github.com/EnigmaCurry/literate-k3s
 : 
 : Permission is hereby granted, free of charge, to any person obtaining a copy of

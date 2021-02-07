@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-06 Sat 18:41 -->
+<!-- 2021-02-07 Sun 08:36 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Literate K3s Cluster</title>
@@ -421,15 +421,23 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#flux-system">6. flux-system</a>
 <ul>
-<li><a href="#FLUX_REPO_NAME">6.1. FLUX_REPO_NAME</a></li>
-<li><a href="#FLUX_GIT_REMOTE">6.2. FLUX_GIT_REMOTE</a></li>
-<li><a href="#flux-system--Create%20directory">6.3. Create directory</a></li>
-<li><a href="#flux-system%20setup">6.4. flux-system setup</a></li>
-<li><a href="#Deploy%20Flux">6.5. Deploy Flux</a></li>
-<li><a href="#Create%20infrastructure%20repository">6.6. Create infrastructure repository</a></li>
-<li><a href="#Tell%20flux%20to%20watch%20the%20infrastructure%20repository">6.7. Tell flux to watch the infrastructure repository</a></li>
-<li><a href="#Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository">6.8. Test adding a new manifest to the git repository</a></li>
-<li><a href="#flux-system%2Fkustomization.yaml">6.9. flux-system/kustomization.yaml</a></li>
+<li><a href="#Flux%20Config">6.1. Flux Config</a>
+<ul>
+<li><a href="#FLUX_REPO_NAME">6.1.1. FLUX_REPO_NAME</a></li>
+<li><a href="#FLUX_GIT_REMOTE">6.1.2. FLUX_GIT_REMOTE</a></li>
+</ul>
+</li>
+<li><a href="#Flux%20Deployment">6.2. Flux Deployment</a>
+<ul>
+<li><a href="#Flux%20Deployment--Create%20directory">6.2.1. Create directory</a></li>
+<li><a href="#flux-system%20setup">6.2.2. flux-system setup</a></li>
+<li><a href="#Deploy%20Flux">6.2.3. Deploy Flux</a></li>
+<li><a href="#Create%20infrastructure%20repository">6.2.4. Create infrastructure repository</a></li>
+<li><a href="#Tell%20flux%20to%20watch%20the%20infrastructure%20repository">6.2.5. Tell flux to watch the infrastructure repository</a></li>
+<li><a href="#Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository">6.2.6. Test adding a new manifest to the git repository</a></li>
+<li><a href="#flux-system%2Fkustomization.yaml">6.2.7. flux-system/kustomization.yaml</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#LICENSE">7. LICENSE</a></li>
@@ -1028,7 +1036,7 @@ cluster, read on.
 <code>CLUSTER</code> is the domain name of your cluster:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org8a6326d">k3s.example.com
+<pre class="src src-config" id="org686eeb0">k3s.example.com
 </pre>
 </div>
 </div>
@@ -1040,7 +1048,7 @@ cluster, read on.
 <code>CLUSTER_SSH_USER</code> is the admin SSH account of the cluster.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org0e43ee7">root
+<pre class="src src-config" id="orgb39523f">root
 </pre>
 </div>
 </div>
@@ -1051,14 +1059,15 @@ cluster, read on.
 <p>
 <code>SRC_DIR</code> is an absolute path reference to the current directory that contains
 this file. It is also the destination directory for tangling. If you cloned the
-repository to a path structure other than the suggestion in the introduction
-guide, you should update this variable accordingly, <i>however</i>, don't change this
-to directory to anything other than the one that contains this file, because
-org-mode is not configured for tangling to any other directory.
+repository to the path structure suggested in the introduction guide, this
+setting should already be correct. If you cloned to a different directory,
+should update this variable accordingly, <i>however</i>, don't change this directory
+to anything other than the one that contains this file, because org-mode is not
+configured for tangling to any other directory.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-config" id="org94e0145">${HOME}/git/literate-k3s/clusters/k3s.example.com
+<pre class="src src-config" id="orge03eee2">${HOME}/git/literate-k3s/clusters/k3s.example.com
 </pre>
 </div>
 </div>
@@ -1071,7 +1080,7 @@ org-mode is not configured for tangling to any other directory.
 <code>KUBE_CONFIG</code> is the local path to the kubectl config file
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgdb5e18a">${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="org5d3742f">${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1085,7 +1094,7 @@ Since you'll need to specify the kubectl config file each and every time you use
 code blocks.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orga450e2b">kubectl --kubeconfig=${HOME}/.kube/k3s.example.com-config
+<pre class="src src-config" id="org6e122e6">kubectl --kubeconfig=${HOME}/.kube/k3s.example.com-config
 </pre>
 </div>
 </div>
@@ -1131,7 +1140,7 @@ related.
 provider. 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org7be62dd">you@example.com
+<pre class="src src-config" id="org4ecafa0">you@example.com
 </pre>
 </div>
 </div>
@@ -1144,7 +1153,7 @@ provider.
 provider). 
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org3e59c59">https://acme-staging-v02.api.letsencrypt.org/directory
+<pre class="src src-config" id="orgeb6b7bb">https://acme-staging-v02.api.letsencrypt.org/directory
 </pre>
 </div>
 
@@ -1187,7 +1196,7 @@ domain name to respond to. <code>TRAEFIK_WHOAMI_DOMAIN</code> is the subdomain t
 whoami service responds to.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org99ecf21">whoami.k3s.example.com
+<pre class="src src-config" id="org2a0b665">whoami.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1199,7 +1208,7 @@ whoami service responds to.
 The version number of Traefik to install (eg. <code>2.3</code>).
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org61a83cf">v2.3
+<pre class="src src-config" id="orgaa9a5c2">v2.3
 </pre>
 </div>
 </div>
@@ -1211,7 +1220,7 @@ The version number of Traefik to install (eg. <code>2.3</code>).
 <code>TRAEFIK_LOG_LEVEL</code> is the filter level on the traefik log.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org1e0396b">INFO
+<pre class="src src-config" id="orgb9e9b44">INFO
 </pre>
 </div>
 </div>
@@ -1292,7 +1301,7 @@ Test with TLS verification on:
 </div>
 
 <p>
-TLS will not verify until you use the production <a href="#org3e59c59">TRAEFIK_ACME_SERVER</a>.
+TLS will not verify until you use the production <a href="#orgeb6b7bb">TRAEFIK_ACME_SERVER</a>.
 </p>
 </div>
 </div>
@@ -1630,7 +1639,7 @@ to direct traffic to any other node.
 <div class="outline-text-4" id="text-4-2-8">
 <p>
 <a href="https://github.com/traefik/whoami">traefik/whoami</a> can be deployed to test Traefik functionality. It listens to the
-domain <a href="#org99ecf21">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
+domain <a href="#org2a0b665">TRAEFIK_WHOAMI_DOMAIN</a> (eg. <code>whoami.k3s.example.com</code>).
 </p>
 
 <div class="org-src-container">
@@ -1751,7 +1760,7 @@ Tools</code>). Now it's time to install the cluster side portion:
 <h4 id="GITEA_DOMAIN"><span class="section-number-4">5.1.1</span> GITEA_DOMAIN</h4>
 <div class="outline-text-4" id="text-5-1-1">
 <div class="org-src-container">
-<pre class="src src-config" id="orgace316d">git.k3s.example.com
+<pre class="src src-config" id="orgf7a887e">git.k3s.example.com
 </pre>
 </div>
 </div>
@@ -1763,7 +1772,7 @@ Tools</code>). Now it's time to install the cluster side portion:
 The size of the postgres database volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgf86093d">5Gi
+<pre class="src src-config" id="org2c97bb5">5Gi
 </pre>
 </div>
 </div>
@@ -1775,7 +1784,7 @@ The size of the postgres database volume for gitea:
 The size of the data volume for gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgdd09bfe">5Gi
+<pre class="src src-config" id="org21256d7">5Gi
 </pre>
 </div>
 </div>
@@ -1788,7 +1797,7 @@ The size of the data volume for gitea:
 name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgfb5eaa1">root
+<pre class="src src-config" id="org7b71236">root
 </pre>
 </div>
 </div>
@@ -1800,7 +1809,7 @@ name.
 <code>GITEA_EMAIL</code> is the admin account email address:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="org563063a">root@example.com
+<pre class="src src-config" id="org9e0ee92">root@example.com
 </pre>
 </div>
 </div>
@@ -2368,38 +2377,47 @@ mirror as well.
 <div id="outline-container-flux-system" class="outline-2">
 <h2 id="flux-system"><span class="section-number-2">6</span> flux-system</h2>
 <div class="outline-text-2" id="text-6">
-<p>
-<code>flux-system</code> is the namespace setup for <a href="https://github.com/fluxcd/flux2">Flux</a>.
-</p>
 </div>
-<div id="outline-container-FLUX_REPO_NAME" class="outline-3">
-<h3 id="FLUX_REPO_NAME"><span class="section-number-3">6.1</span> FLUX_REPO_NAME</h3>
+<div id="outline-container-Flux%20Config" class="outline-3">
+<h3 id="Flux%20Config"><span class="section-number-3">6.1</span> Flux Config</h3>
 <div class="outline-text-3" id="text-6-1">
+</div>
+<div id="outline-container-FLUX_REPO_NAME" class="outline-4">
+<h4 id="FLUX_REPO_NAME"><span class="section-number-4">6.1.1</span> FLUX_REPO_NAME</h4>
+<div class="outline-text-4" id="text-6-1-1">
 <p>
 The name of the repository containing these org files, and from which flux
 reads. Not including the domain, just the name.
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgb804832">literate-k3s
+<pre class="src src-config" id="org68418b4">literate-k3s
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-FLUX_GIT_REMOTE" class="outline-3">
-<h3 id="FLUX_GIT_REMOTE"><span class="section-number-3">6.2</span> FLUX_GIT_REMOTE</h3>
-<div class="outline-text-3" id="text-6-2">
+<div id="outline-container-FLUX_GIT_REMOTE" class="outline-4">
+<h4 id="FLUX_GIT_REMOTE"><span class="section-number-4">6.1.2</span> FLUX_GIT_REMOTE</h4>
+<div class="outline-text-4" id="text-6-1-2">
 <p>
 This is the correct git remote URL if you are using self-hosted Gitea:
 </p>
 <div class="org-src-container">
-<pre class="src src-config" id="orgb7914ee">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
+<pre class="src src-config" id="org1320d21">ssh://git@git.k3s.example.com:2222/root/literate-k3s.git
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-flux-system--Create%20directory" class="outline-3">
-<h3 id="flux-system--Create%20directory"><span class="section-number-3">6.3</span> Create directory</h3>
-<div class="outline-text-3" id="text-6-3">
+</div>
+<div id="outline-container-Flux%20Deployment" class="outline-3">
+<h3 id="Flux%20Deployment"><span class="section-number-3">6.2</span> Flux Deployment</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+<code>flux-system</code> is the namespace setup for <a href="https://github.com/fluxcd/flux2">Flux</a>.
+</p>
+</div>
+<div id="outline-container-Flux%20Deployment--Create%20directory" class="outline-4">
+<h4 id="Flux%20Deployment--Create%20directory"><span class="section-number-4">6.2.1</span> Create directory</h4>
+<div class="outline-text-4" id="text-6-2-1">
 <p>
 Create the <code>flux-system</code> namespace:
 </p>
@@ -2410,9 +2428,9 @@ Create the <code>flux-system</code> namespace:
 </div>
 </div>
 </div>
-<div id="outline-container-flux-system%20setup" class="outline-3">
-<h3 id="flux-system%20setup"><span class="section-number-3">6.4</span> flux-system setup</h3>
-<div class="outline-text-3" id="text-6-4">
+<div id="outline-container-flux-system%20setup" class="outline-4">
+<h4 id="flux-system%20setup"><span class="section-number-4">6.2.2</span> flux-system setup</h4>
+<div class="outline-text-4" id="text-6-2-2">
 <p>
 You need to <a href="https://github.com/fluxcd/flux2/tree/main/install">install the flux command line tool</a>, or you can <a href="https://blog.rymcg.tech/blog/k3s/k3s-01-setup#create-toolbox-container-optional">run it from a
 container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
@@ -2424,9 +2442,9 @@ container</a> or use the <code>flux-go</code> AUR package on Arch Linux.
 </div>
 </div>
 </div>
-<div id="outline-container-Deploy%20Flux" class="outline-3">
-<h3 id="Deploy%20Flux"><span class="section-number-3">6.5</span> Deploy Flux</h3>
-<div class="outline-text-3" id="text-6-5">
+<div id="outline-container-Deploy%20Flux" class="outline-4">
+<h4 id="Deploy%20Flux"><span class="section-number-4">6.2.3</span> Deploy Flux</h4>
+<div class="outline-text-4" id="text-6-2-3">
 <p>
 Tangle all the files, <code>C-c C-v t</code> then run:
 </p>
@@ -2438,9 +2456,9 @@ Tangle all the files, <code>C-c C-v t</code> then run:
 </div>
 </div>
 
-<div id="outline-container-Create%20infrastructure%20repository" class="outline-3">
-<h3 id="Create%20infrastructure%20repository"><span class="section-number-3">6.6</span> Create infrastructure repository</h3>
-<div class="outline-text-3" id="text-6-6">
+<div id="outline-container-Create%20infrastructure%20repository" class="outline-4">
+<h4 id="Create%20infrastructure%20repository"><span class="section-number-4">6.2.4</span> Create infrastructure repository</h4>
+<div class="outline-text-4" id="text-6-2-4">
 <p>
 You will now create a git repository on gitea, that will serve as the root
 source of all the manifests on your cluster. You will commit and push all of the
@@ -2450,7 +2468,7 @@ and keep the cluster in sync with its state.
 
 <p>
 On Gitea, click the <code>+</code> icon in the upper right corner to create a new <code>New
-Repository</code>. Call the new repository the same as <a href="#orgb804832">FLUX_REPO_NAME</a>. 
+Repository</code>. Call the new repository the same as <a href="#org68418b4">FLUX_REPO_NAME</a>. 
 </p>
 
 <p>
@@ -2482,9 +2500,9 @@ Push the changes to the remote:
 </div>
 </div>
 
-<div id="outline-container-Tell%20flux%20to%20watch%20the%20infrastructure%20repository" class="outline-3">
-<h3 id="Tell%20flux%20to%20watch%20the%20infrastructure%20repository"><span class="section-number-3">6.7</span> Tell flux to watch the infrastructure repository</h3>
-<div class="outline-text-3" id="text-6-7">
+<div id="outline-container-Tell%20flux%20to%20watch%20the%20infrastructure%20repository" class="outline-4">
+<h4 id="Tell%20flux%20to%20watch%20the%20infrastructure%20repository"><span class="section-number-4">6.2.5</span> Tell flux to watch the infrastructure repository</h4>
+<div class="outline-text-4" id="text-6-2-5">
 <p>
 This next command is interactive only, so you must run it in a separate
 terminal. Copy and paste it, but you also must replace <code>&lt;&lt;KUBE_CONFIG&gt;&gt;</code>,
@@ -2560,9 +2578,9 @@ Check the logs of the flux Kustomize controller:
 </div>
 </div>
 </div>
-<div id="outline-container-Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository" class="outline-3">
-<h3 id="Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository"><span class="section-number-3">6.8</span> Test adding a new manifest to the git repository</h3>
-<div class="outline-text-3" id="text-6-8">
+<div id="outline-container-Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository" class="outline-4">
+<h4 id="Test%20adding%20a%20new%20manifest%20to%20the%20git%20repository"><span class="section-number-4">6.2.6</span> Test adding a new manifest to the git repository</h4>
+<div class="outline-text-4" id="text-6-2-6">
 <p>
 OK now, in theory, you are done using <code>kubectl apply</code>. From now on, all you have
 to do is commit and push manifests to your git repository, and Flux will
@@ -2645,15 +2663,16 @@ And in another minute or so, the namespace should be gone:
 </div>
 </div>
 </div>
-<div id="outline-container-flux-system%2Fkustomization.yaml" class="outline-3">
-<h3 id="flux-system%2Fkustomization.yaml"><span class="section-number-3">6.9</span> flux-system/kustomization.yaml</h3>
-<div class="outline-text-3" id="text-6-9">
+<div id="outline-container-flux-system%2Fkustomization.yaml" class="outline-4">
+<h4 id="flux-system%2Fkustomization.yaml"><span class="section-number-4">6.2.7</span> flux-system/kustomization.yaml</h4>
+<div class="outline-text-4" id="text-6-2-7">
 <div class="org-src-container">
 <pre class="src src-yaml"><span style="color: #7590db;">apiVersion</span>: kustomize.config.k8s.io/v1beta1
 <span style="color: #7590db;">kind</span>: Kustomization
 <span style="color: #7590db;">resources</span>:
 - gotk-components.yaml
 </pre>
+</div>
 </div>
 </div>
 </div>
@@ -2726,7 +2745,7 @@ well, so I instead opted to copy them here.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: EnigmaCurry</p>
-<p class="date">Created: 2021-02-06 Sat 18:41</p>
+<p class="date">Created: 2021-02-07 Sun 08:36</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

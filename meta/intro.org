@@ -5,7 +5,11 @@ together" code, configuration, prose text, and program results/output, presented
 as a single readable document; sometimes referred to as Executable Documentation
 or Reproducible Research. If you use a Literate Programming style, you will
 never forget to document how your program works, because your documentation /is/
-your program source code.
+your program source code. (Well now, it's still possible for your documentation
+to be /wrong/ or /contradictory/, but at least with Literate Programming, the
+error is sitting right in front of your face. The first time you do Ctrl-F from
+any web browser, and thereby search your entire code base, I think you'll
+understand the power of this.)
 
 [[https://k3s.io/][K3s]] is a distribution of Kubernetes (software for running Docker containers),
 which is easy to deploy to many kinds of computer systems, be it on bare-metal,
@@ -106,15 +110,15 @@ n  -- to ignore the local variables list.
  You should type =y= to proceed, or type =!= to proceed and always trust this
  code from now on.
 
- This automatic loading happens because of the =Local Variables= found at the
- top of the file. The =Local Variables= is a formal way to inform Emacs that you
+ This automatic loading happens because of the =Emacs Local Variables= found at the
+ bottom of the file. The =Emacs Local Variables= is a formal way to inform Emacs that you
  would like to run some code when the file is opened. It could be dangerous to
  do this in some situations, so it's a good thing that Emacs asked you this
  question! In this case, it is setting up to run the included emacs lisp file
  meta/org-meta.el, in order to enable automatic export (YAML and HTML) whenever
  you save this file, as well as a few other fixes for things. If you don't
- desire this behaviour, remove the =eval= line from the =Local Variables=
- section at the top of the file, and you will no longer see this message on
+ desire this behaviour, remove the =eval= line from the =Emacs Local Variables=
+ section at the bottom of the file, and you will no longer see this message on
  load.
 
  When you opened this file, it should have automatically loaded in =Org= mode
@@ -173,7 +177,7 @@ This system extends vanilla Org-mode tangling. Instead of running
 =org-resolve-deps-tangle=, automatically when you save any Org file.
 =org-resolve-deps-tangle= tangles your current file, and finds all of the files
 marked as =INCLUDE=, and runs tangle on all of them, as well. This is setup
-automatically in the =auto-save= hook linked from the =Local Variables=. So all
+automatically in the =auto-save= hook linked from the =Emacs Local Variables=. So all
 you have to do is save the file, and =org-resolve-deps-tangle= runs
 automatically.
 
@@ -218,7 +222,7 @@ form.
 In org-mode, you can export the current document as a single HTML page, with the
 builtin org-mode exporter: type =C-c C-e h-h= or run =M-x
 org-html-export-to-html=. However, in this file, it is setup automatically to
-export HTML whenever the file is saved, see =Local Variables=.
+export HTML whenever the file is saved, see =Emacs Local Variables=.
 
 Normally, org-mode runs all of the code blocks in the file, every single time
 you export. This is undesirable in this case, as the setup code only needs to
@@ -340,7 +344,7 @@ your new cluster.
 
 Before you open any other file, you should always open your main cluster file
 (=k3s.example.com.org=) /first/, as it sets up some config when Emacs loads the
-file. (See =Local Variables=).
+file. (See =Emacs Local Variables=).
 
  * Find the [[Core Config][Core Config]] section.
  * You should review all of the core config code blocks, and edit them

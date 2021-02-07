@@ -25,10 +25,11 @@
 ** SRC_DIR
 =SRC_DIR= is an absolute path reference to the current directory that contains
 this file. It is also the destination directory for tangling. If you cloned the
-repository to a path structure other than the suggestion in the introduction
-guide, you should update this variable accordingly, /however/, don't change this
-to directory to anything other than the one that contains this file, because
-org-mode is not configured for tangling to any other directory.
+repository to the path structure suggested in the introduction guide, this
+setting should already be correct. If you cloned to a different directory,
+should update this variable accordingly, /however/, don't change this directory
+to anything other than the one that contains this file, because org-mode is not
+configured for tangling to any other directory.
 
 #+name: SRC_DIR
 #+begin_src config :noweb yes :eval no
@@ -157,6 +158,21 @@ root@example.com
 ** Gitea Deployment
 #+INCLUDE: "../../lib/gitea.org"
 * flux-system
+** Flux Config
+*** FLUX_REPO_NAME
+The name of the repository containing these org files, and from which flux
+reads. Not including the domain, just the name.
+#+name: FLUX_REPO_NAME
+#+begin_src config :noweb yes :eval no
+literate-k3s
+#+end_src
+*** FLUX_GIT_REMOTE
+This is the correct git remote URL if you are using self-hosted Gitea:
+ #+name: FLUX_GIT_REMOTE
+ #+begin_src config :noweb yes :eval no
+ ssh://git@git.k3s.example.com:2222/root/<<FLUX_REPO_NAME>>.git
+ #+end_src
+** Flux Deployment
 #+INCLUDE: "../../lib/flux.org"
 * LICENSE
 #+INCLUDE: "../../LICENSE.org"
