@@ -11,7 +11,7 @@ You need to [[https://github.com/fluxcd/flux2/tree/main/install][install the flu
 container]] or use the =flux-go= AUR package on Arch Linux.
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-flux install --version=latest --arch=amd64 --export > <<SRC_DIR>>/flux-system/gotk-components.yaml
+flux install --version=<<FLUX_VERSION>> --arch=amd64 --export > <<SRC_DIR>>/flux-system/gotk-components.yaml
 #+end_src
 
 #+RESULTS:
@@ -45,20 +45,17 @@ git -C <<SRC_DIR>> remote add origin <<FLUX_GIT_REMOTE>>
 
 Add the src directory to the repository and commit it:
 #+begin_src shell :noweb yes :eval never-export :exports code :results output
-git add .
-git commit -m "Initial commit for new cluster <<CLUSTER>>"
+git -C <<SRC_DIR>> add .
+git -C <<SRC_DIR>> commit -m "Initial commit for new cluster <<CLUSTER>>"
 #+end_src
-
-#+RESULTS:
-: [master c384a41] Initial commit for new cluster music.enigmacurry.com
-:  5 files changed, 65 insertions(+), 19 deletions(-)
-:  create mode 120000 lib/.#flux.org
-:  create mode 100644 lib/.gitignore
 
 Push the changes to the remote:
 #+begin_src shell :noweb yes :eval never-export :exports code
-git push -u origin
+git -C <<SRC_DIR>> push -u origin master
 #+end_src
+
+#+RESULTS:
+: Branch 'master' set up to track remote branch 'master' from 'origin'.
 
 * Tell flux to watch the infrastructure repository
 This next command is interactive only, so you must run it in a separate
@@ -91,9 +88,10 @@ from Emacs Org.
 Create the =Kustomization= resource:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
+export KUBECONFIG=<<KUBE_CONFIG>>
 flux create kustomization <<FLUX_REPO_NAME>> \
   --source=<<FLUX_REPO_NAME>> \
-  --path="./src" \
+  --path="./" \
   --prune=true \
   --interval=10m
 #+end_src
@@ -105,16 +103,17 @@ you should check the logs of these two controllers:
 Check the logs of the flux Source controller:
 
 #+begin_src shell :noweb yes :eval never-export :exports code :results output
-kubectl --kubeconfig=<<KUBE_CONFIG>> -n flux-system \
+<<kubectl>> -n flux-system \
         logs deployment/source-controller | tail -n 10
 #+end_src
 
 Check the logs of the flux Kustomize controller:
 
 #+begin_src shell :noweb yes :eval never-export :exports code :results output
-kubectl --kubeconfig=<<KUBE_CONFIG>> -n flux-system \
+<<kubectl>> -n flux-system \
         logs deployment/source-controller | tail -n 10
 #+end_src
+
 * Test adding a new manifest to the git repository
 OK now, in theory, you are done using =kubectl apply=. From now on, all you have
 to do is commit and push manifests to your git repository, and Flux will
@@ -123,14 +122,14 @@ automatically apply them to your cluster. So let's test that out:
 Create a new namespace just for testing. Create the manifests:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-mkdir -p just-a-test
-cat <<EOF > just-a-test/kustomization.yaml
+mkdir -p <<SRC_DIR>>/just-a-test
+cat << EOF > <<SRC_DIR>>/just-a-test/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - namespace.yaml
 EOF
-cat <<EOF > just-a-test/namespace.yaml
+cat << EOF > <<SRC_DIR>>/just-a-test/namespace.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -138,41 +137,54 @@ metadata:
 EOF
 #+end_src
 
+#+RESULTS:
+
 Commit the changes:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-git add just-a-test
-git commit -m "just-a-test"
+git -C <<SRC_DIR>> add just-a-test
+git -C <<SRC_DIR>> commit -m "just-a-test"
 #+end_src
+
+#+RESULTS:
+| [master | 6d0681a] | just-a-test |                                |               |
+| 2       | files    |    changed, | 8                              | insertions(+) |
+| create  | mode     |      100644 | just-a-test/kustomization.yaml |               |
+| create  | mode     |      100644 | just-a-test/namespace.yaml     |               |
 
 Push the changes:
 #+begin_src shell :noweb yes :eval never-export :exports code
-git push origin
+git -C <<SRC_DIR>> push origin
 #+end_src
+
+#+RESULTS:
 
 And in a little less than a minute, you should see the new namespace appear:
 #+begin_src shell :noweb yes :eval never-export :exports code
-kubectl --kubeconfig=<<KUBE_CONFIG>> get ns just-a-test
+<<kubectl>> get ns just-a-test
 #+end_src
 
 Now delete the =just-a-test= directory and commit:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-rm -rf just-a-test/
-git add just-a-test/
-git commit -m "remove just-a-test"
+rm -rf <<SRC_DIR>>/just-a-test/
+git -C <<SRC_DIR>> add just-a-test/
+git -C <<SRC_DIR>> commit -m "remove just-a-test"
 #+end_src
 
 Push the changes again:
 #+begin_src shell :noweb yes :eval never-export :exports code
-git push origin
+git -C <<SRC_DIR>> push origin
 #+end_src
 
 And in another minute or so, the namespace should be gone:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-kubectl --kubeconfig=<<KUBE_CONFIG>> get ns just-a-test
+<<kubectl>> get ns just-a-test
 #+end_src
+
+#+RESULTS:
+
 * flux-system/kustomization.yaml
 #+begin_src yaml :noweb yes :eval no :tangle flux-system/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
