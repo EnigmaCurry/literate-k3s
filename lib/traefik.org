@@ -20,31 +20,12 @@ mkdir -p <<SRC_DIR>>/kube-system/traefik
 
 #+RESULTS:
 
-After setting the config, tangle the config by pressing =C-c C-v t=. Then deploy
-Traefik via kubectl (NOTE: you will get an error the first time you run this,
-just run it TWICE):
+Deploy Traefik via kubectl (NOTE: you will get an error the first time you run
+this, just run it TWICE):
 
 #+begin_src shell :noweb yes :eval never-export :exports both
 <<kubectl>> apply -k <<SRC_DIR>>/kube-system/traefik
 #+end_src
-
-#+RESULTS:
-| customresourcedefinition.apiextensions.k8s.io/ingressroutes.traefik.containo.us    | unchanged |
-| customresourcedefinition.apiextensions.k8s.io/ingressroutetcps.traefik.containo.us | unchanged |
-| customresourcedefinition.apiextensions.k8s.io/ingressrouteudps.traefik.containo.us | unchanged |
-| customresourcedefinition.apiextensions.k8s.io/middlewares.traefik.containo.us      | unchanged |
-| customresourcedefinition.apiextensions.k8s.io/tlsoptions.traefik.containo.us       | unchanged |
-| customresourcedefinition.apiextensions.k8s.io/tlsstores.traefik.containo.us        | unchanged |
-| customresourcedefinition.apiextensions.k8s.io/traefikservices.traefik.containo.us  | unchanged |
-| serviceaccount/traefik-ingress-controller                                          | unchanged |
-| clusterrole.rbac.authorization.k8s.io/traefik-ingress-controller                   | unchanged |
-| clusterrolebinding.rbac.authorization.k8s.io/traefik-ingress-controller            | unchanged |
-| service/whoami                                                                     | unchanged |
-| deployment.apps/whoami                                                             | unchanged |
-| daemonset.apps/traefik                                                             | unchanged |
-| ingressroute.traefik.containo.us/whoami                                            | unchanged |
-| traefikservice.traefik.containo.us/whoami                                          | unchanged |
-| persistentvolumeclaim/traefik-data                                                 | unchanged |
 
 * Test Traefik whoami service
 Test with TLS verification off:
@@ -52,26 +33,6 @@ Test with TLS verification off:
 #+begin_src shell :noweb yes :eval never-export :exports both
 curl -Lk <<TRAEFIK_WHOAMI_DOMAIN>>
 #+end_src
-
-#+RESULTS:
-| Hostname:           | whoami-658d568b94-zhv95      |          |
-| IP:                 | 127.0.0.1                    |          |
-| IP:                 | ::1                          |          |
-| IP:                 | 10.42.0.5                    |          |
-| IP:                 | fe80::54b8:eaff:fe76:7124    |          |
-| RemoteAddr:         | 10.42.0.7:58804              |          |
-| GET                 | /                            | HTTP/1.1 |
-| Host:               | whoami.music.enigmacurry.com |          |
-| User-Agent:         | curl/7.75.0                  |          |
-| Accept:             | */*                          |          |
-| Accept-Encoding:    | gzip                         |          |
-| X-Forwarded-For:    | 67.168.173.132               |          |
-| X-Forwarded-Host:   | whoami.music.enigmacurry.com |          |
-| X-Forwarded-Port:   | 443                          |          |
-| X-Forwarded-Proto:  | https                        |          |
-| X-Forwarded-Server: | traefik-8prq6                |          |
-| X-Real-Ip:          | 67.168.173.132               |          |
-|                     |                              |          |
 
 Test with TLS verification on:
 
