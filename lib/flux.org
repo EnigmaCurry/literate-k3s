@@ -11,7 +11,7 @@ You need to [[https://github.com/fluxcd/flux2/tree/main/install][install the flu
 container]] or use the =flux-go= AUR package on Arch Linux.
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-flux install --version=latest --arch=amd64 --export > flux-system/gotk-components.yaml
+flux install --version=latest --arch=amd64 --export > <<SRC_DIR>>/flux-system/gotk-components.yaml
 #+end_src
 
 #+RESULTS:
@@ -19,23 +19,28 @@ flux install --version=latest --arch=amd64 --export > flux-system/gotk-component
    Tangle all the files, =C-c C-v t= then run:
 
  #+begin_src shell :noweb yes :eval never-export :exports both
- kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k flux-system
+ kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k <<SRC_DIR>>/flux-system
  #+end_src
 
 * Create infrastructure repository
-You will now create a git repository on gitea, that will serve as the root
-source of all the manifests on your cluster. You will commit and push all of the
-generated YAML files to this repository and Flux will monitor this repository
-and keep the cluster in sync with its state.
+You will now create a git repository on gitea or github or gitlab or wherever
+you can, that will serve as the root source of all the manifests on your
+cluster. You will commit and push all of the generated YAML files to this
+repository and Flux will monitor this repository and keep the cluster in sync
+with its state.
 
-On Gitea, click the =+= icon in the upper right corner to create a new =New
-Repository=. Call the new repository the same as [[FLUX_REPO_NAME][FLUX_REPO_NAME]]. 
+If using Gitea, click the =+= icon in the upper right corner to create a =New
+Repository=. Call the new repository the same as [[FLUX_REPO_NAME][FLUX_REPO_NAME]].
+
+Initialize the git repository if needed:
+#+begin_src shell :noweb yes :eval never-export :exports code
+git -C <<SRC_DIR>> init
+#+end_src
 
 Set the new gitea repository as the git origin remote:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-git remote remove origin
-git remote add origin <<FLUX_GIT_REMOTE>>
+git -C <<SRC_DIR>> remote add origin <<FLUX_GIT_REMOTE>>
 #+end_src
 
 Add the src directory to the repository and commit it:
@@ -43,6 +48,12 @@ Add the src directory to the repository and commit it:
 git add .
 git commit -m "Initial commit for new cluster <<CLUSTER>>"
 #+end_src
+
+#+RESULTS:
+: [master c384a41] Initial commit for new cluster music.enigmacurry.com
+:  5 files changed, 65 insertions(+), 19 deletions(-)
+:  create mode 120000 lib/.#flux.org
+:  create mode 100644 lib/.gitignore
 
 Push the changes to the remote:
 #+begin_src shell :noweb yes :eval never-export :exports code
