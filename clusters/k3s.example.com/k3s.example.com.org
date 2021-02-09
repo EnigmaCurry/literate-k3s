@@ -42,12 +42,11 @@ root
 Create all of the directories necessary for tangling this config:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
-mkdir -p <<SRC_DIR>>/kube-system/traefik
-mkdir -p <<SRC_DIR>>/git-system/gitea
+mkdir -p <<SRC_DIR>>/kube-system/traefik/
+mkdir -p <<SRC_DIR>>/git-system/gitea/
 mkdir -p <<SRC_DIR>>/flux-system/
+mkdir -p <<SRC_DIR>>/rook-nfs-system/
 #+end_src
-
-#+RESULTS:
 
 * kube-system
 =kube-system= is the namespace for running system wide features, mostly network

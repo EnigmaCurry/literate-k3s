@@ -1,0 +1,115 @@
+* Introduction to Rook
+Out of the box, K3s already supports volumes using the [[https://github.com/rancher/local-path-provisioner][local-path-provisioner]],
+which dynamically provisions persistent storage based upon PhysicalVolumeClaim
+(PVC) records in Kubernetes. This storage is made on the host filesystem of the
+same node as the pod that needs to mount said storage. The volume for each PVC
+is stored as a directory on the host node filesystem like:
+
+: /var/lib/rancher/k3s/storage/pvc-2812c4be-c2c3-44ae-85f8-2a8da4f6554c_kube-system_traefik-data
+
+(This is for example the directory that stores Traefik's PVC, holding
+=acme.json=, and you can see =acme.json= as a regular file in this directory on
+the host.)
+
+The type of storage that the local-path-provisioner provides, only supports a
+specific kind of [[https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes][Access Mode]], namely =ReadWriteOnce= (local-path-provisioner
+storage is analogous to =HostPath= storage as written in the k8s documentation).
+A volume with a =ReadWriteOnce= access mode "can be mounted as read-write [only]
+by a single node". This makes sense for a typical deployment like a Database
+(StatefulSet), where you have one volume that only needs to be accessed by a
+single container. Or, you might have multiple containers accessing this volume,
+/as long as all of the containers are in the same Pod/ (so-called Sidecar
+containers). Pods guarantee that containers run together, on the same host node,
+therefore Pods can access the same local file-systems.
+
+If you need two different Pods to be able to access the same volume, you need to
+use the =ReadWriteMany= or =ReadOnlyMany= access modes, both of which are
+unsupported by the local-path-provisioner. In order to share volumes with more
+than one pod (in other words: across the network), you need a network
+file-system (NFS, GlusterFS, CephFS, ... )
+
+Even if you are only going to have a single-node cluster, it may still make
+sense to run a Network Filesystem, simply because it is more convenient to
+create new Pods than it is to create Sidecar containers inside of existing
+Pods.. (especially when using two different helm charts from different vendors)
+
+[[https://rook.io/docs/rook/v1.5/nfs.html][Rook]] can service as an NFS server (standard UNIX Network File System) and
+dynamic volume provisioner. local-path-provisioner should still be used by
+default, but when you need =ReadWriteMany= it can be used instead of
+local-path-provisoner. [[https://marcbrandner.com/blog/your-very-own-kubernetes-readwritemany-storage/][Marc Brandner wrote a nice blog post about Rook NFS that
+describes this setup in detph]], much of which will be mirrored here in this
+document.
+
+
+* COMMENT Rook Configuration
+You must define the following code blocks in your own configuration:
+
+: *** ROOK_PVC_SIZE
+:     The size of root Rook volume (contains ALL other rook volumes)
+:     #+name: ROOK_PVC_SIZE
+:     #+begin_src config :noweb yes :eval no
+:     50Gi
+:     #+end_src
+: *** ROOK_VERSION
+:     Use the latest version from https://github.com/rook/rook/releases
+:     #+name: ROOK_VERSION
+:     #+begin_src config :noweb yes :eval no
+:     v1.5.6
+:     #+end_src
+
+* Prepare Host Nodes
+The host operating system of the nodes needs additional tools in order to
+support Rook. 
+
+The NFS client tools need to be installed:
+
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
+cat << EOF | ssh <<CLUSTER_SSH_USER>>@<<CLUSTER>> /bin/bash
+apt -qq update && apt install -y nfs-common
+EOF
+#+end_src
+
+* rook-nfs-system/pvc.yaml
+#+begin_src yaml :noweb yes :eval no :tangle rook-nfs-system/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-default-claim
+  namespace: rook-nfs-system
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: <<ROOK_PVC_SIZE>>
+#+end_src
+* rook-nfs-system/nfs.yaml
+#+begin_src yaml :noweb yes :eval no :tangle rook-nfs-system/nfs-server.yaml
+apiVersion: nfs.rook.io/v1alpha1
+kind: NFSServer
+metadata:
+  name: rook-nfs
+  namespace: rook-nfs-system
+spec:
+  replicas: 1
+  exports:
+  - name: share1
+    server:
+      accessMode: ReadWrite
+      squash: "none"
+    persistentVolumeClaim:
+      claimName: nfs-default-claim
+  annotations:
+    rook: nfs
+#+end_src
+* rook-nfs-system/kustomization.yaml
+
+#+begin_src yaml :noweb yes :eval no :tangle rook-nfs-system/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- https://raw.githubusercontent.com/rook/rook/<<ROOK_VERSION>>/cluster/examples/kubernetes/nfs/common.yaml
+- https://raw.githubusercontent.com/rook/rook/<<ROOK_VERSION>>/cluster/examples/kubernetes/nfs/operator.yaml
+- https://raw.githubusercontent.com/rook/rook/<<ROOK_VERSION>>/cluster/examples/kubernetes/nfs/rbac.yaml
+- nfs-server.yaml
+#+end_src
