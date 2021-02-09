@@ -46,6 +46,7 @@ mkdir -p <<SRC_DIR>>/kube-system/traefik/
 mkdir -p <<SRC_DIR>>/git-system/gitea/
 mkdir -p <<SRC_DIR>>/flux-system/
 mkdir -p <<SRC_DIR>>/rook-nfs-system/
+mkdir -p <<SRC_DIR>>/rook-nfs/
 #+end_src
 
 * kube-system
