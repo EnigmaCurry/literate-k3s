@@ -39,7 +39,9 @@
           (goto-char (point-max))
           (insert (concat "#+NAME: SRC_DIR\n"
                           "#+BEGIN_SRC config\n"
-                          (directory-file-name (file-name-directory (buffer-file-name literate-k3s-buffer))) "\n"
+                          (replace-regexp-in-string user-home-directory "~/"
+                                                    (directory-file-name (file-name-directory
+                                                            (buffer-file-name literate-k3s-buffer)))) "\n"
                           "#+END_SRC\n"))
           (org-babel-lob-ingest)
           (kill-buffer))
