@@ -16,11 +16,10 @@ flux install --version=<<FLUX_VERSION>> --arch=amd64 --export > <<SRC_DIR>>/flux
 
 #+RESULTS:
 * Deploy Flux
-   Tangle all the files, =C-c C-v t= then run:
 
- #+begin_src shell :noweb yes :eval never-export :exports both
- kubectl --kubeconfig=<<KUBE_CONFIG>> apply -k <<SRC_DIR>>/flux-system
- #+end_src
+#+begin_src shell :noweb yes :eval never-export :exports both
+<<kubectl>> apply -k <<SRC_DIR>>/flux-system
+#+end_src
 
 * Create infrastructure repository
 You will now create a git repository on gitea or github or gitlab or wherever
@@ -54,18 +53,15 @@ Push the changes to the remote:
 git -C <<SRC_DIR>> push -u origin master
 #+end_src
 
-#+RESULTS:
-: Branch 'master' set up to track remote branch 'master' from 'origin'.
-
 * Tell flux to watch the infrastructure repository
-This next command is interactive only, so you must run it in a separate
-terminal. Copy and paste it, but you also must replace =<<KUBE_CONFIG>>=,
-=<<FLUX_REPO_NAME>>=, and =<<FLUX_GIT_REMOTE>>= manually, with the same values
-as in your config.
+This next command is /interactive only/, so you must run it in a separate
+terminal, not from Org. (Org won't even let you run it, due to =:eval no=). It's
+easiest to copy and paste this next command from the HTML export (in which all
+NoWeb references are resolved) rather than from this Org file.
 
 Create the =Source= resource:
 
-#+begin_example
+#+begin_src shell :eval no :noweb yes
 export KUBECONFIG=<<KUBE_CONFIG>>
 flux create source git <<FLUX_REPO_NAME>> \
   --url=<<FLUX_GIT_REMOTE>> \
@@ -73,17 +69,18 @@ flux create source git <<FLUX_REPO_NAME>> \
   --ssh-rsa-bits=4096 \
   --branch=master \
   --interval=1m
-#+end_example
+#+end_src
 
 Flux will automatically create its own SSH key, and will output its public SSH
-key. You must copy this key and install it as a Deploy Key in the remote git
-repository settings. In Gitea, add the deploy key under the repository
-=Settings->Deploy Keys=. The deploy key does not require write privileges. Once
-installed, press =Y= and =Enter= to continue, and it will test that it works for
-you.
+key to the terminal and wait for you. You must copy this key and install it as a
+Deploy Key in the remote git repository settings. If you use Gitea, add the
+deploy key under the repository =Settings->Deploy Keys=. The deploy key does not
+require write privileges. Once installed, come back to the terminal and press
+=Y= and =Enter= to continue, and it will test that the key is installed
+correctly.
 
-The rest of these commands can run non-interactive, so go ahead and run these
-from Emacs Org.
+The rest of these commands can run non-interactively, so go ahead and run the
+rest as you normally do from Emacs Org.
 
 Create the =Kustomization= resource:
 
