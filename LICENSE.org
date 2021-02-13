@@ -1,4 +1,5 @@
-Here is the license for [[https://github.com/EnigmaCurry/literate-k3s][enigmacurry/literate-k3s]] and its accompanying libraries:
+Here are the licenses for [[https://github.com/EnigmaCurry/literate-k3s][enigmacurry/literate-k3s]] and its accompanying
+libraries:
 
 : Copyright 2021 EnigmaCurry - https://github.com/EnigmaCurry/literate-k3s
 : 
@@ -45,9 +46,26 @@ The HTML export stylesheet and javascript code is forked from
 : THE SOFTWARE.
 
 [[https://github.com/alphapapa/unpackaged.el][alphapapa/unpackaged.el]] is licensed under the [[https://github.com/alphapapa/unpackaged.el/blob/master/LICENSE][GNU General Public License v3.0]].
-Select functions from this package has been copied verbatim into
-[[attachment:meta/unpackaged.el][meta/unpackaged.el]], in order to improve the user experience using Org mode.
-These functions could be removed, and installed separately from the upstream
-package into your Emacs environment, its just that they are not packaged very
-well, so I instead opted to copy them here.
+Select functions from this package have been copied verbatim into the
+literate-k3s package under [[https://github.com/EnigmaCurry/literate-k3s/blob/master/meta/unpackaged.el][meta/unpackaged.el]], which fixes some bugs in Org HTML
+exports. It is the unpackaged nature of this code that required copying into the
+literate-k3s codebase, but these same functions can be installed from the
+upstream repository instead, and thus would have this license restriction
+removed.
+
+: https://github.com/alphapapa/unpackaged.el
+: Copyright (C) 2018  Adam Porter
+:
+: This program is free software; you can redistribute it and/or modify
+: it under the terms of the GNU General Public License as published by
+: the Free Software Foundation, either version 3 of the License, or
+: (at your option) any later version.
+:
+: This program is distributed in the hope that it will be useful,
+: but WITHOUT ANY WARRANTY; without even the implied warranty of
+: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+: GNU General Public License for more details.
+:
+: You should have received a copy of the GNU General Public License
+: along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
