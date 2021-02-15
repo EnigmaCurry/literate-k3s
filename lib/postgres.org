@@ -1,5 +1,5 @@
 * COMMENT Postgres Config
-You must add the following config to your Org document:
+You must add the following config to your Org document (un-comment):
 # ** Postgres Config
 # *** POSTGRES_PVC_SIZE
 #     How big do you want the database volume?
@@ -41,7 +41,7 @@ the database access credentials from the =PGHOST=, =PGUSER=, and =PGPASSWORD=
 environment variables. From your workstation, you can retrieve the password
 directly from the Secret stored in the cluster and set this variable:
 
-#+begin_src shell :noweb yes :eval never-export :results none :session pyapp-postgres
+#+begin_src shell :noweb yes :eval never-export :results none :session postgres
 export KUBECONFIG=<<KUBE_CONFIG>>
 export PGPASSWORD=$(kubectl -n postgres get secret/postgres-postgresql \
   -o jsonpath='{.data.postgresql-password}' | base64 -d)
@@ -50,12 +50,12 @@ export PGDATABASE=<<POSTGRES_DATABASE_NAME>>
 export PGUSER=<<POSTGRES_DATABASE_USER>>
 #+end_src
 
-By setting these variables within a block marked =:session pyapp-postgres=,
+By setting these variables within a block marked =:session postgres=,
 these variables are available in other code blocks marked with the same session
-(or until the session is terminated and/or closing the =pyapp-postgres= buffer
+(or until the session is terminated and/or closing the =postgres= buffer
 in Emacs):
 
-#+begin_src shell :noweb yes :eval never-export :session pyapp-postgres
+#+begin_src shell :noweb yes :eval never-export :session postgres
 psql -c 'SELECT 1'
 #+end_src
 * postgres/kustomization.yaml
