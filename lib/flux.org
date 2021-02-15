@@ -53,7 +53,7 @@ NoWeb references are resolved) rather than from this Org file.
 
 Create the =Source= resource:
 
-#+begin_src shell :eval no :noweb yes
+#+begin_src shell :noweb yes :eval no
 export KUBECONFIG=<<KUBE_CONFIG>>
 flux create source git <<FLUX_REPO_NAME>> \
   --url=<<FLUX_GIT_REMOTE>> \
@@ -74,15 +74,16 @@ correctly.
 The rest of these commands can run non-interactively, so go ahead and run the
 rest as you normally do from Emacs Org.
 
-Create the =Kustomization= resource:
+Create the =Kustomization= resource and apply it:
 
-#+begin_src shell :noweb yes :eval never-export :exports code
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
 export KUBECONFIG=<<KUBE_CONFIG>>
 flux create kustomization <<FLUX_REPO_NAME>> \
   --source=<<FLUX_REPO_NAME>> \
   --path="./" \
   --prune=true \
-  --interval=10m
+  --interval=10m --export > <<SRC_DIR>>/flux-system/kustomize.sources.yaml && \
+  <<kubectl>> apply -f <<SRC_DIR>>/flux-system/kustomize.sources.yaml
 #+end_src
 
 The Source controller periodically pulls changes from the git repository. The
@@ -169,6 +170,7 @@ kind: Kustomization
 resources:
 - gotk-components.yaml
 - helm.sources.yaml
+- kustomize.sources.yaml
 #+end_src
 * flux-system/helm.sources.yaml
 #+begin_src yaml :noweb yes :eval no :tangle flux-system/helm.sources.yaml
@@ -182,3 +184,4 @@ spec:
   interval: 12h0m0s
   url: https://charts.bitnami.com/bitnami
 #+end_src
+
