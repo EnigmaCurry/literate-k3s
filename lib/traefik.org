@@ -68,11 +68,9 @@ kubernetes-crd-definition.yml
 Deploy Traefik via kubectl (NOTE: you will get an error the first time you run
 this, just run it TWICE):
 
-#+begin_src shell :noweb yes :eval never-export :exports both
+#+begin_src shell :noweb yes :eval never-export
 <<kubectl>> apply -k <<SRC_DIR>>/kube-system/traefik
 #+end_src
-
-#+RESULTS:
 
 * Test Traefik whoami service
 Test with TLS verification off:
