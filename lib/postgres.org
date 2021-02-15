@@ -1,28 +1,30 @@
 * COMMENT Postgres Config
 You must add the following config to your Org document:
-: ** Postgres Config
-: *** POSTGRES_PVC_SIZE
-:     How big do you need the Database volume?
-:     #+name: POSTGRES_PVC_SIZE
-:     #+begin_src config :noweb yes :eval no
-:     1Gi
-:     #+end_src
-: *** POSTGRES_HELM_CHART_VERSION
-:     What version of the [[https://github.com/bitnami/charts/tree/master/bitnami/postgresql][PostgreSQL Helm Chart]] do you want to install?
-:     #+name: POSTGRES_HELM_CHART_VERSION
-:     #+begin_src config :noweb yes :eval no
-:     10.1.1
-:     #+end_src
-: *** POSTGRES_DATABASE_NAME
-:     #+name: POSTGRES_DATABASE_NAME
-:     #+begin_src config :noweb yes :eval no
-:     postgres
-:     #+end_src
-: *** POSTGRES_DATABASE_USER
-:     #+name: POSTGRES_DATABASE_USER
-:     #+begin_src config :noweb yes :eval no
-:     postgres
-:     #+end_src
+# ** Postgres Config
+# *** POSTGRES_PVC_SIZE
+#     How big do you want the database volume?
+#     #+name: POSTGRES_PVC_SIZE
+#     #+begin_src config :noweb yes :eval no
+#     1Gi
+#     #+end_src
+# *** POSTGRES_HELM_CHART_VERSION
+#     What version of the [[https://github.com/bitnami/charts/tree/master/bitnami/postgresql][PostgreSQL Helm Chart]] do you want to install?
+#     #+name: POSTGRES_HELM_CHART_VERSION
+#     #+begin_src config :noweb yes :eval no
+#     10.1.1
+#     #+end_src
+# *** POSTGRES_DATABASE_NAME
+#     What is the name for the initial database?
+#     #+name: POSTGRES_DATABASE_NAME
+#     #+begin_src config :noweb yes :eval no
+#     postgres
+#     #+end_src
+# *** POSTGRES_DATABASE_USER
+#     What is the name of the user to access the database?
+#     #+name: POSTGRES_DATABASE_USER
+#     #+begin_src config :noweb yes :eval no
+#     postgres
+#     #+end_src
 
 * Access PostgreSQL from your workstation
 If you want to access the PostgreSQL database from your workstation, you can
@@ -44,6 +46,7 @@ export KUBECONFIG=<<KUBE_CONFIG>>
 export PGPASSWORD=$(kubectl -n postgres get secret/postgres-postgresql \
   -o jsonpath='{.data.postgresql-password}' | base64 -d)
 export PGHOST=localhost
+export PGDATABASE=<<POSTGRES_DATABASE_NAME>>
 export PGUSER=<<POSTGRES_DATABASE_USER>>
 #+end_src
 
