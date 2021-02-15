@@ -4,9 +4,10 @@
 You need to [[https://github.com/fluxcd/flux2/tree/main/install][install the flux command line tool]], or you can [[https://blog.rymcg.tech/blog/k3s/k3s-01-setup#create-toolbox-container-optional][run it from a
 container]] or use the =flux-go= AUR package on Arch Linux.
 
-#+begin_src shell :noweb yes :eval never-export :exports code
+#+begin_src shell :noweb yes :eval never-export :exports code :results none
 flux install --version=<<FLUX_VERSION>> --arch=amd64 --export > <<SRC_DIR>>/flux-system/gotk-components.yaml
 #+end_src
+
 * Deploy Flux
 NOTE: you will get an error the /first/ time you run this. Run this TWICE:
 #+begin_src shell :noweb yes :eval never-export :exports both
@@ -170,7 +171,6 @@ kind: Kustomization
 resources:
 - gotk-components.yaml
 - helm.sources.yaml
-- kustomize.sources.yaml
 #+end_src
 * flux-system/helm.sources.yaml
 #+begin_src yaml :noweb yes :eval no :tangle flux-system/helm.sources.yaml
