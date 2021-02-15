@@ -1,10 +1,4 @@
 =flux-system= is the namespace setup for [[https://github.com/fluxcd/flux2][Flux]].
-* Create directory
-Create the =flux-system= namespace:
-
-#+begin_src shell :noweb yes :eval never-export :exports code
-mkdir -p <<SRC_DIR>>/flux-system
-#+end_src
 * flux-system setup
 
 You need to [[https://github.com/fluxcd/flux2/tree/main/install][install the flux command line tool]], or you can [[https://blog.rymcg.tech/blog/k3s/k3s-01-setup#create-toolbox-container-optional][run it from a
@@ -13,10 +7,8 @@ container]] or use the =flux-go= AUR package on Arch Linux.
 #+begin_src shell :noweb yes :eval never-export :exports code
 flux install --version=<<FLUX_VERSION>> --arch=amd64 --export > <<SRC_DIR>>/flux-system/gotk-components.yaml
 #+end_src
-
-#+RESULTS:
 * Deploy Flux
-
+NOTE: you will get an error the /first/ time you run this. Run this TWICE:
 #+begin_src shell :noweb yes :eval never-export :exports both
 <<kubectl>> apply -k <<SRC_DIR>>/flux-system
 #+end_src
@@ -134,8 +126,6 @@ metadata:
 EOF
 #+end_src
 
-#+RESULTS:
-
 Commit the changes:
 
 #+begin_src shell :noweb yes :eval never-export :exports code
@@ -143,18 +133,10 @@ git -C <<SRC_DIR>> add just-a-test
 git -C <<SRC_DIR>> commit -m "just-a-test"
 #+end_src
 
-#+RESULTS:
-| [master | 6d0681a] | just-a-test |                                |               |
-| 2       | files    |    changed, | 8                              | insertions(+) |
-| create  | mode     |      100644 | just-a-test/kustomization.yaml |               |
-| create  | mode     |      100644 | just-a-test/namespace.yaml     |               |
-
 Push the changes:
 #+begin_src shell :noweb yes :eval never-export :exports code
 git -C <<SRC_DIR>> push origin
 #+end_src
-
-#+RESULTS:
 
 And in a little less than a minute, you should see the new namespace appear:
 #+begin_src shell :noweb yes :eval never-export :exports code
@@ -180,13 +162,23 @@ And in another minute or so, the namespace should be gone:
 <<kubectl>> get ns just-a-test
 #+end_src
 
-#+RESULTS:
-
 * flux-system/kustomization.yaml
 #+begin_src yaml :noweb yes :eval no :tangle flux-system/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - gotk-components.yaml
+- helm.sources.yaml
 #+end_src
-
+* flux-system/helm.sources.yaml
+#+begin_src yaml :noweb yes :eval no :tangle flux-system/helm.sources.yaml
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: bitnami
+  namespace: flux-system
+spec:
+  interval: 12h0m0s
+  url: https://charts.bitnami.com/bitnami
+#+end_src

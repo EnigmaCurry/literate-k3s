@@ -1,0 +1,101 @@
+* COMMENT Postgres Config
+You must add the following config to your Org document:
+: ** Postgres Config
+: *** POSTGRES_PVC_SIZE
+:     How big do you need the Database volume?
+:     #+name: POSTGRES_PVC_SIZE
+:     #+begin_src config :noweb yes :eval no
+:     1Gi
+:     #+end_src
+: *** POSTGRES_HELM_CHART_VERSION
+:     What version of the [[https://github.com/bitnami/charts/tree/master/bitnami/postgresql][PostgreSQL Helm Chart]] do you want to install?
+:     #+name: POSTGRES_HELM_CHART_VERSION
+:     #+begin_src config :noweb yes :eval no
+:     10.1.1
+:     #+end_src
+: *** POSTGRES_DATABASE_NAME
+:     #+name: POSTGRES_DATABASE_NAME
+:     #+begin_src config :noweb yes :eval no
+:     postgres
+:     #+end_src
+: *** POSTGRES_DATABASE_USER
+:     #+name: POSTGRES_DATABASE_USER
+:     #+begin_src config :noweb yes :eval no
+:     postgres
+:     #+end_src
+
+* Access PostgreSQL from your workstation
+If you want to access the PostgreSQL database from your workstation, you can
+forward the database TCP port from the cluster to your localhost via =kubectl=
+(run this in a different long-running terminal or tmux session):
+
+#+begin_src shell :noweb yes :eval no :exports code
+export KUBECONFIG=<<KUBE_CONFIG>>
+kubectl -n postgres port-forward svc/postgres-postgresql 5432
+#+end_src
+
+The PostgreSQL client, =psql= (Arch Linux package: =postgresql-libs=), will read
+the database access credentials from the =PGHOST=, =PGUSER=, and =PGPASSWORD=
+environment variables. From your workstation, you can retrieve the password
+directly from the Secret stored in the cluster and set this variable:
+
+#+begin_src shell :noweb yes :eval never-export :results none :session pyapp-postgres
+export KUBECONFIG=<<KUBE_CONFIG>>
+export PGPASSWORD=$(kubectl -n postgres get secret/postgres-postgresql \
+  -o jsonpath='{.data.postgresql-password}' | base64 -d)
+export PGHOST=localhost
+export PGUSER=<<POSTGRES_DATABASE_USER>>
+#+end_src
+
+By setting these variables within a block marked =:session pyapp-postgres=,
+these variables are available in other code blocks marked with the same session
+(or until the session is terminated and/or closing the =pyapp-postgres= buffer
+in Emacs):
+
+#+begin_src shell :noweb yes :eval never-export :session pyapp-postgres
+psql -c 'SELECT 1'
+#+end_src
+
+#+RESULTS:
+| ?column?   |      |
+| ---------- |      |
+| 1          |      |
+| (1         | row) |
+* postgres/kustomization.yaml
+#+begin_src yaml :noweb yes :eval no :tangle postgres/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- namespace.yaml
+- helm.release.yaml
+#+end_src
+* postgres/namespace.yaml
+#+begin_src yaml :noweb yes :eval no :tangle postgres/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: postgres
+#+end_src
+* postgres/helm.release.yaml
+#+begin_src yaml :noweb yes :eval no :tangle postgres/helm.release.yaml
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: postgresql
+  namespace: flux-system
+spec:
+  chart:
+    spec:
+      chart: postgresql
+      version: <<POSTGRES_HELM_CHART_VERSION>>
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+  interval: 5m0s
+  targetNamespace: postgres
+  values:
+    persistence:
+      size: <<POSTGRES_PVC_SIZE>>
+    postgresqlDatabase: <<POSTGRES_DATABASE_NAME>>
+    postgresqlUsername: <<POSTGRES_DATABASE_USER>>
+#+end_src
