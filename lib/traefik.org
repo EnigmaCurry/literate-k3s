@@ -11,14 +11,59 @@ The =whoami= service is a small test service, for testing the functionality of
 Traefik, including the TLS certificate creation process, and serving as the most
 basic example of setting up a Traefik IngressRoute.
 
+* COMMENT Traefik Config
+You must add the following config to your Org document (un-comment):
+#+BEGIN_COMMENT
+# ** Traefik Config
+# Edit the variables for the Traefik config:
+# *** TRAEFIK_ACME_EMAIL
+#   =TRAEFIK_ACME_EMAIL= is the email address to register with the ACME service
+#   provider. 
+#  #+name: TRAEFIK_ACME_EMAIL
+#  #+begin_src config :eval no
+#  you@example.com
+#  #+end_src
+# *** TRAEFIK_ACME_SERVER
+#  =TRAEFIK_ACME_SERVER= is the URL for the Let's Encrypt API (Or other ACME
+#  provider). For development purposes, use the staging URL. For production use
+#  the URL https://acme-v02.api.letsencrypt.org/directory instead (will produce
+#  valid certificates in web browsers).
+# 
+#  #+name: TRAEFIK_ACME_SERVER
+#  #+begin_src config :eval no
+#  https://acme-staging-v02.api.letsencrypt.org/directory
+#  #+end_src
+# 
+# *** TRAEFIK_WHOAMI_DOMAIN
+#  [[https://github.com/traefik/whoami][traefik/whoami]] can be deployed to test Traefik functionality. It needs its own
+#  domain name to respond to. =TRAEFIK_WHOAMI_DOMAIN= is the subdomain that the
+#  whoami service responds to.
+#  #+name: TRAEFIK_WHOAMI_DOMAIN
+#  #+begin_src config :noweb yes :eval no
+#  whoami.<<CLUSTER>>
+#  #+end_src
+# *** TRAEFIK_VERSION
+#  The version number of Traefik to install (eg. =2.3=).
+#  #+name: TRAEFIK_VERSION
+#  #+begin_src config :eval no
+#  v2.3
+#  #+end_src
+# *** TRAEFIK_LOG_LEVEL
+#  =TRAEFIK_LOG_LEVEL= is the filter level on the traefik log.
+#  #+name: TRAEFIK_LOG_LEVEL
+#  #+begin_src config :eval no
+#  INFO
+#  #+end_src
+#+END_COMMENT
+
 * Deploy Traefik
-Create the traefik deployment directory underneath the namespace directory:
-
-#+begin_src shell :noweb yes :eval never-export :exports code
-mkdir -p <<SRC_DIR>>/kube-system/traefik
+Download the Traefik Custom Resource Definitions: 
+#+begin_src shell :noweb yes :eval never-export :exports code :results none
+curl -Lo <<SRC_DIR>>/kube-system/traefik/crd.yaml \
+  https://raw.githubusercontent.com/traefik/traefik/\
+<<TRAEFIK_VERSION>>/docs/content/reference/dynamic-configuration/\
+kubernetes-crd-definition.yml
 #+end_src
-
-#+RESULTS:
 
 Deploy Traefik via kubectl (NOTE: you will get an error the first time you run
 this, just run it TWICE):
@@ -26,6 +71,8 @@ this, just run it TWICE):
 #+begin_src shell :noweb yes :eval never-export :exports both
 <<kubectl>> apply -k <<SRC_DIR>>/kube-system/traefik
 #+end_src
+
+#+RESULTS:
 
 * Test Traefik whoami service
 Test with TLS verification off:
@@ -49,7 +96,7 @@ TLS will not verify until you use the production [[TRAEFIK_ACME_SERVER][TRAEFIK_
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- https://raw.githubusercontent.com/traefik/traefik/<<TRAEFIK_VERSION>>/docs/content/reference/dynamic-configuration/kubernetes-crd-definition.yml
+- crd.yaml
 - rbac.yaml
 - pvc.yaml
 - daemonset.yaml
