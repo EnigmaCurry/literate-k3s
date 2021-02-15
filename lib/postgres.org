@@ -27,11 +27,11 @@ You must add the following config to your Org document:
 * Access PostgreSQL from your workstation
 If you want to access the PostgreSQL database from your workstation, you can
 forward the database TCP port from the cluster to your localhost via =kubectl=
-(run this in a different long-running terminal or tmux session):
+(This is a long running process that starts in a new buffer called =k3s-postgres=):
 
-#+begin_src shell :noweb yes :eval no :exports code
+#+begin_src shell :noweb yes :eval never-export :results none :session k3s-postgres
 export KUBECONFIG=<<KUBE_CONFIG>>
-kubectl -n postgres port-forward svc/postgres-postgresql 5432
+kubectl -n postgres port-forward svc/postgres-postgresql 5432 &
 #+end_src
 
 The PostgreSQL client, =psql= (Arch Linux package: =postgresql-libs=), will read
@@ -55,12 +55,6 @@ in Emacs):
 #+begin_src shell :noweb yes :eval never-export :session pyapp-postgres
 psql -c 'SELECT 1'
 #+end_src
-
-#+RESULTS:
-| ?column?   |      |
-| ---------- |      |
-| 1          |      |
-| (1         | row) |
 * postgres/kustomization.yaml
 #+begin_src yaml :noweb yes :eval no :tangle postgres/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
