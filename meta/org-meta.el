@@ -89,7 +89,9 @@
                     (org-resolve-deps-tangle)
                     ;; Create .gitignore if it does not exist
                     (when (not (file-exists-p (concat literate-k3s-src-dir ".gitignore")))
-                      (write-region ".org-resolve-deps.org" nil (concat literate-k3s-src-dir ".gitignore")))
+                      (write-region ".org-resolve-deps.org\n" nil (concat literate-k3s-src-dir ".gitignore"))
+                      (write-region ".#*\n" nil (concat literate-k3s-src-dir ".gitignore") t)
+                      )
                     ))))
     (add-hook 'org-babel-pre-tangle-hook
               (lambda ()
