@@ -95,14 +95,14 @@ Check the logs of the flux Source controller:
 
 #+begin_src shell :noweb yes :eval never-export :exports code :results output
 <<kubectl>> -n flux-system \
-        logs deployment/source-controller | tail -n 10
+        logs deployment/source-controller | tail -n 3
 #+end_src
 
 Check the logs of the flux Kustomize controller:
 
 #+begin_src shell :noweb yes :eval never-export :exports code :results output
 <<kubectl>> -n flux-system \
-        logs deployment/source-controller | tail -n 10
+        logs deployment/source-controller | tail -n 3
 #+end_src
 
 * Test adding a new manifest to the git repository
