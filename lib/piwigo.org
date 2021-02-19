@@ -1,3 +1,7 @@
+[[https://piwigo.org/][Piwigo]] is a mature open source PHP based image gallery. The images will be
+stored primarily on a local volume attached to the pod, and additionally a
+sidecar deployment of [[https://restic.net/][Restic]] will regularly backup the volume to S3 storage.
+
 * Get database credentials
   You need the database password in order to fill in the config form (You must
   un-comment the =echo= line (remove =#=), and accept your own responsibility to
