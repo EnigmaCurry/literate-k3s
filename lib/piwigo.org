@@ -248,10 +248,7 @@ spec:
           image: lobaro/restic-backup-docker:1.2-0.9.4
           env:
           - name: RESTIC_REPOSITORY
-            valueFrom:
-              secretKeyRef:
-                name: piwigo-s3-backup
-                key: RESTIC_REPOSITORY
+            value: <<PIWIGO_DATA_BACKUP_REPOSITORY>>
           # Restic /requires/ encryption, but I don't need it, and I worry more
           # about forgetting the password than anything else. Data is protected by
           # S3 credentials not encryption. The hard coded `password` here is cool:
