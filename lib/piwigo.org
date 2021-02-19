@@ -41,34 +41,6 @@ into your new projects that depend on MariaDB, and be careful to translate all
 of the PIWIGO specific references in variable names and paths, in your own
 name-spaced application.
 #+END_COMMENT
-** PIWIGO_MARIADB_PVC_SIZE
-   How big do you need the Database volume?
-   #+name: PIWIGO_MARIADB_PVC_SIZE
-   #+begin_src config :noweb yes :eval no
-   5Gi
-   #+end_src
-** PIWIGO_MARIADB_BACKUP_PVC_SIZE
-   How big do you need the Backup Database volume?
-   #+name: PIWIGO_MARIADB_PVC_SIZE
-   #+begin_src config :noweb yes :eval no
-   10Gi
-   #+end_src
-** PIWIGO_MARIADB_HELM_CHART_VERSION
-   What version of the [[https://github.com/bitnami/charts/tree/master/bitnami/mariadb][MariaDB Helm Chart]] do you want to install?
-   #+name: PIWIGO_MARIADB_HELM_CHART_VERSION
-   #+begin_src config :noweb yes :eval no
-   9.0.1
-   #+end_src
-** PIWIGO_MARIADB_DATABASE_NAME
-   #+name: PIWIGO_MARIADB_DATABASE_NAME
-   #+begin_src config :noweb yes :eval no
-   piwigo
-   #+end_src
-** PIWIGO_MARIADB_DATABASE_USER
-   #+name: PIWIGO_MARIADB_DATABASE_USER
-   #+begin_src config :noweb yes :eval no
-   piwigo
-   #+end_src
 ** piwigo/mariadb/backups.pvc.yaml
 #+begin_src yaml :noweb yes :eval no :tangle piwigo/mariadb/backups.pvc.yaml
 apiVersion: v1
@@ -102,6 +74,15 @@ spec:
   releaseName: mariadb
   interval: 5m0s
   targetNamespace: piwigo
+  valuesFrom: 
+  - kind: Secret
+    name: mariadb
+    valuesKey: mariadb-root-password
+    targetPath: auth.rootPassword
+  - kind: Secret
+    name: mariadb
+    valuesKey: mariadb-password
+    targetPath: auth.password
   values:
     auth:
       username: <<PIWIGO_MARIADB_DATABASE_USER>>
