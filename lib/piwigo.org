@@ -95,7 +95,7 @@ spec:
         - name: INCREMENTAL
           value: "true"
         - name: MYSQL_HOST
-          value: localhost
+          value: mariadb
         - name: MYSQL_USER
           value: root
         - name: MYSQL_PASSWORD
@@ -133,9 +133,10 @@ spec:
           mountPath: /data
 #+end_src
 
-* Backup Piwigo config+photos to S3
-You probably consider your photos important, so you should make a backup to an
-external storage bucket. You will put your S3 credentials into a sealed secret.
+* Backup Piwigo database+config+photos to S3
+You probably consider your photos and data important, so you should make a
+backup to an external storage bucket. You will put your S3 credentials into a
+sealed secret.
 
 Since you're dealing with a secret, you should copy these commands into a fresh
 terminal, and edit them directly in the shell (not edited nor run from Org).
@@ -168,9 +169,15 @@ kubectl create secret generic piwigo-s3-backup \
 The backup is regularly scheduled, but you can trigger the initial backup to
 occur immediately:
 
-#+begin_src shell :noweb yes :eval never-export :exports code
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
 <<kubectl>> -n piwigo \
     exec piwigo-0 --container piwigo-s3-backup -t -- \
+    /bin/backup && \
+<<kubectl>> -n piwigo \
+    exec mariadb-0 --container mariadb-backups -t -- \
+    /scripts/backup.sh && \
+<<kubectl>> -n piwigo \
+    exec mariadb-0 --container mariadb-s3-upload -t -- \
     /bin/backup
 #+end_src
 
