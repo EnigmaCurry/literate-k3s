@@ -3,26 +3,29 @@ and private galleries, user registration, comments, notifications, slideshows,
 bootstrap theme for wide device compatibility, and also there's native mobile
 apps available. The images will be stored primarily on a pod-local volume, and
 additionally a sidecar deployment of [[https://restic.net/][Restic]] will regularly backup the volume to
-remote S3 storage.
+remote S3 storage. The database is stored in MariaDB, and additional sidecars
+are created to regularly backup the database to S3 with Restic.
 
 Assuming you have already installed Flux, and you have tangled your Org source,
 and committed, and pushed to the git repository, piwigo should now already be
-running. You just need to sign in and configure the database credentials to get
-started.
+running. To get started, you just need to sign in, and configure the database
+credentials.
 
 * Get database credentials
-  You need the database password in order to fill in the config form (You must
-  un-comment the =echo= line (remove =#=), and accept your own responsibility to
-  clear the RESULTS before saving this file!):
+You need the database password in order to fill in the config form (In order to
+see the password, you must un-comment the following =echo= line (remove =#=)
+before running it, remember to clear the RESULTS before saving this file
+again: =C-c C-v k=):
 
-  #+begin_src shell :noweb yes :eval never-export :exports code
-  MARIADB_PASSWORD=$(<<kubectl>> -n piwigo get secret/mariadb \
-    -o jsonpath='{.data.mariadb-password}' | base64 -d)
-  #echo "Piwigo MariaDB password is: ${MARIADB_PASSWORD}"
-  #+end_src
+#+begin_src shell :noweb yes :eval never-export :exports code
+MARIADB_PASSWORD=$(<<kubectl>> -n piwigo get secret/mariadb \
+  -o jsonpath='{.data.mariadb-password}' | base64 -d)
+#echo "Piwigo MariaDB password is: ${MARIADB_PASSWORD}"
+#+end_src
 
-  Now you can go to the PIWIGO_DOMAIN in your browser and configure the database:
-  
+Now you can go to the =PIWIGO_DOMAIN= in your browser and configure the
+database:
+
   * host: =mariadb=
   * username: =piwigo=
   * password: (see above output)
@@ -34,14 +37,21 @@ started.
 I /would like/ to just be able to INCLUDE a MariaDB template for Piwigo. But I
 haven't figured out a way to "instance" an Org-mode INCLUDE statement to use it
 more than once, like a true template. So for now you can just copy this section
-into your new projects that depend on MariaDB, and be careful to change all of
-the PIWIGO specific variables and paths to your own name-spaced application.
+into your new projects that depend on MariaDB, and be careful to translate all
+of the PIWIGO specific references in variable names and paths, in your own
+name-spaced application.
 #+END_COMMENT
 ** PIWIGO_MARIADB_PVC_SIZE
    How big do you need the Database volume?
    #+name: PIWIGO_MARIADB_PVC_SIZE
    #+begin_src config :noweb yes :eval no
    5Gi
+   #+end_src
+** PIWIGO_MARIADB_BACKUP_PVC_SIZE
+   How big do you need the Backup Database volume?
+   #+name: PIWIGO_MARIADB_PVC_SIZE
+   #+begin_src config :noweb yes :eval no
+   10Gi
    #+end_src
 ** PIWIGO_MARIADB_HELM_CHART_VERSION
    What version of the [[https://github.com/bitnami/charts/tree/master/bitnami/mariadb][MariaDB Helm Chart]] do you want to install?
@@ -59,32 +69,98 @@ the PIWIGO specific variables and paths to your own name-spaced application.
    #+begin_src config :noweb yes :eval no
    piwigo
    #+end_src
+** piwigo/mariadb/backups.pvc.yaml
+#+begin_src yaml :noweb yes :eval no :tangle piwigo/mariadb/backups.pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: piwigo-mariadb-backups
+  namespace: piwigo
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: <<PIWIGO_MARIADB_BACKUP_PVC_SIZE>>
+  storageClassName: local-path
+#+end_src
 ** piwigo/mariadb/helm.release.yaml
- #+begin_src yaml :noweb yes :eval no :tangle piwigo/mariadb/helm.release.yaml
- apiVersion: helm.toolkit.fluxcd.io/v2beta1
- kind: HelmRelease
- metadata:
-   name: piwigo-mariadb
-   namespace: flux-system
- spec:
-   chart:
-     spec:
-       chart: mariadb
-       version: <<PIWIGO_MARIADB_HELM_CHART_VERSION>>
-       sourceRef:
-         kind: HelmRepository
-         name: bitnami
-   releaseName: mariadb
-   interval: 5m0s
-   targetNamespace: piwigo
-   values:
-     primary:
-       persistence:
-         size: <<PIWIGO_MARIADB_PVC_SIZE>>
-     auth:
-       username: <<PIWIGO_MARIADB_DATABASE_USER>>
-       database: <<PIWIGO_MARIADB_DATABASE_NAME>>
- #+end_src
+#+begin_src yaml :noweb yes :eval no :tangle piwigo/mariadb/helm.release.yaml
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: piwigo-mariadb
+  namespace: flux-system
+spec:
+  chart:
+    spec:
+      chart: mariadb
+      version: <<PIWIGO_MARIADB_HELM_CHART_VERSION>>
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+  releaseName: mariadb
+  interval: 5m0s
+  targetNamespace: piwigo
+  values:
+    auth:
+      username: <<PIWIGO_MARIADB_DATABASE_USER>>
+      database: <<PIWIGO_MARIADB_DATABASE_NAME>>
+    primary:
+      persistence:
+        size: <<PIWIGO_MARIADB_PVC_SIZE>>
+      extraVolumes:
+      - name: mariadb-backups
+        persistentVolumeClaim:
+          claimName: piwigo-mariadb-backups
+      sidecars:
+      - name: mariadb-backups
+        image: woolfg/mysql-backup-sidecar:v0.3.1-mariadb-10.4
+        env:
+        - name: CRON_SCHEDULE
+          value: "30 2 * * *"
+        - name: BACKUP_DIR
+          value: /backup
+        - name: INCREMENTAL
+          value: "true"
+        - name: MYSQL_HOST
+          value: localhost
+        - name: MYSQL_USER
+          value: root
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb
+              key: mariadb-root-password
+        volumeMounts:
+        - name: mariadb
+          mountPath: /var/lib/mysql
+        - name: mariadb-backups
+          mountPath: /backup
+      - name: mariadb-s3-upload
+        image: lobaro/restic-backup-docker:1.3.1-0.9.6
+        env:
+        - name: RESTIC_REPOSITORY
+          value: <<PIWIGO_MARIADB_BACKUP_REPOSITORY>>
+        - name: RESTIC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: piwigo
+              key: RESTIC_PASSWORD
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-backups
+              key: S3_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-backups
+              key: S3_SECRET_ACCESS_KEY
+        volumeMounts:
+        - name: mariadb-backups
+          mountPath: /data
+#+end_src
 
 * Backup Piwigo config+photos to S3
 You probably consider your photos important, so you should make a backup to an
@@ -107,14 +183,11 @@ the left/right arrow keys (NOT the up/down arrow keys), and edit the variables
 before pressing Enter:
 
 #+begin_src shell :noweb yes :eval never :exports code
-S3_ENDPOINT=s3.us-west-1.wasabisys.com
-S3_BUCKET=mybucket
 S3_ACCESS_KEY_ID=xxxxxxxxx
 S3_SECRET_ACCESS_KEY=xxxxxxxx
 SRC_DIR=${HOME}/git/clusters/barrel.rymcg.tech/
 kubectl create secret generic piwigo-s3-backup \
    --namespace piwigo --dry-run=client -o json \
-   --from-literal=RESTIC_REPOSITORY=s3:https://${S3_ENDPOINT}/${S3_BUCKET} \
    --from-literal=S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID} \
    --from-literal=S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY} \
    | kubeseal -o yaml > \
@@ -140,6 +213,7 @@ resources:
 - statefulset.yaml
 - service.yaml
 - piwigo-s3-backup.sealed_secret.yaml
+- mariadb/backups.pvc.yaml
 - mariadb/helm.release.yaml
 #+end_src
 * piwigo/namespace.yaml
@@ -206,9 +280,9 @@ spec:
               secretKeyRef:
                 name: piwigo-s3-backup
                 key: RESTIC_REPOSITORY
-          # Just hardcode a default restic password, I don't care about
-          # encryption, and I worry more about forgetting the password than
-          # anything else. Data is protected by S3 credentials not encryption.
+          # Restic /requires/ encryption, but I don't need it, and I worry more
+          # about forgetting the password than anything else. Data is protected by
+          # S3 credentials not encryption. The hard coded `password` here is cool:
           - name: RESTIC_PASSWORD
             value: password
           - name: AWS_ACCESS_KEY_ID
