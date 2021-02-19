@@ -1,6 +1,14 @@
-[[https://piwigo.org/][Piwigo]] is a mature open source PHP based image gallery. The images will be
-stored primarily on a local volume attached to the pod, and additionally a
-sidecar deployment of [[https://restic.net/][Restic]] will regularly backup the volume to S3 storage.
+[[https://piwigo.org/][Piwigo]] is a mature, open source, PHP based, image web gallery, supporting public
+and private galleries, user registration, comments, notifications, slideshows,
+bootstrap theme for wide device compatibility, and also there's native mobile
+apps available. The images will be stored primarily on a pod-local volume, and
+additionally a sidecar deployment of [[https://restic.net/][Restic]] will regularly backup the volume to
+remote S3 storage.
+
+Assuming you have already installed Flux, and you have tangled your Org source,
+and committed, and pushed to the git repository, piwigo should now already be
+running. You just need to sign in and configure the database credentials to get
+started.
 
 * Get database credentials
   You need the database password in order to fill in the config form (You must
