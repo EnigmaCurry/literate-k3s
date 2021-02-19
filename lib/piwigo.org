@@ -46,7 +46,7 @@ name-spaced application.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: piwigo-mariadb-backups
+  name: mariadb-backups
   namespace: piwigo
 spec:
   accessModes:
@@ -61,8 +61,8 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: piwigo-mariadb
-  namespace: flux-system
+  name: mariadb
+  namespace: piwigo
 spec:
   chart:
     spec:
@@ -73,27 +73,18 @@ spec:
         name: bitnami
   releaseName: mariadb
   interval: 5m0s
-  targetNamespace: piwigo
-  valuesFrom: 
-  - kind: Secret
-    name: mariadb
-    valuesKey: mariadb-root-password
-    targetPath: auth.rootPassword
-  - kind: Secret
-    name: mariadb
-    valuesKey: mariadb-password
-    targetPath: auth.password
   values:
     auth:
       username: <<PIWIGO_MARIADB_DATABASE_USER>>
       database: <<PIWIGO_MARIADB_DATABASE_NAME>>
+      existingSecret: mariadb
     primary:
       persistence:
         size: <<PIWIGO_MARIADB_PVC_SIZE>>
       extraVolumes:
       - name: mariadb-backups
         persistentVolumeClaim:
-          claimName: piwigo-mariadb-backups
+          claimName: mariadb-backups
       sidecars:
       - name: mariadb-backups
         image: woolfg/mysql-backup-sidecar:v0.3.1-mariadb-10.4
@@ -194,6 +185,7 @@ resources:
 - statefulset.yaml
 - service.yaml
 - piwigo-s3-backup.sealed_secret.yaml
+- helm.sources.yaml
 - mariadb/backups.pvc.yaml
 - mariadb/helm.release.yaml
 #+end_src
@@ -331,4 +323,16 @@ spec:
       port: 80
   tls:
     certResolver: default
+#+end_src
+* piwigo/helm.sources.yaml
+#+begin_src yaml :noweb yes :eval no :tangle piwigo/helm.sources.yaml
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: bitnami
+  namespace: piwigo
+spec:
+  interval: 12h0m0s
+  url: https://charts.bitnami.com/bitnami
 #+end_src
