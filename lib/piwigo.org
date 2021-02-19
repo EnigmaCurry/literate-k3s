@@ -77,7 +77,6 @@ spec:
     auth:
       username: <<PIWIGO_MARIADB_DATABASE_USER>>
       database: <<PIWIGO_MARIADB_DATABASE_NAME>>
-      existingSecret: mariadb
     primary:
       persistence:
         size: <<PIWIGO_MARIADB_PVC_SIZE>>
