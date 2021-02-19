@@ -79,9 +79,8 @@ the PIWIGO specific variables and paths to your own name-spaced application.
  #+end_src
 
 * Backup Piwigo config+photos to S3
-You probably consider your photos important, so you should back them up to an
-external storage backup. You need to add your S3 credentials into a sealed
-secret.
+You probably consider your photos important, so you should make a backup to an
+external storage bucket. You will put your S3 credentials into a sealed secret.
 
 Since you're dealing with a secret, you should copy these commands into a fresh
 terminal, and edit them directly in the shell (not edited nor run from Org).
