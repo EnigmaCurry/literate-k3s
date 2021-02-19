@@ -110,6 +110,15 @@ kubectl create secret generic piwigo-s3-backup \
   ${SRC_DIR}/piwigo/piwigo-s3-backup.sealed_secret.yaml
 #+end_src
 
+Once you've committed and pushed, and flux has redeployed, execute the commands
+to initialize the repository:
+
+#+begin_src shell :noweb yes :eval never-export :exports code :results output
+<<kubectl>> -n piwigo \
+    exec piwigo-0 --container piwigo-s3-backup -t -- \
+    restic init
+#+end_src
+
 * piwigo/kustomization.yaml
 #+begin_src yaml :noweb yes :eval no :tangle piwigo/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -186,6 +195,11 @@ spec:
               secretKeyRef:
                 name: piwigo-s3-backup
                 key: RESTIC_REPOSITORY
+          # Just hardcode a default restic password, I don't care about
+          # encryption, and I worry more about forgetting the password than
+          # anything else. Data is protected by S3 credentials not encryption.
+          - name: RESTIC_PASSWORD
+            value: password
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
