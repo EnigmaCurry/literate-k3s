@@ -10,7 +10,7 @@ sidecar deployment of [[https://restic.net/][Restic]] will regularly backup the 
   #+begin_src shell :noweb yes :eval never-export :exports code
   MARIADB_PASSWORD=$(<<kubectl>> -n piwigo get secret/mariadb \
     -o jsonpath='{.data.mariadb-password}' | base64 -d)
-  echo "Piwigo MariaDB password is: ${MARIADB_PASSWORD}"
+  #echo "Piwigo MariaDB password is: ${MARIADB_PASSWORD}"
   #+end_src
 
   Now you can go to the PIWIGO_DOMAIN in your browser and configure the database:
@@ -154,7 +154,7 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 50Gi
+      storage: <<PIWIGO_PVC_SIZE>>
   storageClassName: local-path
 #+end_src
 * piwigo/statefulset.yaml
