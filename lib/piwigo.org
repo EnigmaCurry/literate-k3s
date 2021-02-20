@@ -152,9 +152,10 @@ set enable-bracketed-paste on
 Copy and paste this next code into the same terminal as above. Before pressing
 Enter, press =Ctrl-A= to go back to beginning of the first line, or scroll with
 the left/right arrow keys (NOT the up/down arrow keys), and edit the variables
-before pressing Enter:
+=S3_ACCESS_KEY_ID= and =S3_SECRET_ACCESS_KEY= before pressing Enter:
 
 #+begin_src shell :noweb yes :eval never :exports code
+unset HISTFILE
 S3_ACCESS_KEY_ID=xxxxxxxxx
 S3_SECRET_ACCESS_KEY=xxxxxxxx
 SRC_DIR=${HOME}/git/clusters/barrel.rymcg.tech/
